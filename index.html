@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard de Aplicaciones Educativas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    h1 {
+      color: #1a5fb4;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    header p {
+      color: #555;
+      font-size: 1.1em;
+      max-width: 600px;
+    }
+    .creator-section {
+      background: #e9eef5;
+      border-radius: 10px;
+      padding: 25px 30px;
+      margin: 0 auto 40px;
+      max-width: 700px;
+      text-align: center;
+      border: 1px solid #dce5f2;
+    }
+    .creator-section h2 {
+      color: #2c6fbb;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .creator-section p {
+      color: #444;
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+    .signature {
+        margin-top: 20px;
+        line-height: 1.5;
+        font-style: italic;
+        color: #555;
+    }
+    .dashboard-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      max-width: 1200px;
+    }
+    .app-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 25px;
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .app-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .app-card h3 {
+      color: #2c6fbb;
+      margin-top: 0;
+      border-bottom: 2px solid #e0e6ed;
+      padding-bottom: 10px;
+      /* --- CAMBIO REALIZADO: Título centrado --- */
+      text-align: center;
+    }
+    .app-card p {
+      flex-grow: 1;
+      color: #444;
+      font-size: 15px;
+      line-height: 1.6;
+      /* --- CAMBIO REALIZADO: Texto justificado --- */
+      text-align: justify;
+    }
+    .btn {
+      display: block;
+      background: #1a5fb4;
+      color: white;
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #134a8e;
+    }
+    .btn.disabled {
+      background-color: #a0b4ce;
+      cursor: not-allowed;
+    }
+    footer {
+        text-align: center;
+        margin-top: 50px;
+        color: #888;
+        font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Dashboard de Aplicaciones Educativas</h1>
+    <p>
+      Bienvenido/a. Desde aquí puedes acceder a un conjunto de herramientas
+      diseñadas para la enseñanza y el aprendizaje en el entorno digital.
+    </p>
+  </header>
+
+  <section class="creator-section">
+    <h2>Una nota del creador</h2>
+    <p>
+      ¡Hola! Mi nombre es Manuel Rodríguez Peñalver. Como Profesor de Tecnología y Coordinador TDE, mi objetivo es crear herramientas prácticas y accesibles que nos ayuden, tanto a docentes como a estudiantes, a navegar y prosperar en el entorno digital. Espero que encuentres estos recursos de gran utilidad.
+    </p>
+    <div class="signature">
+        <strong>Manuel Rodríguez Peñalver</strong><br>
+        Profesor de Tecnología, Coordinador TDE y Escuelas 4.0<br>
+        IES Sierra de los Filabres
+    </div>
+  </section>
+
+  <main class="dashboard-container">
+    <!-- Aplicación 1: Rúbrica Interactiva (ACTIVA) -->
+    <article class="app-card">
+      <h3>Competencia Digital</h3>
+      <p>
+        Una herramienta completa de autoevaluación para medir y entender tus
+        habilidades digitales en cuatro áreas clave: ciudadanía, comunicación,
+        creación de contenidos y pensamiento computacional.
+      </p>
+      <a href="rubrica-interactiva.html" class="btn">Acceder a la Rúbrica</a>
+    </article>
+
+    <!-- Aplicación 2: Rúbrica de Evaluación Inicial (FUTURA) -->
+    <article class="app-card">
+      <h3>Rúbrica de Evaluación Inicial</h3>
+      <p>
+        Un cuestionario rápido para establecer una línea base de
+        conocimientos al comienzo de un curso. Ideal para
+        adaptar la enseñanza a las necesidades del grupo.
+      </p>
+      <a href="#" class="btn disabled">Próximamente</a>
+    </article>
+
+    <!-- Aplicación 3: Descubre tu Nivel Digital (FUTURA) -->
+    <article class="app-card">
+      <h3>Descubre tu Nivel Digital</h3>
+      <p>
+        Una guía gamificada y visual para que los más jóvenes
+        puedan descubrir su nivel de competencia digital de una forma sencilla
+        y divertida, fomentando la curiosidad.
+      </p>
+      <a href="#" class="btn disabled">Próximamente</a>
+    </article>
+
+    <!-- Aplicación 4: Plan de Razonamiento Matemático (FUTURA) -->
+    <article class="app-card">
+      <h3>Plan de Razonamiento Matemático</h3>
+      <p>
+        Una colección de desafíos, problemas y acertijos diseñados para fortalecer
+        la lógica, la resolución de problemas y el pensamiento crítico a través
+        de las matemáticas.
+      </p>
+      <a href="#" class="btn disabled">Próximamente</a>
+    </article>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 - Plataforma desarrollada por Manuel Rodríguez</p>
+  </footer>
+
+</body>
+</html>
