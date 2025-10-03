@@ -15,8 +15,25 @@
     h1 {
       text-align: center;
       color: #1a5fb4;
-      margin-bottom: 30px;
+      margin-bottom: 15px; /* Reducido para dar espacio al nuevo botón */
     }
+    /* --- INICIO: ESTILOS PARA EL NUEVO BOTÓN --- */
+    .info-button {
+      display: block; /* Permite centrarlo y darle márgenes */
+      width: fit-content; /* El ancho se ajusta al texto */
+      margin: 0 auto 30px; /* Centrado horizontalmente y con margen inferior */
+      padding: 8px 20px;
+      background-color: #6c757d; /* Un color secundario/neutro */
+      color: white;
+      text-decoration: none; /* Quita el subrayado del enlace */
+      border-radius: 6px;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    .info-button:hover {
+      background-color: #5a6268; /* Un poco más oscuro al pasar el ratón */
+    }
+    /* --- FIN: ESTILOS PARA EL NUEVO BOTÓN --- */
     .datos-alumno {
       background: white;
       border-radius: 10px;
@@ -219,6 +236,12 @@
 <body>
   <h1>Rúbrica Interactiva de Competencia Digital</h1>
 
+  <!-- --- INICIO: BOTÓN AÑADIDO --- -->
+  <a href="https://github.com/manuelrodriguezedu-boop/rubrica-digital" target="_blank" rel="noopener noreferrer" class="info-button">
+    Ver Instrucciones (README)
+  </a>
+  <!-- --- FIN: BOTÓN AÑADIDO --- -->
+
   <div class="datos-alumno">
     <h2>Datos del Alumno</h2>
     <div class="form-row">
@@ -393,7 +416,7 @@
     // =================================================================================
     // IMPORTANTE: Pega aquí la URL de tu Web App de Google Apps Script.
     // =================================================================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyV1R46yi3k5iAIFoOw-0dA24y8tCzq6LylWbpGkioZodnz3j9I6wve9Raiv3iid5mGrg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyV1R46yi3k5iAIFoOw-0dA24y8tCzq6LylWbpGkioZodnz3j9I6wve9Raiv3iid5mGrg/exec"; // ¡Asegúrate de que esta es TU URL!
     // =================================================================================
 
     const form = document.getElementById('rubricaForm');
@@ -411,7 +434,9 @@
         return;
       }
       
-      if (SCRIPT_URL === "PEGA_AQUÍ_LA_URL_DE_TU_WEB_APP") {
+      // Esta comprobación de seguridad está diseñada para evitar que uses la URL de ejemplo.
+      // Si pusiste tu URL arriba, esta comprobación no dará problemas.
+      if (SCRIPT_URL === "https://script.google.com/macros/s/PON-AQUI-LA-URL-DE-EJEMPLO-SI-LA-HUBIERA/exec") {
         alert("Error de configuración: Por favor, introduce la URL de la Web App de Google Apps Script en la variable SCRIPT_URL del código JavaScript.");
         return;
       }
