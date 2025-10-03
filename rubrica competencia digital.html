@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rúbrica Interactiva de Competencia Digital</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #1a5fb4;
+      margin-bottom: 30px;
+    }
+    .datos-alumno {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .datos-alumno h2 {
+      color: #2c6fbb;
+      margin-top: 0;
+      border-bottom: 2px solid #e0e6ed;
+      padding-bottom: 10px;
+    }
+    .datos-alumno .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .datos-alumno .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    .datos-alumno label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #444;
+    }
+    .datos-alumno input, .datos-alumno select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd9f0;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    .area {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .area h2 {
+      color: #2c6fbb;
+      border-bottom: 2px solid #e0e6ed;
+      padding-bottom: 10px;
+    }
+    .criterio {
+      margin-bottom: 30px;
+    }
+    .criterio h3 {
+      margin-bottom: 12px;
+      color: #444;
+    }
+    .nivel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .nivel-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .nivel input[type="radio"] {
+      margin-top: 6px;
+    }
+    .nivel label {
+      flex: 1;
+      padding: 12px;
+      background: #f8fbff;
+      border: 1px solid #cbd9f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nivel input[type="radio"]:checked + label {
+      background: #e0ecff;
+      border-color: #1a5fb4;
+      font-weight: bold;
+    }
+    .nivel label:hover {
+      background: #edf5ff;
+    }
+    .nivel-desc {
+      margin-top: 6px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+    }
+    .btn-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    button {
+      background: #1a5fb4;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+      min-width: 200px; /* Ancho mínimo para el botón */
+    }
+    button:hover {
+      background: #134a8e;
+    }
+    button:disabled {
+        background-color: #a0b4ce;
+        cursor: not-allowed;
+    }
+    #resultado {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin-top: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: none;
+    }
+    #resultado h2 {
+      color: #1a5fb4;
+      text-align: center;
+    }
+    #resultado .alumno-info {
+      text-align: center;
+      margin-bottom: 20px;
+      font-style: italic;
+      color: #555;
+    }
+    .nivel-resumen {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .nivel-item-res {
+      background: #f0f7ff;
+      padding: 15px;
+      border-radius: 8px;
+      width: 30%;
+      min-width: 200px;
+      text-align: center;
+      margin: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .nivel-item-res h3 {
+      margin: 0 0 10px;
+      color: #1a5fb4;
+    }
+    .nivel-item-res p {
+      margin: 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .recomendacion {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e6ed;
+    }
+    .recomendacion p {
+      line-height: 1.6;
+    }
+    .nivel-global-container {
+      background: #e6f0ff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 25px;
+      border: 2px solid #1a5fb4;
+    }
+    .nivel-global-container h3 {
+      margin: 0 0 10px;
+      color: #1a5fb4;
+    }
+    .nivel-global-container p {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+      color: #1a5fb4;
+    }
+    .mensaje-feedback {
+        text-align: center;
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 6px;
+        display: none; /* Oculto por defecto */
+    }
+    .mensaje-feedback.success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .mensaje-feedback.error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rúbrica Interactiva de Competencia Digital</h1>
+
+  <div class="datos-alumno">
+    <h2>Datos del Alumno</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nombre">Nombre y Apellidos *</label>
+        <input type="text" id="nombre" name="nombre" required>
+      </div>
+      <div class="form-group">
+        <label for="curso">Curso *</label>
+        <input type="text" id="curso" name="curso" placeholder="Ej. 1º ESO, 2º Bachillerato, etc." required>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="centro">Centro Educativo</label>
+        <input type="text" id="centro" name="centro">
+      </div>
+      <div class="form-group">
+        <label for="localidad">Localidad</label>
+        <input type="text" id="localidad" name="localidad">
+      </div>
+    </div>
+  </div>
+
+  <form id="rubricaForm">
+    <!-- Las áreas y criterios de la rúbrica van aquí (sin cambios) -->
+    <!-- Área 1 -->
+    <div class="area">
+      <h2>Área 1: Ciudadanía Digital y Bienestar</h2>
+      <div class="criterio">
+        <h3>Seguridad y Privacidad</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="sp0" name="seguridad" value="0"><label for="sp0"><span class="nivel-desc">No comprendo la importancia de proteger mis contraseñas, no soy consciente de los riesgos de la información en internet y no sé cómo actuar ante amenazas digitales.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="sp1" name="seguridad" value="1"><label for="sp1"><span class="nivel-desc">Comprendo la importancia de no compartir mis contraseñas y soy consciente de que no toda la información en internet es segura.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="sp2" name="seguridad" value="2"><label for="sp2"><span class="nivel-desc">Sé crear contraseñas seguras y diferentes para mis cuentas. Puedo identificar correos sospechosos (phishing) y sé configurar las opciones básicas de privacidad en mis redes sociales.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="sp3" name="seguridad" value="3"><label for="sp3"><span class="nivel-desc">Gestiono de forma proactiva mi huella digital, utilizo herramientas de protección como antivirus y sé cómo actuar para prevenir riesgos y amenazas en entornos digitales.</span></label></div>
+        </div>
+      </div>
+      <div class="criterio">
+        <h3>Uso Ético y Responsable</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="ue0" name="etica" value="0"><label for="ue0"><span class="nivel-desc">No entiendo qué es el plagio, no respeto la autoría de los contenidos ajenos y no sé citar fuentes.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="ue1" name="etica" value="1"><label for="ue1"><span class="nivel-desc">Entiendo que no debo copiar y pegar el trabajo de otros y presentarlo como mío.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="ue2" name="etica" value="2"><label for="ue2"><span class="nivel-desc">Cito correctamente las fuentes que utilizo en mis trabajos y comprendo los conceptos de plagio y derechos de autor.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="ue3" name="etica" value="3"><label for="ue3"><span class="nivel-desc">No solo aplicas un uso ético de la tecnología, sino que impulsas activamente su uso seguro y responsable en tu entorno, por ejemplo, explicando a tus compañeros los sesgos que puede tener la IA o la importancia de la propiedad intelectual.</span></label></div>
+        </div>
+      </div>
+      <div class="criterio">
+        <h3>Bienestar Digital</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="bd0" name="bienestar" value="0"><label for="bd0"><span class="nivel-desc">No soy consciente del impacto negativo del uso excesivo de pantallas en mi salud ni en mis estudios, y no establezco límites para su uso.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="bd1" name="bienestar" value="1"><label for="bd1"><span class="nivel-desc">Soy consciente de que pasar demasiado tiempo conectado a las pantallas puede afectar a mi salud y a mis estudios.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="bd2" name="bienestar" value="2"><label for="bd2"><span class="nivel-desc">Establezco límites de tiempo para el uso de dispositivos, tomo descansos regulares y busco un equilibrio para cuidar mi salud física y mental.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="bd3" name="bienestar" value="3"><label for="bd3"><span class="nivel-desc">Gestiono de forma autónoma un equilibrio saludable entre mi vida online y offline, por ejemplo, desactivando notificaciones en periodos de estudio o dejando conscientemente los dispositivos fuera del dormitorio.</span></label></div>
+        </div>
+      </div>
+    </div>
+    <!-- Área 2 -->
+    <div class="area">
+      <h2>Área 2: Comunicación y Colaboración Digital</h2>
+      <div class="criterio">
+        <h3>Herramientas de Comunicación</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="hc0" name="comunicacion" value="0"><label for="hc0"><span class="nivel-desc">No utilizo herramientas digitales para comunicarme ni sé expresar mis ideas de forma clara en entornos digitales.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="hc1" name="comunicacion" value="1"><label for="hc1"><span class="nivel-desc">Utilizo herramientas básicas como el correo electrónico o la mensajería instantánea para enviar y recibir información simple.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="hc2" name="comunicacion" value="2"><label for="hc2"><span class="nivel-desc">Participo activamente en videollamadas y foros de debate, compartiendo archivos y expresando mis ideas de forma clara y respetuosa.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="hc3" name="comunicacion" value="3"><label for="hc3"><span class="nivel-desc">Selecciono la herramienta de comunicación digital más adecuada para cada propósito y audiencia (un chat para algo rápido, una videollamada para un debate, un foro para una consulta), optimizando el flujo de trabajo.</span></label></div>
+        </div>
+      </div>
+      <div class="criterio">
+        <h3>Colaboración en Entornos Digitales</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="col0" name="colaboracion" value="0"><label for="col0"><span class="nivel-desc">No participo en documentos compartidos ni colaboro en proyectos digitales con otros.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="col1" name="colaboracion" value="1"><label for="col1"><span class="nivel-desc">Participo en documentos compartidos (texto, presentaciones) cuando me invitan, realizando ediciones sencillas.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="col2" name="colaboracion" value="2"><label for="col2"><span class="nivel-desc">Colaboro de forma activa en proyectos de equipo utilizando herramientas digitales, aportando ideas, asignando tareas y ofreciendo retroalimentación constructiva a mis compañeros.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="col3" name="colaboracion" value="3"><label for="col3"><span class="nivel-desc">Eres capaz de organizar y gestionar un proyecto digital en equipo desde su inicio, proponiendo la herramienta más adecuada, definiendo roles, estableciendo plazos y resolviendo conflictos para alcanzar un objetivo común de forma eficaz.</span></label></div>
+        </div>
+      </div>
+    </div>
+    <!-- Área 3 -->
+    <div class="area">
+      <h2>Área 3: Creación de Contenidos Digitales</h2>
+      <div class="criterio">
+        <h3>Producción Multimedia</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="pm0" name="multimedia" value="0"><label for="pm0"><span class="nivel-desc">No creo documentos ni presentaciones digitales, ni incluyo imágenes o texto de forma organizada.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="pm1" name="multimedia" value="1"><label for="pm1"><span class="nivel-desc">Creo documentos de texto con formato básico y presentaciones sencillas que incluyen imágenes y texto.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="pm2" name="multimedia" value="2"><label for="pm2"><span class="nivel-desc">Edito imágenes o vídeos de forma básica para mis proyectos. Creo contenidos más dinámicos como infografías o presentaciones interactivas.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="pm3" name="multimedia" value="3"><label for="pm3"><span class="nivel-desc">Produzco contenido multimedia complejo e integrado (vídeos con efectos, podcasts, páginas web sencillas) combinando diferentes herramientas y formatos para comunicar una idea de manera eficaz.</span></label></div>
+        </div>
+      </div>
+      <div class="criterio">
+        <h3>Diseño y Modelado 3D</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="3d0" name="modelado3d" value="0"><label for="3d0"><span class="nivel-desc">No he explorado ni manipulado modelos 3D, ni conozco plataformas como Tinkercad.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="3d1" name="modelado3d" value="1"><label for="3d1"><span class="nivel-desc">Exploro y manipulo modelos 3D ya existentes en plataformas como Tinkercad para entender cómo funcionan.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="3d2" name="modelado3d" value="2"><label for="3d2"><span class="nivel-desc">Soy capaz de crear y modificar diseños 3D sencillos desde cero, como un llavero o una figura simple.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="3d3" name="modelado3d" value="3"><label for="3d3"><span class="nivel-desc">Diseño objetos 3D complejos y funcionales, y preparo los archivos correctamente para su impresión 3D, resolviendo los problemas que puedan surgir en el proceso.</span></label></div>
+        </div>
+      </div>
+      <div class="criterio">
+        <h3>Introducción a la Inteligencia Artificial Generativa</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="ia0" name="ia" value="0"><label for="ia0"><span class="nivel-desc">No utilizo herramientas de IA generativa ni sé cómo formular instrucciones (prompts) para obtener resultados.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="ia1" name="ia" value="1"><label for="ia1"><span class="nivel-desc">Utilizo herramientas de IA (como Dall-E 2 o Stable Diffusion) para generar imágenes o textos a partir de instrucciones simples (prompts).</span></label></div>
+          <div class="nivel-item"><input type="radio" id="ia2" name="ia" value="2"><label for="ia2"><span class="nivel-desc">Refino y detallo mis instrucciones (prompts) para obtener resultados más precisos, creativos y ajustados a lo que necesito.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="ia3" name="ia" value="3"><label for="ia3"><span class="nivel-desc">Utilizo la IA de forma crítica y ética como una herramienta de apoyo, combinando los resultados de varias plataformas para crear un producto original y reconociendo sus limitaciones y posibles sesgos.</span></label></div>
+        </div>
+      </div>
+    </div>
+    <!-- Área 4 -->
+    <div class="area">
+      <h2>Área 4: Pensamiento Computacional, Programación y Robótica</h2>
+      <div class="criterio">
+        <h3>Lógica de Programación</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="lp0" name="programacion" value="0"><label for="lp0"><span class="nivel-desc">No he seguido tutoriales de programación por bloques ni he creado ningún proyecto sencillo en entornos como Scratch o Blockly.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="lp1" name="programacion" value="1"><label for="lp1"><span class="nivel-desc">Sigo tutoriales para crear proyectos muy sencillos en entornos de programación por bloques, como Scratch o Blockly.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="lp2" name="programacion" value="2"><label for="lp2"><span class="nivel-desc">Modifico proyectos ya existentes para personalizarlos o creo programas sencillos desde cero para resolver un problema concreto.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="lp3" name="programacion" value="3"><label for="lp3"><span class="nivel-desc">Utilizas de forma autónoma conceptos como bucles, condicionales y variables para crear desde cero un programa original (como un pequeño videojuego o una herramienta útil) que está bien comentado y es eficiente.</span></label></div>
+        </div>
+      </div>
+      <div class="criterio">
+        <h3>Robótica Educativa</h3>
+        <div class="nivel">
+          <div class="nivel-item"><input type="radio" id="rob0" name="robotica" value="0"><label for="rob0"><span class="nivel-desc">No he montado ni programado ningún robot, ni sé cómo hacer que siga instrucciones básicas.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="rob1" name="robotica" value="1"><label for="rob1"><span class="nivel-desc">Monto y programo un robot sencillo (como un Beebot o Maqueen) para que siga una secuencia de instrucciones predefinidas.</span></label></div>
+          <div class="nivel-item"><input type="radio" id="rob2" name="robotica" value="2"><label for="rob2"><span class="nivel-desc">Programo un robot (usando placas como Microbit o Arduino) para que reaccione a su entorno utilizando sensores simples (de luz, sonido, obstáculos).</span></label></div>
+          <div class="nivel-item"><input type="radio" id="rob3" name="robotica" value="3"><label for="rob3"><span class="nivel-desc">Diseño, construyo y programo un proyecto de robótica completo para resolver un reto del mundo real, integrando múltiples sensores y actuadores de forma creativa y funcional.</span></label></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-container">
+      <button type="submit" id="submit-button">Calcular y Guardar Resultados</button>
+    </div>
+    <div id="feedback-message" class="mensaje-feedback"></div>
+  </form>
+
+  <div id="resultado">
+    <h2>Resultado de tu Autoevaluación</h2>
+    <div class="alumno-info" id="alumno-info"></div>
+    <div class="nivel-resumen">
+      <div class="nivel-item-res">
+        <h3>Ciudadanía Digital</h3>
+        <p id="res-ciudadania">—</p>
+      </div>
+      <div class="nivel-item-res">
+        <h3>Comunicación y Colaboración</h3>
+        <p id="res-comunicacion">—</p>
+      </div>
+      <div class="nivel-item-res">
+        <h3>Creación de Contenidos</h3>
+        <p id="res-creacion">—</p>
+      </div>
+      <div class="nivel-item-res">
+        <h3>Pensamiento Computacional</h3>
+        <p id="res-computacional">—</p>
+      </div>
+    </div>
+    <div class="nivel-global-container">
+      <h3>Nivel de Competencia Digital</h3>
+      <p id="nivel-global">—</p>
+    </div>
+    <div class="recomendacion">
+      <h3>Recomendaciones</h3>
+      <p id="recomendacion-texto">Completa la autoevaluación para recibir recomendaciones personalizadas.</p>
+    </div>
+  </div>
+
+  <script>
+    // =================================================================================
+    // IMPORTANTE: Pega aquí la URL de tu Web App de Google Apps Script.
+    // =================================================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyV1R46yi3k5iAIFoOw-0dA24y8tCzq6LylWbpGkioZodnz3j9I6wve9Raiv3iid5mGrg/exec";
+    // =================================================================================
+
+    const form = document.getElementById('rubricaForm');
+    const submitButton = document.getElementById('submit-button');
+    const feedbackMessage = document.getElementById('feedback-message');
+    const resultadoDiv = document.getElementById('resultado');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombre').value.trim();
+      const curso = document.getElementById('curso').value.trim();
+      if (!nombre || !curso) {
+        alert('Por favor, completa los campos obligatorios del alumno (Nombre y Curso).');
+        return;
+      }
+      
+      if (SCRIPT_URL === "PEGA_AQUÍ_LA_URL_DE_TU_WEB_APP") {
+        alert("Error de configuración: Por favor, introduce la URL de la Web App de Google Apps Script en la variable SCRIPT_URL del código JavaScript.");
+        return;
+      }
+
+      // Deshabilitar el botón para evitar envíos múltiples
+      submitButton.disabled = true;
+      submitButton.textContent = 'Enviando...';
+      feedbackMessage.style.display = 'none';
+
+      // Función para obtener el valor de un grupo de radio buttons
+      function getSelectedValue(name) {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        return selected ? parseInt(selected.value) : 0;
+      }
+
+      // Recopilar puntuaciones
+      const seguridad = getSelectedValue("seguridad");
+      const etica = getSelectedValue("etica");
+      const bienestar = getSelectedValue("bienestar");
+      const comunicacion = getSelectedValue("comunicacion");
+      const colaboracion = getSelectedValue("colaboracion");
+      const multimedia = getSelectedValue("multimedia");
+      const modelado3d = getSelectedValue("modelado3d");
+      const ia = getSelectedValue("ia");
+      const programacion = getSelectedValue("programacion");
+      const robotica = getSelectedValue("robotica");
+
+      // Calcular promedios por área
+      const ciudadania = Math.round((seguridad + etica + bienestar) / 3);
+      const comunicacionColab = Math.round((comunicacion + colaboracion) / 2);
+      const creacion = Math.round((multimedia + modelado3d + ia) / 3);
+      const computacional = Math.round((programacion + robotica) / 2);
+      const nivelGlobal = Math.round((ciudadania + comunicacionColab + creacion + computacional) / 4);
+
+      // Generar recomendaciones
+      let rec = "";
+      if (ciudadania <= 1) rec += "Refuerza conceptos básicos de ciudadanía digital: privacidad, ética y bienestar online. ";
+      if (comunicacionColab <= 1) rec += "Practica el uso de herramientas de comunicación y colaboración digital (videollamadas, documentos compartidos). ";
+      if (creacion <= 1) rec += "Explora la creación de contenidos: desde presentaciones hasta edición básica de multimedia o uso inicial de IA. ";
+      if (computacional <= 1) rec += "Iníciate en el pensamiento computacional con Scratch o robótica educativa sencilla. ";
+      if (rec === "") {
+        rec = "¡Excelente! Estás en un nivel avanzado en todas las áreas. Considera profundizar en proyectos complejos o ayudar a otros a desarrollar sus competencias.";
+      }
+      
+      // Mostrar resultados en la página
+      document.getElementById('alumno-info').textContent = `${nombre} - ${curso}`;
+      document.getElementById('res-ciudadania').textContent = `Nivel ${ciudadania}`;
+      document.getElementById('res-comunicacion').textContent = `Nivel ${comunicacionColab}`;
+      document.getElementById('res-creacion').textContent = `Nivel ${creacion}`;
+      document.getElementById('res-computacional').textContent = `Nivel ${computacional}`;
+      document.getElementById('nivel-global').textContent = `Nivel ${nivelGlobal}`;
+      document.getElementById('recomendacion-texto').textContent = rec;
+      resultadoDiv.style.display = 'block';
+
+      // Preparar los datos para enviar a Google Sheet
+      const dataToSend = {
+        nombre: nombre,
+        curso: curso,
+        centro: document.getElementById('centro').value.trim(),
+        localidad: document.getElementById('localidad').value.trim(),
+        ciudadania,
+        comunicacionColab,
+        creacion,
+        computacional,
+        nivelGlobal,
+        recomendacion: rec
+      };
+      
+      // Enviar los datos usando fetch
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8', // Apps Script web apps a menudo funcionan mejor con text/plain para el cuerpo
+        },
+        body: JSON.stringify(dataToSend)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          feedbackMessage.textContent = '¡Resultados guardados en la hoja de cálculo con éxito!';
+          feedbackMessage.className = 'mensaje-feedback success';
+        } else {
+          throw new Error(data.message || 'Error desconocido al guardar los datos.');
+        }
+      })
+      .catch(error => {
+        console.error('Error al enviar los datos:', error);
+        feedbackMessage.textContent = `Error al guardar los datos: ${error.message}. Revisa la consola para más detalles.`;
+        feedbackMessage.className = 'mensaje-feedback error';
+      })
+      .finally(() => {
+        // Reactivar el botón y mostrar mensaje
+        submitButton.disabled = false;
+        submitButton.textContent = 'Calcular y Guardar Resultados';
+        feedbackMessage.style.display = 'block';
+        // Desplazar la vista para ver el resultado y el mensaje de feedback
+        resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>
