@@ -330,6 +330,36 @@
 
             // Actualizar el tema al cargar la página
             updateTheme();
+
+            // Lógica para la selección automática de nivel
+            const allRadioButtons = document.querySelectorAll('input[type="radio"]');
+
+            allRadioButtons.forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    const ratingValue = event.target.value;
+                    const ratingName = event.target.name;
+                    const levelName = ratingName.replace('_rating', '_level');
+                    const levelSelect = document.querySelector(`select[name="${levelName}"]`);
+
+                    if (levelSelect) {
+                        switch (ratingValue) {
+                            case '1-4':
+                            case '5':
+                                levelSelect.value = 'I';
+                                break;
+                            case '6':
+                            case '7-8':
+                                levelSelect.value = 'M';
+                                break;
+                            case '9-10':
+                                levelSelect.value = 'A';
+                                break;
+                            default:
+                                levelSelect.value = ''; // Reset
+                        }
+                    }
+                });
+            });
         });
     </script>
 </body>
