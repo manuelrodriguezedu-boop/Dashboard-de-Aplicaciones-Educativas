@@ -103,7 +103,7 @@
   <script>
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const registerForm = document.getElementById('register-form');
     const submitButton = document.getElementById('submit-button');
@@ -115,23 +115,9 @@
       submitButton.disabled = true;
       submitButton.textContent = 'Procesando...';
 
-      // Recoger todos los valores del formulario
-      const name = document.getElementById('name').value;
-      const lastname = document.getElementById('lastname').value;
-      const course = document.getElementById('course').value;
-      const group = document.getElementById('group').value;
-      const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirm-password').value;
       
-      // Validaciones
-      if (!name || !lastname || !course || !group || !email || !password) {
-        errorMessage.textContent = 'Por favor, rellena todos los campos.';
-        errorMessage.style.display = 'block';
-        submitButton.disabled = false;
-        submitButton.textContent = 'Registrar mi cuenta';
-        return;
-      }
       if (password !== confirmPassword) {
           errorMessage.textContent = 'Las contraseñas no coinciden.';
           errorMessage.style.display = 'block';
@@ -140,16 +126,17 @@
           return;
       }
 
-      // Envío de datos a Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
+      // --- Y TAMBIÉN CORREGIMOS AQUÍ ---
+      // Ahora usamos "supabaseClient" para llamar a la función de registro.
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: document.getElementById('email').value,
         password: password,
         options: {
           data: {
-            nombre: name,
-            apellidos: lastname,
-            curso: course,
-            grupo: group,
+            nombre: document.getElementById('name').value,
+            apellidos: document.getElementById('lastname').value,
+            curso: document.getElementById('course').value,
+            grupo: document.getElementById('group').value,
           }
         }
       });
@@ -164,6 +151,38 @@
 
       submitButton.disabled = false;
       submitButton.textContent = 'Registrar mi cuenta';
+    });
+  </script>
+
+</body>
+</html>
+No te olvides de hacer lo mismo en login.html
+Este mismo error estará en tu archivo login.html. Tienes que hacer la misma corrección allí:
+code
+JavaScript
+// En login.html
+
+// ... (HTML y CSS) ...
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'PEGA_TU_CLAVE_ANON_PÚBLICA_AQUÍ';
+    
+    // CORRECCIÓN:
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginForm = document.getElementById('login-form');
+    // ... etc ...
+
+    loginForm.addEventListener('submit', async (event) => {
+      // ...
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // CORRECCIÓN:
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      // ... el resto del código ...
     });
   </script>
 
