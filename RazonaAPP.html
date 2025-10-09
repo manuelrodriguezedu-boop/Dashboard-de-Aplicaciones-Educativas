@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Acceso - RazonaApp</title>
+  <!-- PASO 1: LIBRERÍA DE SUPABASE AÑADIDA -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -127,11 +129,16 @@
       cursor: pointer;
       transition: background 0.3s, transform 0.1s;
     }
+    
+    .submit-btn:disabled {
+        background-color: #95a5a6;
+        cursor: not-allowed;
+    }
 
-    .submit-btn:hover {
+    .submit-btn:hover:not(:disabled) {
       background: #2980b9;
     }
-    .submit-btn:active {
+    .submit-btn:active:not(:disabled) {
         transform: scale(0.98);
     }
 
@@ -251,8 +258,15 @@
     <p>IES Sierra de los Filabres</p>
   </footer>
 
+  <!-- PASO 2: SECCIÓN SCRIPT COMPLETAMENTE REEMPLAZADA CON LA LÓGICA DE SUPABASE -->
   <script>
-    // --- LÓGICA DE LA PÁGINA DE AUTENTICACIÓN ---
+    // --- LÓGICA DE LA PÁGINA DE AUTENTICACIÓN CON SUPABASE ---
+
+    // **IMPORTANTE**: Pega aquí la URL y la Clave Anon de tu proyecto de Supabase
+    const SUPABASE_URL = 'URL_DE_TU_PROYECTO_SUPABASE'; 
+    const SUPABASE_ANON_KEY = 'CLAVE_ANON_DE_TU_PROYECTO';
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Referencias a elementos del DOM
     const authContainer = document.getElementById('auth-container');
@@ -261,98 +275,120 @@
     const submitButton = document.getElementById('submit-button');
     const errorMessage = document.getElementById('error-message');
     const toggleContainer = document.getElementById('toggle-container');
-    
-    // Campos específicos
     const nameFields = document.getElementById('name-fields');
     const courseFields = document.getElementById('course-fields');
     const confirmPasswordField = document.getElementById('confirm-password-field');
     const loginOptions = document.getElementById('login-options');
 
-    let currentMode = 'login'; // 'login' o 'register'
+    let currentMode = 'login';
 
-    // Función para cambiar entre modos
-    function setMode(mode) {
+    // Función para cambiar entre modos de login y registro
+    function setMode(mode) { 
       currentMode = mode;
-      errorMessage.style.display = 'none'; // Ocultar errores al cambiar
-      authForm.reset(); // Limpiar el formulario
-
+      errorMessage.style.display = 'none';
+      authForm.reset();
       const isLoginMode = mode === 'login';
-      
-      // Ajustar la visibilidad de los campos
       nameFields.classList.toggle('hidden', isLoginMode);
       courseFields.classList.toggle('hidden', isLoginMode);
       confirmPasswordField.classList.toggle('hidden', isLoginMode);
       loginOptions.classList.toggle('hidden', !isLoginMode);
-
-      // Actualizar textos
       authContainer.style.maxWidth = isLoginMode ? '400px' : '480px';
       formTitle.textContent = isLoginMode ? 'Bienvenido de nuevo' : 'Crear Nueva Cuenta';
       submitButton.textContent = isLoginMode ? 'Entrar' : 'Registrar mi cuenta';
-      
       if (isLoginMode) {
         toggleContainer.innerHTML = '¿No tienes cuenta? <a id="toggle-link-action">Regístrate aquí</a>';
       } else {
         toggleContainer.innerHTML = '¿Ya tienes una cuenta? <a id="toggle-link-action">Inicia sesión aquí</a>';
       }
-      
-      // Volver a añadir el listener al enlace que acabamos de crear
       document.getElementById('toggle-link-action').addEventListener('click', () => {
         setMode(isLoginMode ? 'register' : 'login');
       });
     }
 
-    // Listener para el envío del formulario
-    authForm.addEventListener('submit', (event) => {
+    // Listener principal del formulario
+    authForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       errorMessage.style.display = 'none';
+      submitButton.disabled = true;
+      submitButton.textContent = 'Procesando...';
 
       if (currentMode === 'login') {
-        handleLogin();
+        await handleLogin();
       } else {
-        handleRegister();
+        await handleRegister();
       }
     });
 
-    function handleLogin() {
+    // Función para manejar el inicio de sesión
+    async function handleLogin() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-      if (email === 'alumno@razona.app' && password === '1234') {
-        alert('¡Inicio de sesión correcto! Redirigiendo al panel...');
-        // window.location.href = 'dashboard.html';
-      } else {
-        errorMessage.textContent = 'El correo o la contraseña son incorrectos.';
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        errorMessage.textContent = error.message;
         errorMessage.style.display = 'block';
+      } else {
+        alert('¡Inicio de sesión correcto! Redirigiendo...');
+        // Aquí es donde rediriges a la página principal de la aplicación
+        // window.location.href = 'dashboard.html';
       }
+      
+      submitButton.disabled = false;
+      submitButton.textContent = 'Entrar';
     }
 
-    function handleRegister() {
-      const name = document.getElementById('name').value.trim();
-      const lastname = document.getElementById('lastname').value.trim();
+    // Función para manejar el registro de un nuevo usuario
+    async function handleRegister() {
+      const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirm-password').value;
+      const name = document.getElementById('name').value;
+      const lastname = document.getElementById('lastname').value;
+      const course = document.getElementById('course').value;
+      const group = document.getElementById('group').value;
 
-      if (!name || !lastname || !password || !confirmPassword) {
-        errorMessage.textContent = 'Por favor, rellena todos los campos obligatorios.';
-        errorMessage.style.display = 'block';
-        return;
-      }
-      if (password.length < 6) {
-        errorMessage.textContent = 'La contraseña debe tener al menos 6 caracteres.';
-        errorMessage.style.display = 'block';
-        return;
-      }
+      // Validación de campos
       if (password !== confirmPassword) {
-        errorMessage.textContent = 'Las contraseñas no coinciden.';
-        errorMessage.style.display = 'block';
-        return;
+          errorMessage.textContent = 'Las contraseñas no coinciden.';
+          errorMessage.style.display = 'block';
+          submitButton.disabled = false;
+          submitButton.textContent = 'Registrar mi cuenta';
+          return;
       }
 
-      alert(`¡Registro completado para ${name} ${lastname}! Serás llevado a la página de inicio de sesión.`);
-      setMode('login'); // Cambiar a la vista de login después de un registro exitoso
+      // Los datos extra se pasan en la opción 'data'.
+      // El TRIGGER que creamos en la base de datos usará estos datos para rellenar la tabla 'alumnos'.
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            nombre: name,
+            apellidos: lastname,
+            curso: course,
+            grupo: group,
+          }
+        }
+      });
+
+      if (error) {
+        errorMessage.textContent = error.message;
+        errorMessage.style.display = 'block';
+      } else {
+        alert('¡Registro completado! Revisa tu correo electrónico para verificar tu cuenta y poder iniciar sesión.');
+        setMode('login'); // Volver a la vista de login
+      }
+      
+      submitButton.disabled = false;
+      submitButton.textContent = 'Registrar mi cuenta';
     }
 
-    // Configuración inicial
+    // Configuración inicial al cargar la página
     setMode('login');
 
   </script>
