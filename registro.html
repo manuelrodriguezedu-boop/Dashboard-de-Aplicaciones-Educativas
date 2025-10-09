@@ -101,14 +101,17 @@
   </footer>
 
   <script>
+    // 1. DEFINIMOS LAS CREDENCIALES UNA SOLA VEZ AL PRINCIPIO.
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+ 
+    // 2. REFERENCIAS A LOS ELEMENTOS DEL DOM (sin cambios)
     const registerForm = document.getElementById('register-form');
     const submitButton = document.getElementById('submit-button');
     const errorMessage = document.getElementById('error-message');
 
+    // 3. LÓGICA DEL FORMULARIO (ahora usa 'supabaseClient')
     registerForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       errorMessage.style.display = 'none';
@@ -126,8 +129,6 @@
           return;
       }
 
-      // --- Y TAMBIÉN CORREGIMOS AQUÍ ---
-      // Ahora usamos "supabaseClient" para llamar a la función de registro.
       const { data, error } = await supabaseClient.auth.signUp({
         email: document.getElementById('email').value,
         password: password,
@@ -153,38 +154,5 @@
       submitButton.textContent = 'Registrar mi cuenta';
     });
   </script>
-
-</body>
-</html>
-No te olvides de hacer lo mismo en login.html
-Este mismo error estará en tu archivo login.html. Tienes que hacer la misma corrección allí:
-code
-JavaScript
-// En login.html
-
-// ... (HTML y CSS) ...
-
-  <script>
-    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'PEGA_TU_CLAVE_ANON_PÚBLICA_AQUÍ';
-    
-    // CORRECCIÓN:
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const loginForm = document.getElementById('login-form');
-    // ... etc ...
-
-    loginForm.addEventListener('submit', async (event) => {
-      // ...
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      // CORRECCIÓN:
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-      // ... el resto del código ...
-    });
-  </script>
-
 </body>
 </html>```
