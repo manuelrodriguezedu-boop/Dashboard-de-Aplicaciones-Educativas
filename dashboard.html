@@ -1,21 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Principal - RazonaApp</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #ecf0f1; text-align: center; }
-        .container { padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; }
-        p { color: #7f8c8d; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel Principal - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --primary: #2c3e50; --secondary: #3498db; --light: #ecf0f1; --dark: #1a252f; }
+    body { 
+        font-family: 'Segoe UI', sans-serif; 
+        background-color: var(--light); 
+        color: var(--primary);
+        margin: 0;
+    }
+    header {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    #user-info {
+        font-size: 0.9rem;
+    }
+    #logout-button {
+        background: var(--secondary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-left: 1rem;
+    }
+    main {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+        color: var(--secondary);
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>¡Bienvenido a RazonaApp!</h1>
-        <p>Has iniciado sesión correctamente.</p>
-        <p>Aquí irá el panel principal de la aplicación.</p>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i> RazonaApp</div>
+    <div>
+        <span id="user-info">Cargando...</span>
+        <button id="logout-button">Cerrar Sesión</button>
     </div>
+  </header>
+
+  <main>
+    <h1 id="welcome-message">¡Bienvenido!</h1>
+    <p>Este es tu panel principal. Desde aquí podrás acceder a los retos de la semana y a tu diario de problemas.</p>
+    <!-- Aquí irá el resto del contenido de la app -->
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Referencias a elementos del DOM
+    const userInfo = document.getElementById('user-info');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const logoutButton = document.getElementById('logout-button');
+
+    async function checkUserSession() {
+        // 1. Comprobar si hay una sesión activa
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+        if (!session) {
+            // 2. Si NO hay sesión, redirigir al login
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // 3. Si HAY sesión, obtener el perfil del alumno
+        const user = session.user;
+        const { data: alumno, error: profileError } = await supabaseClient
+            .from('alumnos')
+            .select('nombre, apellidos, curso, grupo')
+            .eq('id_alumno', user.id) // Busca el perfil que coincida con el ID del usuario
+            .single(); // Esperamos un solo resultado
+
+        if (profileError) {
+            console.error('Error al obtener el perfil del alumno:', profileError);
+            userInfo.textContent = 'Error al cargar perfil.';
+            return;
+        }
+
+        if (alumno) {
+            // 4. Personalizar la página con los datos del alumno
+            userInfo.textContent = `${alumno.nombre} ${alumno.apellidos} (${alumno.curso} - ${alumno.grupo})`;
+            welcomeMessage.textContent = `¡Bienvenido de nuevo, ${alumno.nombre}!`;
+        }
+    }
+
+    // 5. Añadir la funcionalidad de cerrar sesión
+    logoutButton.addEventListener('click', async () => {
+        const { error } = await supabaseClient.auth.signOut();
+        if (!error) {
+            // Redirigir al login después de cerrar sesión
+            window.location.href = 'login.html';
+        } else {
+            console.error('Error al cerrar sesión:', error);
+        }
+    });
+
+    // 6. Ejecutar la comprobación de sesión en cuanto la página cargue
+    checkUserSession();
+  </script>
+
 </body>
 </html>
