@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" /><title>Evaluar Reto - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>/* ... (CSS similar a reto.html) ... */</style>
+</head>
+<body>
+  <header><!-- ... --></header>
+  <main>
+    <h1>Evaluación del Reto: <span id="reto-titulo"></span></h1>
+    <p>Alumno/a: <strong id="alumno-nombre"></strong></p>
+
+    <!-- Aquí se mostraría el trabajo del alumno (Fase 1, 2, 3, 4) -->
+    <div id="resolucion-container">Cargando trabajo del alumno...</div>
+    
+    <hr>
+
+    <h2>Rúbrica de Evaluación</h2>
+    <form id="evaluacion-form">
+      <!-- Criterio 1: Comprensión -->
+      <div>
+        <label>1. Comprensión</label>
+        <input type="radio" name="comprension" value="1"> 1
+        <input type="radio" name="comprension" value="2"> 2
+        <input type="radio" name="comprension" value="3"> 3
+        <input type="radio" name="comprension" value="4"> 4
+      </div>
+      <!-- Repetir para Planificación, Ejecución, Revisión -->
+      <textarea id="comentarios" placeholder="Añade comentarios para el alumno..."></textarea>
+      <button type="submit">Enviar Evaluación</button>
+    </form>
+  </main>
+
+  <script>
+    const SUPABASE_URL = '...'; // Pega tu URL
+    const SUPABASE_ANON_KEY = '...'; // Pega tu Clave Anon
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    let resolucionId = null;
+
+    async function loadEvaluacionPage() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) { window.location.href = 'login.html'; return; }
+        
+        const params = new URLSearchParams(window.location.search);
+        resolucionId = params.get('id');
+        if (!resolucionId) { window.location.href = 'profesor_dashboard.html'; return; }
+
+        // Cargar los datos de la resolución del alumno
+        const { data: resolucion, error } = await supabaseClient
+            .from('resoluciones')
+            .select(`*, alumnos(nombre, apellidos), retos(titulo)`)
+            .eq('id', resolucionId)
+            .single();
+
+        if (resolucion) {
+            document.getElementById('reto-titulo').textContent = resolucion.retos.titulo;
+            document.getElementById('alumno-nombre').textContent = `${resolucion.alumnos.nombre} ${resolucion.alumnos.apellidos}`;
+            
+            // Aquí mostrarías resolucion.fase1_comprension, etc.
+            const container = document.getElementById('resolucion-container');
+            container.innerHTML = `<pre>${JSON.stringify(resolucion, null, 2)}</pre>`; // Vista simple para depurar
+        }
+    }
+    
+    // Añadir listener al form para guardar la evaluación en la tabla 'evaluaciones'
+    // y actualizar el estado de la 'resolucion' a 'evaluado'.
+    
+    document.addEventListener('DOMContentLoaded', loadEvaluacionPage);
+  </script>
+</body>
+</html>
