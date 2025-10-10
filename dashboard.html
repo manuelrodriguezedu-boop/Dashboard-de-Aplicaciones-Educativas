@@ -3,125 +3,342 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel Principal - RazonaApp</title>
+  <title>Panel del Alumno - RazonaApp</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root { --primary: #2c3e50; --secondary: #3498db; --light: #ecf0f1; --dark: #1a252f; }
-    body { 
-        font-family: 'Segoe UI', sans-serif; 
-        background-color: var(--light); 
-        color: var(--primary);
-        margin: 0;
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --gold: #f1c40f;
     }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--primary);
+    }
+
     header {
-        background: var(--primary);
-        color: white;
-        padding: 1rem 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
+
     .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
+      font-size: 1.6rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    #user-info {
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info span {
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: var(--secondary);
+      color: white;
+      text-decoration: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      transition: background 0.3s;
+      cursor: pointer; /* Añadido para que parezca un botón */
+      border: none; /* Añadido para que parezca un botón */
+    }
+    .logout-btn:hover {
+      background: #2980b9;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: var(--dark);
+      padding: 0.8rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    nav a:hover, nav a.active {
+      background: var(--secondary);
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .welcome-message {
+      margin-bottom: 2rem;
+    }
+    .welcome-message h1 {
+      font-size: 2rem;
+      margin-bottom: 0.2rem;
+    }
+    .welcome-message p {
+      color: #7f8c8d;
+      font-size: 1.1rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .widget {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .widget h3 {
+      color: var(--secondary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.2rem;
+    }
+
+    .widget p {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: var(--dark);
+    }
+    
+    .badges-container {
+        margin-top: auto;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: var(--light);
+      color: var(--primary);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .badge.gold {
+      background: var(--gold);
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .progress-bar-bg {
+      background: var(--light);
+      height: 12px;
+      border-radius: 10px;
+      margin: 0.5rem 0 1rem 0;
+    }
+    .progress-bar-fill {
+      background: var(--success);
+      height: 100%;
+      border-radius: 10px;
+    }
+    
+    .streak-info {
+        font-size: 1.1rem;
+    }
+    .streak-icon {
+        color: var(--warning);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: var(--dark);
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 3rem;
+    }
+    footer p {
+        margin-bottom: 0.3rem;
         font-size: 0.9rem;
     }
-    #logout-button {
-        background: var(--secondary);
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        cursor: pointer;
-        margin-left: 1rem;
-    }
-    main {
-        max-width: 1000px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h1 {
-        color: var(--secondary);
+
+    @media (max-width: 768px) {
+        header { flex-direction: column; gap: 0.8rem; }
+        nav a { padding: 0.5rem 1rem; font-size: 0.9rem; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo"><i class="fas fa-brain"></i> RazonaApp</div>
-    <div>
-        <span id="user-info">Cargando...</span>
-        <button id="logout-button">Cerrar Sesión</button>
+    <div class="logo">
+      <i class="fas fa-brain"></i>
+      <span>RazonaApp</span>
+    </div>
+    <div class="user-info">
+      <span id="user-name">Cargando...</span>
+      <button class="logout-btn" id="logout-button"><i class="fas fa-sign-out-alt"></i> Salir</button>
     </div>
   </header>
 
+  <nav>
+    <a href="#" class="active"><i class="fas fa-home"></i> Inicio</a>
+    <a href="#"><i class="fas fa-bullseye"></i> Retos</a>
+    <a href="#"><i class="fas fa-book-open"></i> Mi Diario</a>
+    <a href="#"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
+    <a href="#"><i class="fas fa-toolbox"></i> Recursos</a>
+  </nav>
+
   <main>
-    <h1 id="welcome-message">¡Bienvenido!</h1>
-    <p>Este es tu panel principal. Desde aquí podrás acceder a los retos de la semana y a tu diario de problemas.</p>
-    <!-- Aquí irá el resto del contenido de la app -->
+    <div class="welcome-message">
+      <h1>Panel Personal</h1>
+      <p id="welcome-text">¡Hola de nuevo! Aquí tienes tu resumen semanal.</p>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="widget">
+        <h3><i class="fas fa-star"></i> Reto de la Semana</h3>
+        <p><strong>El Dilema del Contrato Móvil:</strong> Analiza dos tarifas de telefonía para encontrar el punto de equilibrio. ¡Es el momento de aplicar funciones lineales!</p>
+        <a href="#" class="btn">Empezar Reto</a>
+      </div>
+
+      <div class="widget">
+        <h3><i class="fas fa-feather-alt"></i> Mi Diario de Problemas</h3>
+        <p>Tu última reflexión: <em>"Descubrí que dibujar el problema primero me ayuda a entender mucho mejor qué datos necesito..."</em></p>
+        <div class="badges-container">
+            <span class="badge gold"><i class="fas fa-trophy"></i> Maestro de la Analogía</span>
+            <span class="badge"><i class="fas fa-check"></i> 15 Retos Resueltos</span>
+        </div>
+      </div>
+
+      <div class="widget">
+        <h3><i class="fas fa-chart-line"></i> Mi Progreso Semanal</h3>
+        <p>Has completado la mayoría de tus objetivos de práctica. ¡Sigue así!</p>
+        <div>
+            <span>Retos de Gimnasia Mental: <strong>18 / 20</strong></span>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: 90%;"></div>
+            </div>
+            <span class="streak-info">Racha actual: <strong>7 días <i class="fas fa-fire streak-icon"></i></strong></span>
+        </div>
+      </div>
+    </div>
   </main>
+  
+  <footer>
+    <p>Manuel Rodríguez Peñalver</p>
+    <p>Profesor de Tecnología, Coordinador TDE y Escuelas 4.0</p>
+    <p>IES Sierra de los Filabres</p>
+  </footer>
 
   <script>
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Referencias a elementos del DOM
-    const userInfo = document.getElementById('user-info');
-    const welcomeMessage = document.getElementById('welcome-message');
+    // Referencias a los elementos del DOM que vamos a actualizar
+    const userNameDisplay = document.getElementById('user-name');
+    const welcomeTextDisplay = document.getElementById('welcome-text');
     const logoutButton = document.getElementById('logout-button');
 
-    async function checkUserSession() {
-        // 1. Comprobar si hay una sesión activa
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
+    async function loadUserData() {
+        // 1. Comprobar la sesión del usuario
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
 
-        if (!session) {
-            // 2. Si NO hay sesión, redirigir al login
+        if (sessionError || !session) {
+            console.error('No hay sesión activa, redirigiendo al login.');
             window.location.href = 'login.html';
             return;
         }
 
-        // 3. Si HAY sesión, obtener el perfil del alumno
         const user = session.user;
+
+        // 2. Obtener los datos del perfil del alumno desde la tabla "alumnos"
         const { data: alumno, error: profileError } = await supabaseClient
             .from('alumnos')
-            .select('nombre, apellidos, curso, grupo')
-            .eq('id_alumno', user.id) // Busca el perfil que coincida con el ID del usuario
-            .single(); // Esperamos un solo resultado
+            .select('nombre, apellidos, curso') // Puedes añadir más campos si los necesitas
+            .eq('id_alumno', user.id)
+            .single();
 
         if (profileError) {
-            console.error('Error al obtener el perfil del alumno:', profileError);
-            userInfo.textContent = 'Error al cargar perfil.';
+            console.error('Error al cargar el perfil del alumno:', profileError);
+            userNameDisplay.textContent = 'Error de perfil';
             return;
         }
-
+        
         if (alumno) {
-            // 4. Personalizar la página con los datos del alumno
-            userInfo.textContent = `${alumno.nombre} ${alumno.apellidos} (${alumno.curso} - ${alumno.grupo})`;
-            welcomeMessage.textContent = `¡Bienvenido de nuevo, ${alumno.nombre}!`;
+            // 3. Actualizar la interfaz con los datos del alumno
+            userNameDisplay.textContent = `${alumno.nombre} ${alumno.apellidos}`;
+            welcomeTextDisplay.textContent = `¡Hola de nuevo, ${alumno.nombre}! Aquí tienes tu resumen semanal.`;
         }
     }
 
-    // 5. Añadir la funcionalidad de cerrar sesión
+    // 4. Configurar el botón de cerrar sesión
     logoutButton.addEventListener('click', async () => {
         const { error } = await supabaseClient.auth.signOut();
-        if (!error) {
-            // Redirigir al login después de cerrar sesión
-            window.location.href = 'login.html';
+        if (error) {
+            console.error('Error al cerrar sesión', error);
         } else {
-            console.error('Error al cerrar sesión:', error);
+            // No es necesario redirigir explícitamente, la recarga de página lo hará
+            // por la comprobación de sesión al principio.
+            window.location.href = 'login.html';
         }
     });
 
-    // 6. Ejecutar la comprobación de sesión en cuanto la página cargue
-    checkUserSession();
+    // 5. Ejecutar la función principal cuando la página se cargue
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUserData();
+    });
   </script>
 
 </body>
