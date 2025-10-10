@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* ... (El CSS no cambia) ... */
+    /* ... (El CSS está perfecto, no se toca) ... */
     :root { --primary: #2c3e50; --secondary: #3498db; --light: #ecf0f1; --dark: #1a252f; --success: #2ecc71; --error: #e74c3c; }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: linear-gradient(135deg, var(--primary), var(--dark)); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; color: var(--primary); padding: 2rem 1rem; }
@@ -38,13 +38,11 @@
     <form id="login-form">
       <div class="form-group"><label for="email">Correo Electrónico</label><input type="email" id="email" placeholder="tucorreo@ejemplo.com" required></div>
       <div class="form-group"><label for="password">Contraseña</label><input type="password" id="password" placeholder="Tu contraseña" required><i class="fas fa-eye" id="togglePassword"></i></div>
-      
-      <!-- CAMBIO: Añadido un id al enlace -->
       <div class="form-options">
         <div class="remember-me"><input type="checkbox" id="remember"><label for="remember">Recuérdame</label></div>
-        <a href="reset-password.html" class="toggle-link" id="forgot-password-link">¿Olvidaste tu contraseña?</a>
+        <!-- El href="#" es correcto aquí porque lo gestionamos con JavaScript -->
+        <a href="#" class="toggle-link" id="forgot-password-link">¿Olvidaste tu contraseña?</a>
       </div>
-      
       <button type="submit" class="submit-btn" id="submit-button">Entrar</button>
       <p id="error-message"></p>
     </form>
@@ -56,62 +54,86 @@
     <p>IES Sierra de los Filabres</p>
   </footer>
 
+  <!-- SCRIPT CORREGIDO Y LIMPIO PARA LOGIN.HTML -->
   <script>
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const resetForm = document.getElementById('reset-password-form');
+    // Referencias a los elementos de ESTA página
+    const loginForm = document.getElementById('login-form');
     const submitButton = document.getElementById('submit-button');
     const errorMessage = document.getElementById('error-message');
+    const emailInput = document.getElementById('email');
+    const rememberMeCheckbox = document.getElementById('remember');
+    const passwordInput = document.getElementById('password');
+    const togglePasswordIcon = document.getElementById('togglePassword');
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
 
-    // 1. Escuchar el evento de inicio de sesión especial para recuperación de contraseña
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        // Este evento se dispara automáticamente si la URL contiene un token de recuperación
-        if (event === 'PASSWORD_RECOVERY') {
-            
-            // 2. Ahora que la sesión está establecida, podemos añadir el listener al formulario
-            resetForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                errorMessage.style.display = 'none';
-                submitButton.disabled = true;
-                submitButton.textContent = 'Guardando...';
+    // Lógica para visualizar la contraseña
+    togglePasswordIcon.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
 
-                const newPassword = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirm-password').value;
-                
-                // Validaciones (sin cambios)
-                if (newPassword.length < 6) {
-                    errorMessage.textContent = 'La contraseña debe tener al menos 6 caracteres.';
-                    errorMessage.style.display = 'block';
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Guardar Nueva Contraseña';
-                    return;
-                }
-                if (newPassword !== confirmPassword) {
-                    errorMessage.textContent = 'Las contraseñas no coinciden.';
-                    errorMessage.style.display = 'block';
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Guardar Nueva Contraseña';
-                    return;
-                }
+    // Lógica para recordar el email
+    document.addEventListener('DOMContentLoaded', () => {
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        if (rememberedEmail) {
+            emailInput.value = rememberedEmail;
+            rememberMeCheckbox.checked = true;
+        }
+    });
 
-                // 3. Llamar a updateUser AHORA que tenemos una sesión activa
-                const { data, error } = await supabaseClient.auth.updateUser({
-                    password: newPassword
-                });
+    // Lógica para el envío del formulario de LOGIN
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        errorMessage.style.display = 'none';
+        submitButton.disabled = true;
+        submitButton.textContent = 'Procesando...';
 
-                if (error) {
-                    errorMessage.textContent = "Error: " + error.message;
-                    errorMessage.style.display = 'block';
-                } else {
-                    alert('¡Contraseña actualizada con éxito! Serás redirigido para iniciar sesión.');
-                    window.location.href = 'login.html';
-                }
+        const email = emailInput.value;
+        const password = passwordInput.value;
 
-                submitButton.disabled = false;
-                submitButton.textContent = 'Guardar Nueva Contraseña';
-            });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            errorMessage.textContent = "Correo o contraseña incorrectos.";
+            errorMessage.style.display = 'block';
+        } else {
+            if (rememberMeCheckbox.checked) {
+                localStorage.setItem('rememberedEmail', email);
+            } else {
+                localStorage.removeItem('rememberedEmail');
+            }
+            alert('¡Inicio de sesión correcto! Redirigiendo al panel principal...');
+            // window.location.href = 'dashboard.html';
+        }
+
+        submitButton.disabled = false;
+        submitButton.textContent = 'Entrar';
+    });
+    
+    // Lógica para el enlace de "Olvidaste tu contraseña"
+    forgotPasswordLink.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const email = prompt("Por favor, introduce tu correo electrónico para enviarte las instrucciones:");
+
+        if (!email) return;
+
+        // Construye la URL de redirección dinámicamente
+        const redirectUrl = window.location.origin + window.location.pathname.replace('login.html', 'reset-password.html');
+        
+        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: redirectUrl
+        });
+
+        if (error) {
+            alert("Error: " + error.message);
+        } else {
+            alert("Se han enviado las instrucciones para restablecer tu contraseña. ¡Revisa tu correo!");
         }
     });
   </script>
