@@ -1,1 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mi Diario de Problemas - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --success: #2ecc71;
+      --warning: #f39c12;
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--primary);
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info span {
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: var(--secondary);
+      color: white;
+      text-decoration: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      transition: background 0.3s;
+      cursor: pointer;
+      border: none;
+    }
+    .logout-btn:hover {
+      background: #2980b9;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: var(--dark);
+      padding: 0.8rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    nav a:hover, nav a.active {
+      background: var(--secondary);
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.2rem;
+      color: var(--secondary);
+    }
+    .page-header p {
+      color: #7f8c8d;
+      font-size: 1.1rem;
+    }
+    
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--light);
+    }
+
+    th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    
+    .status-badge {
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: white;
+    }
+    .status-completado { background-color: var(--success); }
+    .status-progreso { background-color: var(--warning); }
+    
+    .btn-small {
+        background: var(--primary);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background-color 0.3s;
+    }
+    .btn-small:hover {
+        background: var(--dark);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info">
+      <span id="user-name">Cargando...</span>
+      <button class="logout-btn" id="logout-button"><i class="fas fa-sign-out-alt"></i> Salir</button>
+    </div>
+  </header>
+
+  <nav>
+    <a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a>
+    <a href="retos.html"><i class="fas fa-bullseye"></i> Retos</a>
+    <a href="diario.html" class="active"><i class="fas fa-book-open"></i> Mi Diario</a>
+    <a href="gimnasia.html"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
+    <a href="recursos.html"><i class="fas fa-toolbox"></i> Recursos</a>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Mi Diario de Problemas</h1>
+      <p>Aquí puedes ver un historial de todos los retos que has abordado y revisar tu trabajo.</p>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Reto</th>
+            <th>Estado</th>
+            <th>Última Actualización</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="resoluciones-tbody">
+          <!-- Las filas se generarán dinámicamente aquí -->
+          <tr>
+            <td colspan="4" style="text-align: center;">Cargando tus resoluciones...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const userNameDisplay = document.getElementById('user-name');
+    const logoutButton = document.getElementById('logout-button');
+    const resolucionesTbody = document.getElementById('resoluciones-tbody');
+
+    async function loadDiarioData() {
+        // 1. Proteger la ruta y obtener el usuario
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
+        }
+        const user = session.user;
+        userNameDisplay.textContent = user.email; // Placeholder
+
+        // 2. Obtener las resoluciones del usuario, uniendo con la tabla de retos
+        const { data: resoluciones, error } = await supabaseClient
+            .from('resoluciones')
+            .select(`
+                id_reto,
+                estado,
+                fecha_actualizacion,
+                retos ( titulo ) 
+            `)
+            .eq('id_alumno', user.id)
+            .order('fecha_actualizacion', { ascending: false });
+
+        if (error) {
+            console.error("Error al cargar el diario:", error);
+            resolucionesTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Error al cargar los datos.</td></tr>`;
+        } else {
+            renderResoluciones(resoluciones);
+        }
+    }
+
+    function renderResoluciones(resoluciones) {
+        // Limpiar el estado de "cargando"
+        resolucionesTbody.innerHTML = '';
+
+        if (!resoluciones || resoluciones.length === 0) {
+            resolucionesTbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Aún no has comenzado ningún reto. ¡Ve al panel de inicio y empieza!</td></tr>`;
+            return;
+        }
+
+        // Crear una fila en la tabla por cada resolución
+        resoluciones.forEach(res => {
+            const fecha = new Date(res.fecha_actualizacion).toLocaleDateString('es-ES');
+            const estadoBadge = res.estado === 'completado'
+                ? `<span class="status-badge status-completado">Completado</span>`
+                : `<span class="status-badge status-progreso">En Progreso</span>`;
+            
+            const row = `
+                <tr>
+                    <td>${res.retos.titulo}</td>
+                    <td>${estadoBadge}</td>
+                    <td>${fecha}</td>
+                    <td><a href="reto.html?id=${res.id_reto}" class="btn-small">Ver</a></td>
+                </tr>
+            `;
+            resolucionesTbody.innerHTML += row;
+        });
+    }
+
+    logoutButton.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'login.html';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadDiarioData);
+  </script>
+
+</body>
+</html>
