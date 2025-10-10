@@ -1,1 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gimnasia Mental - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --success: #2ecc71;
+      --error: #e74c3c;
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--primary);
+    }
+
+    header { /* ... (CSS de header y nav sin cambios) ... */
+      background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
+    }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: #2980b9; }
+    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    
+    main {
+      max-width: 700px; /* Más estrecho para enfocar la atención */
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      text-align: center;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    .page-header h1 { font-size: 2rem; margin-bottom: 0.2rem; }
+    .page-header p { color: #7f8c8d; font-size: 1.1rem; }
+    
+    /* --- Interfaz de Gimnasia Mental --- */
+    .gimnasia-container {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    #problema-display {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    #respuesta-input {
+        width: 100%;
+        max-width: 300px;
+        padding: 1rem;
+        font-size: 1.5rem;
+        text-align: center;
+        border: 2px solid #bdc3c7;
+        border-radius: 8px;
+        margin: 0 auto 1rem auto;
+        display: block;
+    }
+
+    .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    #comprobar-btn {
+        background: var(--primary);
+        color: white;
+    }
+    
+    #siguiente-btn {
+        background: var(--secondary);
+        color: white;
+    }
+
+    #feedback-message {
+        margin-top: 1.5rem;
+        font-weight: bold;
+        height: 24px; /* Para evitar que la página salte */
+    }
+    .feedback-correcto { color: var(--success); }
+    .feedback-incorrecto { color: var(--error); }
+    
+    .stats {
+        margin-top: 2rem;
+        font-size: 1.1rem;
+        color: #555;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info">
+      <span id="user-name">Cargando...</span>
+      <button class="logout-btn" id="logout-button"><i class="fas fa-sign-out-alt"></i> Salir</button>
+    </div>
+  </header>
+
+  <nav>
+    <a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a>
+    <a href="retos.html"><i class="fas fa-bullseye"></i> Retos</a>
+    <a href="diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
+    <a href="gimnasia.html" class="active"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
+    <a href="recursos.html"><i class="fas fa-toolbox"></i> Recursos</a>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Gimnasia Mental</h1>
+      <p>¡Pon a prueba tu agilidad! Resuelve estos problemas de cálculo lo más rápido que puedas.</p>
+    </div>
+
+    <div class="gimnasia-container">
+      <div id="problema-display">25 + 17 = ?</div>
+      <input type="number" id="respuesta-input" placeholder="Tu respuesta">
+      <div id="feedback-message"></div>
+      <div class="btn-container">
+        <button id="comprobar-btn" class="btn">Comprobar</button>
+        <button id="siguiente-btn" class="btn">Siguiente</button>
+      </div>
+      <div class="stats">
+        Aciertos en esta sesión: <strong id="aciertos-contador">0</strong>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Referencias al DOM
+    const userNameDisplay = document.getElementById('user-name');
+    const logoutButton = document.getElementById('logout-button');
+    const problemaDisplay = document.getElementById('problema-display');
+    const respuestaInput = document.getElementById('respuesta-input');
+    const comprobarBtn = document.getElementById('comprobar-btn');
+    const siguienteBtn = document.getElementById('siguiente-btn');
+    const feedbackMessage = document.getElementById('feedback-message');
+    const aciertosContador = document.getElementById('aciertos-contador');
+
+    let solucionActual = 0;
+    let aciertosSesion = 0;
+    let userId = null;
+
+    // --- FUNCIONES DE LA LÓGICA DEL JUEGO ---
+
+    function generarProblema() {
+        feedbackMessage.textContent = '';
+        respuestaInput.value = '';
+        respuestaInput.disabled = false;
+        comprobarBtn.disabled = false;
+        respuestaInput.focus();
+
+        const operadores = ['+', '-', '*'];
+        const operador = operadores[Math.floor(Math.random() * operadores.length)];
+        let num1, num2;
+
+        switch(operador) {
+            case '+':
+                num1 = Math.floor(Math.random() * 50) + 1;
+                num2 = Math.floor(Math.random() * 50) + 1;
+                solucionActual = num1 + num2;
+                problemaDisplay.textContent = `${num1} + ${num2} = ?`;
+                break;
+            case '-':
+                num1 = Math.floor(Math.random() * 50) + 20;
+                num2 = Math.floor(Math.random() * (num1 - 1)) + 1; // Para evitar resultados negativos
+                solucionActual = num1 - num2;
+                problemaDisplay.textContent = `${num1} - ${num2} = ?`;
+                break;
+            case '*':
+                num1 = Math.floor(Math.random() * 10) + 2;
+                num2 = Math.floor(Math.random() * 10) + 2;
+                solucionActual = num1 * num2;
+                problemaDisplay.textContent = `${num1} × ${num2} = ?`;
+                break;
+        }
+    }
+
+    async function comprobarRespuesta() {
+        const respuestaUsuario = parseInt(respuestaInput.value, 10);
+        
+        if (isNaN(respuestaUsuario)) {
+            feedbackMessage.textContent = 'Por favor, introduce un número.';
+            feedbackMessage.className = 'feedback-incorrecto';
+            return;
+        }
+
+        respuestaInput.disabled = true;
+        comprobarBtn.disabled = true;
+
+        if (respuestaUsuario === solucionActual) {
+            feedbackMessage.textContent = '¡Correcto!';
+            feedbackMessage.className = 'feedback-correcto';
+            aciertosSesion++;
+            aciertosContador.textContent = aciertosSesion;
+
+            // Registrar la actividad en Supabase
+            if (userId) {
+                const { error } = await supabaseClient
+                    .from('actividad')
+                    .insert({ id_alumno: userId, tipo_actividad: 'Gimnasia Mental' });
+                if (error) console.error("Error al registrar actividad:", error);
+            }
+        } else {
+            feedbackMessage.textContent = `Incorrecto. La solución era ${solucionActual}.`;
+            feedbackMessage.className = 'feedback-incorrecto';
+        }
+    }
+
+    // --- LÓGICA DE LA PÁGINA ---
+
+    async function loadPage() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
+        }
+        userId = session.user.id;
+        userNameDisplay.textContent = session.user.email;
+        
+        generarProblema();
+    }
+    
+    // Listeners de los botones
+    comprobarBtn.addEventListener('click', comprobarRespuesta);
+    siguienteBtn.addEventListener('click', generarProblema);
+    // Permitir enviar con la tecla Enter
+    respuestaInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            comprobarRespuesta();
+        }
+    });
+
+    logoutButton.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'login.html';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadPage);
+  </script>
+
+</body>
+</html>
