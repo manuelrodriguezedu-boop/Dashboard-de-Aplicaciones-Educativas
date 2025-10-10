@@ -1,1 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recursos y Herramientas - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--primary);
+    }
+
+    header { /* ... (CSS de header y nav sin cambios) ... */
+      background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
+    }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: #2980b9; }
+    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .page-header {
+      margin-bottom: 2.5rem;
+    }
+    .page-header h1 { font-size: 2rem; margin-bottom: 0.2rem; }
+    .page-header p { color: #7f8c8d; font-size: 1.1rem; }
+
+    h2.section-title {
+        font-size: 1.5rem;
+        color: var(--secondary);
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--light);
+        padding-bottom: 0.5rem;
+    }
+    
+    /* --- Grid de Recursos --- */
+    .recursos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .recurso-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      padding: 2rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+      color: var(--primary);
+    }
+    
+    .recurso-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .recurso-card i {
+        font-size: 3.5rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .recurso-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .recurso-card p {
+        color: #555;
+        font-size: 0.9rem;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info">
+      <span id="user-name">Cargando...</span>
+      <button class="logout-btn" id="logout-button"><i class="fas fa-sign-out-alt"></i> Salir</button>
+    </div>
+  </header>
+
+  <nav>
+    <a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a>
+    <a href="retos.html"><i class="fas fa-bullseye"></i> Retos</a>
+    <a href="diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
+    <a href="gimnasia.html"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
+    <a href="recursos.html" class="active"><i class="fas fa-toolbox"></i> Recursos</a>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Caja de Herramientas</h1>
+      <p>Accede a herramientas digitales y manipulativos virtuales para potenciar tu razonamiento.</p>
+    </div>
+
+    <!-- Sección de Herramientas Digitales -->
+    <h2 class="section-title">Herramientas Digitales</h2>
+    <div class="recursos-grid">
+      <a href="https://www.geogebra.org/classic" target="_blank" class="recurso-card">
+        <i class="fas fa-compass-drawing"></i>
+        <h3>GeoGebra</h3>
+        <p>Explora la geometría dinámica, representa funciones y trabaja con gráficos interactivos.</p>
+      </a>
+      <a href="https://scratch.mit.edu/" target="_blank" class="recurso-card">
+        <i class="fas fa-puzzle-piece"></i>
+        <h3>Scratch</h3>
+        <p>Iníciate en el pensamiento computacional y la programación por bloques.</p>
+      </a>
+      <a href="https://sheets.google.com" target="_blank" class="recurso-card">
+        <i class="fas fa-table-cells"></i>
+        <h3>Hojas de Cálculo</h3>
+        <p>Organiza datos, crea tablas y visualiza información con gráficos.</p>
+      </a>
+    </div>
+    
+    <!-- Sección de Manipulativos Virtuales -->
+    <h2 class="section-title">Manipulativos Virtuales</h2>
+    <div class="recursos-grid">
+      <a href="#" class="recurso-card">
+        <i class="fas fa-cubes"></i>
+        <h3>Regletas Cuisenaire</h3>
+        <p>Trabaja con números, fracciones y proporciones de forma visual.</p>
+      </a>
+      <a href="#" class="recurso-card">
+        <i class="fas fa-border-all"></i>
+        <h3>Geoplano</h3>
+        <p>Construye figuras geométricas, explora perímetros y áreas.</p>
+      </a>
+      <a href="#" class="recurso-card">
+        <i class="fas fa-shapes"></i>
+        <h3>Tangram</h3>
+        <p>Desarrolla tu visión espacial y resuelve puzzles geométricos.</p>
+      </a>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const userNameDisplay = document.getElementById('user-name');
+    const logoutButton = document.getElementById('logout-button');
+
+    async function loadPage() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
+        }
+        // Para simplificar, solo mostramos el email en la cabecera en esta página.
+        userNameDisplay.textContent = session.user.email;
+    }
+    
+    logoutButton.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'login.html';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadPage);
+  </script>
+
+</body>
+</html>
