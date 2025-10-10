@@ -66,8 +66,8 @@
       padding: 0.4rem 0.8rem;
       border-radius: 5px;
       transition: background 0.3s;
-      cursor: pointer; /* Añadido para que parezca un botón */
-      border: none; /* Añadido para que parezca un botón */
+      cursor: pointer;
+      border: none;
     }
     .logout-btn:hover {
       background: #2980b9;
@@ -191,6 +191,7 @@
       background: var(--success);
       height: 100%;
       border-radius: 10px;
+      transition: width 0.5s ease-in-out;
     }
     
     .streak-info {
@@ -246,30 +247,33 @@
     </div>
 
     <div class="dashboard-grid">
-      <div class="widget">
-        <h3><i class="fas fa-star"></i> Reto de la Semana</h3>
-        <p><strong>El Dilema del Contrato Móvil:</strong> Analiza dos tarifas de telefonía para encontrar el punto de equilibrio. ¡Es el momento de aplicar funciones lineales!</p>
-        <a href="#" class="btn">Empezar Reto</a>
+      <!-- Widget: Reto de la Semana (con IDs para el script) -->
+      <div class="widget" id="reto-widget">
+        <h3><i class="fas fa-star"></i> <strong id="reto-titulo">Reto de la Semana</strong></h3>
+        <p id="reto-descripcion">Cargando reto...</p>
+        <a href="#" class="btn" id="reto-enlace">Empezar Reto</a>
       </div>
 
-      <div class="widget">
+      <!-- Widget: Mi Diario (con IDs para el script) -->
+      <div class="widget" id="diario-widget">
         <h3><i class="fas fa-feather-alt"></i> Mi Diario de Problemas</h3>
-        <p>Tu última reflexión: <em>"Descubrí que dibujar el problema primero me ayuda a entender mucho mejor qué datos necesito..."</em></p>
+        <p>Tu última reflexión: <em id="diario-reflexion">Cargando reflexión...</em></p>
         <div class="badges-container">
             <span class="badge gold"><i class="fas fa-trophy"></i> Maestro de la Analogía</span>
             <span class="badge"><i class="fas fa-check"></i> 15 Retos Resueltos</span>
         </div>
       </div>
 
-      <div class="widget">
+      <!-- Widget: Progreso Semanal (con IDs para el script) -->
+      <div class="widget" id="progreso-widget">
         <h3><i class="fas fa-chart-line"></i> Mi Progreso Semanal</h3>
         <p>Has completado la mayoría de tus objetivos de práctica. ¡Sigue así!</p>
         <div>
-            <span>Retos de Gimnasia Mental: <strong>18 / 20</strong></span>
+            <span>Retos de Gimnasia Mental: <strong class="progreso-contador">0 / 20</strong></span>
             <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: 90%;"></div>
+                <div class="progress-bar-fill" style="width: 0%;"></div>
             </div>
-            <span class="streak-info">Racha actual: <strong>7 días <i class="fas fa-fire streak-icon"></i></strong></span>
+            <span class="streak-info">Racha actual: <strong class="racha-contador">0 días</strong> <i class="fas fa-fire streak-icon"></i></span>
         </div>
       </div>
     </div>
@@ -282,30 +286,22 @@
   </footer>
 
   <script>
-    // --- CONFIGURACIÓN Y REFERENCIAS A ELEMENTOS DEL DOM ---
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Referencias a los elementos del DOM que vamos a actualizar
     const userNameDisplay = document.getElementById('user-name');
     const welcomeTextDisplay = document.getElementById('welcome-text');
     const logoutButton = document.getElementById('logout-button');
-    
-    // Referencias a los nuevos widgets
-    const retoTitulo = document.querySelector('#reto-widget h3 strong');
-    const retoDescripcion = document.querySelector('#reto-widget p');
-    const retoEnlace = document.querySelector('#reto-widget a');
-    
-    const diarioReflexion = document.querySelector('#diario-widget p em');
-    
+    const retoTitulo = document.getElementById('reto-titulo');
+    const retoDescripcion = document.getElementById('reto-descripcion');
+    const retoEnlace = document.getElementById('reto-enlace');
+    const diarioReflexion = document.getElementById('diario-reflexion');
     const progresoContador = document.querySelector('#progreso-widget .progreso-contador');
     const progresoBarra = document.querySelector('#progreso-widget .progress-bar-fill');
     const rachaContador = document.querySelector('#progreso-widget .racha-contador');
 
-    // --- FUNCIÓN PRINCIPAL ---
     async function loadDashboardData() {
-        // 1. OBTENER LA SESIÓN DEL USUARIO Y PROTEGER LA RUTA
         const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             window.location.href = 'login.html';
@@ -313,27 +309,18 @@
         }
         const user = session.user;
 
-        // 2. CARGAR TODOS LOS DATOS EN PARALELO PARA MAYOR EFICIENCIA
-        const [
-            alumnoData,
-            retoData,
-            diarioData,
-            actividadData
-        ] = await Promise.all([
+        const [alumnoData, retoData, diarioData, actividadData] = await Promise.all([
             fetchAlumnoProfile(user.id),
             fetchRetoActual(),
             fetchUltimaReflexion(user.id),
             fetchActividadSemanal(user.id)
         ]);
 
-        // 3. ACTUALIZAR LA INTERFAZ CON LOS DATOS OBTENIDOS
         updateProfileUI(alumnoData);
         updateRetoUI(retoData);
         updateDiarioUI(diarioData);
         updateProgresoUI(actividadData);
     }
-
-    // --- FUNCIONES AUXILIARES PARA OBTENER DATOS ---
 
     async function fetchAlumnoProfile(userId) {
         const { data, error } = await supabaseClient.from('alumnos').select('nombre, apellidos').eq('id_alumno', userId).single();
@@ -342,7 +329,7 @@
     }
 
     async function fetchRetoActual() {
-        const { data, error } = await supabaseClient.from('retos').select('titulo, descripcion, enlace').eq('es_reto_actual', true).single();
+        const { data, error } = await supabaseClient.from('retos').select('titulo, descripcion, enlace').eq('es_reto_actual', true).limit(1).single();
         if (error) console.error('Error al cargar reto:', error);
         return data;
     }
@@ -355,13 +342,11 @@
     
     async function fetchActividadSemanal(userId) {
         const sieteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        const { data, error, count } = await supabaseClient.from('actividad').select('*', { count: 'exact' }).eq('id_alumno', userId).gte('fecha_completado', sieteDiasAtras);
+        const { data, error, count } = await supabaseClient.from('actividad').select('*', { count: 'exact', head: true }).eq('id_alumno', userId).gte('fecha_completado', sieteDiasAtras);
         if (error) console.error('Error al cargar actividad:', error);
-        return { activities: data, count: count };
+        return count;
     }
 
-    // --- FUNCIONES AUXILIARES PARA ACTUALIZAR LA INTERFAZ ---
-    
     function updateProfileUI(alumno) {
         if (alumno) {
             userNameDisplay.textContent = `${alumno.nombre} ${alumno.apellidos}`;
@@ -388,26 +373,23 @@
         }
     }
 
-    function updateProgresoUI(actividad) {
-        const objetivoSemanal = 20; // Puedes cambiar este valor
-        const count = actividad.count || 0;
+    function updateProgresoUI(count) {
+        const objetivoSemanal = 20;
+        const numActividades = count || 0;
         
-        progresoContador.textContent = `${count} / ${objetivoSemanal}`;
-        const porcentaje = Math.min((count / objetivoSemanal) * 100, 100);
+        progresoContador.textContent = `${numActividades} / ${objetivoSemanal}`;
+        const porcentaje = Math.min((numActividades / objetivoSemanal) * 100, 100);
         progresoBarra.style.width = `${porcentaje}%`;
-
-        // Lógica simple para la racha (puedes hacerla más compleja si quieres)
-        // Por ahora, solo muestra el número de actividades de la semana.
-        rachaContador.textContent = `${count} actividades esta semana`;
+        
+        // Esta es una lógica simple de racha. Podrías hacerla más compleja.
+        rachaContador.textContent = `${numActividades} actividades esta semana`;
     }
 
-    // --- CONFIGURACIÓN DEL BOTÓN DE CERRAR SESIÓN ---
     logoutButton.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
         window.location.href = 'login.html';
     });
 
-    // --- PUNTO DE ENTRADA ---
     document.addEventListener('DOMContentLoaded', () => {
         loadDashboardData();
     });
