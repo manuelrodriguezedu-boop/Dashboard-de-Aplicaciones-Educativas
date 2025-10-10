@@ -7,7 +7,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* --- (El CSS es el mismo que en la versión anterior, no es necesario cambiarlo) --- */
     :root { --primary: #2c3e50; --secondary: #3498db; --light: #ecf0f1; --dark: #1a252f; --success: #2ecc71; --error: #e74c3c; }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: linear-gradient(135deg, var(--primary), var(--dark)); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; color: var(--primary); padding: 2rem 1rem; }
@@ -54,9 +53,14 @@
   </footer>
 
   <script>
+    // --- CÓDIGO CORREGIDO Y FUNCIONAL PARA LOGIN.HTML ---
+
+    // **IMPORTANTE**: Pega aquí las MISMAS credenciales que en registro.html
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98'; // Asegúrate de que sea la correcta
+    
+    // CORRECCIÓN 1: Usamos 'supabaseClient' para no entrar en conflicto con la librería.
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const loginForm = document.getElementById('login-form');
     const submitButton = document.getElementById('submit-button');
@@ -71,13 +75,15 @@
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      // CORRECCIÓN 2: Usamos 'supabaseClient' para llamar a la función de inicio de sesión.
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
-        errorMessage.textContent = error.message;
+        errorMessage.textContent = "Correo o contraseña incorrectos."; // Mensaje más amigable
         errorMessage.style.display = 'block';
       } else {
-        alert('¡Inicio de sesión correcto! Redirigiendo...');
+        alert('¡Inicio de sesión correcto! Redirigiendo al panel principal...');
+        // ¡ÉXITO! Este es el punto donde rediriges a la página principal de la app.
         // window.location.href = 'dashboard.html';
       }
 
