@@ -290,6 +290,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Referencias a los elementos del DOM que vamos a actualizar
     const userNameDisplay = document.getElementById('user-name');
     const welcomeTextDisplay = document.getElementById('welcome-text');
     const logoutButton = document.getElementById('logout-button');
@@ -328,8 +329,10 @@
         return data;
     }
 
+    // --- ESTA ES LA FUNCIÓN CORREGIDA ---
+    // Ahora pide el 'id' del reto además de los otros datos.
     async function fetchRetoActual() {
-        const { data, error } = await supabaseClient.from('retos').select('titulo, descripcion, enlace').eq('es_reto_actual', true).limit(1).single();
+        const { data, error } = await supabaseClient.from('retos').select('id, titulo, descripcion, enlace').eq('es_reto_actual', true).limit(1).single();
         if (error) console.error('Error al cargar reto:', error);
         return data;
     }
@@ -354,14 +357,17 @@
         }
     }
 
+    // --- Y ESTA ES LA OTRA FUNCIÓN CORREGIDA ---
+    // Ahora usa el 'reto.id' para construir el enlace correctamente.
     function updateRetoUI(reto) {
         if (reto) {
             retoTitulo.textContent = reto.titulo;
             retoDescripcion.textContent = reto.descripcion;
-            retoEnlace.href = reto.enlace || '#';
+            retoEnlace.href = `reto.html?id=${reto.id}`; // Construye el enlace dinámico
         } else {
             retoTitulo.textContent = "No hay reto esta semana";
             retoDescripcion.textContent = "Vuelve más tarde para ver el próximo desafío.";
+            retoEnlace.style.display = 'none'; // Oculta el botón si no hay reto
         }
     }
 
@@ -381,7 +387,6 @@
         const porcentaje = Math.min((numActividades / objetivoSemanal) * 100, 100);
         progresoBarra.style.width = `${porcentaje}%`;
         
-        // Esta es una lógica simple de racha. Podrías hacerla más compleja.
         rachaContador.textContent = `${numActividades} actividades esta semana`;
     }
 
@@ -393,7 +398,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadDashboardData();
     });
-  </script>
+  </script>```
 
 </body>
 </html>
