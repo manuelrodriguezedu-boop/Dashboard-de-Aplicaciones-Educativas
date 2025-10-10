@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resolviendo Reto - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --primary: #2c3e50; --secondary: #3498db; --light: #ecf0f1; --dark: #1a252f; --success: #2ecc71; }
+    body { font-family: 'Segoe UI', sans-serif; background-color: var(--light); color: var(--primary); margin: 0; }
+    header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo { font-size: 1.6rem; font-weight: bold; }
+    .user-info span { font-weight: 500; }
+    .back-btn { color: white; text-decoration: none; padding: 0.4rem 0.8rem; border: 1px solid white; border-radius: 5px; }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+    .reto-header { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 2rem; }
+    .reto-header h1 { color: var(--secondary); margin-bottom: 0.5rem; }
+    .fase { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+    .fase-header { background: var(--primary); color: white; padding: 1rem 1.5rem; border-radius: 12px 12px 0 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .fase-content { padding: 1.5rem; border-top: 1px solid var(--light); display: none; }
+    .fase-content.active { display: block; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+    textarea, select { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; font-family: 'Segoe UI', sans-serif; }
+    .actions { text-align: right; margin-top: 2rem; }
+    .btn { background: var(--secondary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.3s; margin-left: 1rem; }
+    .btn-success { background: var(--success); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i> RazonaApp</div>
+    <div class="user-info">
+      <span id="user-name">Cargando...</span>
+      <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Volver al Panel</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="reto-header">
+      <h1 id="reto-titulo">Cargando Reto...</h1>
+      <p id="reto-descripcion">...</p>
+    </div>
+
+    <!-- Fase 1: Comprender -->
+    <div class="fase">
+      <div class="fase-header"><h2>1. Comprender el Problema</h2><i class="fas fa-chevron-down"></i></div>
+      <div class="fase-content active">
+        <div class="form-group"><label for="f1-datos">¿Cuáles son los datos clave?</label><textarea id="f1-datos" rows="3"></textarea></div>
+        <div class="form-group"><label for="f1-objetivo">¿Cuál es la incógnita o el objetivo final?</label><textarea id="f1-objetivo" rows="2"></textarea></div>
+      </div>
+    </div>
+    
+    <!-- Fase 2: Diseñar un Plan -->
+    <div class="fase">
+      <div class="fase-header"><h2>2. Diseñar un Plan</h2><i class="fas fa-chevron-down"></i></div>
+      <div class="fase-content">
+        <div class="form-group">
+          <label for="f2-estrategia">¿Qué estrategia/heurística usarás?</label>
+          <select id="f2-estrategia">
+            <option value="">Selecciona una...</option>
+            <option value="analogia">Buscar analogías</option>
+            <option value="simplificar">Simplificar el problema</option>
+            <option value="dividir">Dividir y vencer</option>
+            <option value="experimentar">Experimentar (ensayo y error)</option>
+            <option value="atras">Trabajar hacia atrás</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="f2-plan">Describe tu plan paso a paso</label><textarea id="f2-plan" rows="4"></textarea></div>
+      </div>
+    </div>
+    
+    <!-- Fase 3: Ejecutar el Plan -->
+    <div class="fase">
+      <div class="fase-header"><h2>3. Ejecutar el Plan</h2><i class="fas fa-chevron-down"></i></div>
+      <div class="fase-content"><div class="form-group"><label for="f3-ejecucion">Escribe aquí tu resolución (cálculos, diagramas, etc.)</label><textarea id="f3-ejecucion" rows="8"></textarea></div></div>
+    </div>
+    
+    <!-- Fase 4: Revisar y Reflexionar -->
+    <div class="fase">
+      <div class="fase-header"><h2>4. Revisar y Reflexionar</h2><i class="fas fa-chevron-down"></i></div>
+      <div class="fase-content"><div class="form-group"><label for="f4-reflexion">¿La solución tiene sentido? ¿Qué has aprendido? ¿Podrías haberlo hecho de otra forma?</label><textarea id="f4-reflexion" rows="5"></textarea></div></div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn" id="save-progress-btn"><i class="fas fa-save"></i> Guardar Progreso</button>
+      <button class="btn btn-success" id="complete-btn"><i class="fas fa-check-circle"></i> Marcar como Completado</button>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Referencias al DOM
+    const userNameDisplay = document.getElementById('user-name');
+    const retoTitulo = document.getElementById('reto-titulo');
+    const retoDescripcion = document.getElementById('reto-descripcion');
+    const saveButton = document.getElementById('save-progress-btn');
+    const completeButton = document.getElementById('complete-btn');
+
+    let currentUserId = null;
+    let currentRetoId = null;
+
+    async function loadPage() {
+        // Proteger ruta y obtener usuario
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
+        }
+        currentUserId = session.user.id;
+        userNameDisplay.textContent = session.user.email; // Temporal, se puede mejorar
+
+        // Obtener el ID del reto desde la URL (ej: reto.html?id=1)
+        const params = new URLSearchParams(window.location.search);
+        currentRetoId = params.get('id');
+        if (!currentRetoId) {
+            alert("No se ha especificado un reto.");
+            window.location.href = 'dashboard.html';
+            return;
+        }
+
+        // Cargar datos del reto y de la resolución del alumno
+        const [retoData, resolucionData] = await Promise.all([
+            supabaseClient.from('retos').select('*').eq('id', currentRetoId).single(),
+            supabaseClient.from('resoluciones').select('*').eq('id_alumno', currentUserId).eq('id_reto', currentRetoId).single()
+        ]);
+
+        // Rellenar la cabecera del reto
+        if (retoData.data) {
+            retoTitulo.textContent = retoData.data.titulo;
+            retoDescripcion.textContent = retoData.data.descripcion;
+        }
+
+        // Rellenar el formulario con los datos guardados, si existen
+        if (resolucionData.data) {
+            const resolucion = resolucionData.data;
+            if (resolucion.fase1_comprension) {
+                document.getElementById('f1-datos').value = resolucion.fase1_comprension.datos || '';
+                document.getElementById('f1-objetivo').value = resolucion.fase1_comprension.objetivo || '';
+            }
+            if (resolucion.fase2_plan) {
+                document.getElementById('f2-estrategia').value = resolucion.fase2_plan.estrategia || '';
+                document.getElementById('f2-plan').value = resolucion.fase2_plan.plan || '';
+            }
+            document.getElementById('f3-ejecucion').value = resolucion.fase3_ejecucion || '';
+            document.getElementById('f4-reflexion').value = resolucion.fase4_reflexion || '';
+        }
+    }
+
+    async function saveOrUpdateResolution(estado = 'en_progreso') {
+        const resolutionPayload = {
+            id_alumno: currentUserId,
+            id_reto: currentRetoId,
+            fase1_comprension: {
+                datos: document.getElementById('f1-datos').value,
+                objetivo: document.getElementById('f1-objetivo').value,
+            },
+            fase2_plan: {
+                estrategia: document.getElementById('f2-estrategia').value,
+                plan: document.getElementById('f2-plan').value,
+            },
+            fase3_ejecucion: document.getElementById('f3-ejecucion').value,
+            fase4_reflexion: document.getElementById('f4-reflexion').value,
+            estado: estado,
+            fecha_actualizacion: new Date().toISOString()
+        };
+        
+        // upsert = si ya existe una fila para este alumno/reto, la actualiza. Si no, la crea.
+        const { error } = await supabaseClient.from('resoluciones').upsert(resolutionPayload);
+
+        if (error) {
+            alert("Error al guardar: " + error.message);
+        } else {
+            if (estado === 'completado') {
+                alert("¡Reto completado y enviado!");
+                window.location.href = 'dashboard.html';
+            } else {
+                alert("Progreso guardado con éxito.");
+            }
+        }
+    }
+
+    // Lógica para los acordeones
+    document.querySelectorAll('.fase-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
+            header.querySelector('i').classList.toggle('fa-chevron-down');
+            header.querySelector('i').classList.toggle('fa-chevron-up');
+        });
+    });
+    
+    // Listeners de los botones
+    saveButton.addEventListener('click', () => saveOrUpdateResolution('en_progreso'));
+    completeButton.addEventListener('click', () => saveOrUpdateResolution('completado'));
+    
+    // Cargar la página
+    document.addEventListener('DOMContentLoaded', loadPage);
+  </script>
+
+</body>
+</html>```
+
+---
+
+### **Paso 3: Conectar el Panel de Control (`dashboard.html`)**
+
+El último paso es hacer que el botón "Empezar Reto" de tu `dashboard.html` apunte a esta nueva página con el ID correcto.
+
+1.  Abre tu archivo `dashboard.html`.
+2.  Busca la función `updateRetoUI` dentro de la etiqueta `<script>`.
+3.  **Asegúrate de que la función se vea así:**
+
+```javascript
+    function updateRetoUI(reto) {
+        if (reto) {
+            retoTitulo.textContent = reto.titulo;
+            retoDescripcion.textContent = reto.descripcion;
+            // LA LÍNEA MÁS IMPORTANTE: Construye el enlace con el ID del reto
+            retoEnlace.href = `reto.html?id=${reto.id}`;
+        } else {
+            retoTitulo.textContent = "No hay reto esta semana";
+            retoDescripcion.textContent = "Vuelve más tarde para ver el próximo desafío.";
+            retoEnlace.style.display = 'none'; // Oculta el botón si no hay reto
+        }
+    }
