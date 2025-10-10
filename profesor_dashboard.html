@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel del Profesor - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>/* ... (Puedes usar un CSS similar al de diario.html) ... */</style>
+</head>
+<body>
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp - Módulo Profesorado</span></div>
+    <div class="user-info"><span id="user-name">Cargando...</span><button id="logout-button">Salir</button></div>
+  </header>
+  <main>
+    <h1>Entregas Pendientes de Evaluación</h1>
+    <div class="table-container">
+      <table>
+        <thead><tr><th>Alumno/a</th><th>Reto</th><th>Fecha de Entrega</th><th>Acciones</th></tr></thead>
+        <tbody id="entregas-tbody"><tr><td colspan="4">Cargando entregas...</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+  <script>
+    const SUPABASE_URL = '...'; // Pega tu URL
+    const SUPABASE_ANON_KEY = '...'; // Pega tu Clave Anon
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadProfesorDashboard() {
+        // 1. Comprobar sesión y rol de profesor
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) { window.location.href = 'login.html'; return; }
+
+        const { data: profesor, error: profileError } = await supabaseClient.from('profesores').select('id, nombre').eq('id', session.user.id).single();
+        if (profileError || !profesor) {
+            alert("Acceso denegado. Esta área es solo para profesores.");
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        document.getElementById('user-name').textContent = profesor.nombre;
+
+        // 2. Obtener las resoluciones pendientes de los alumnos asignados
+        const { data: resoluciones, error } = await supabaseClient
+            .from('resoluciones')
+            .select(`
+                id,
+                fecha_actualizacion,
+                alumnos ( nombre, apellidos ),
+                retos ( titulo )
+            `)
+            .eq('estado', 'completado'); // Solo las que los alumnos han marcado como completadas
+
+        if (error) {
+            console.error("Error al cargar entregas:", error);
+            return;
+        }
+        
+        renderEntregas(resoluciones);
+    }
+    
+    function renderEntregas(entregas) {
+        const tbody = document.getElementById('entregas-tbody');
+        tbody.innerHTML = '';
+        if (entregas.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4">No hay entregas pendientes.</td></tr>`;
+            return;
+        }
+        entregas.forEach(entrega => {
+            const row = `
+                <tr>
+                    <td>${entrega.alumnos.nombre} ${entrega.alumnos.apellidos}</td>
+                    <td>${entrega.retos.titulo}</td>
+                    <td>${new Date(entrega.fecha_actualizacion).toLocaleDateString()}</td>
+                    <td><a href="evaluar_reto.html?id=${entrega.id}">Evaluar</a></td>
+                </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadProfesorDashboard);
+    // Añadir lógica del botón de logout...
+  </script>
+</body>
+</html>
