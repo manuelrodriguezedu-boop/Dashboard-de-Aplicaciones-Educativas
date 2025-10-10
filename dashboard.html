@@ -282,6 +282,7 @@
   </footer>
 
   <script>
+    // --- CONFIGURACIÓN Y REFERENCIAS A ELEMENTOS DEL DOM ---
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -290,54 +291,125 @@
     const userNameDisplay = document.getElementById('user-name');
     const welcomeTextDisplay = document.getElementById('welcome-text');
     const logoutButton = document.getElementById('logout-button');
+    
+    // Referencias a los nuevos widgets
+    const retoTitulo = document.querySelector('#reto-widget h3 strong');
+    const retoDescripcion = document.querySelector('#reto-widget p');
+    const retoEnlace = document.querySelector('#reto-widget a');
+    
+    const diarioReflexion = document.querySelector('#diario-widget p em');
+    
+    const progresoContador = document.querySelector('#progreso-widget .progreso-contador');
+    const progresoBarra = document.querySelector('#progreso-widget .progress-bar-fill');
+    const rachaContador = document.querySelector('#progreso-widget .racha-contador');
 
-    async function loadUserData() {
-        // 1. Comprobar la sesión del usuario
+    // --- FUNCIÓN PRINCIPAL ---
+    async function loadDashboardData() {
+        // 1. OBTENER LA SESIÓN DEL USUARIO Y PROTEGER LA RUTA
         const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-
         if (sessionError || !session) {
-            console.error('No hay sesión activa, redirigiendo al login.');
             window.location.href = 'login.html';
             return;
         }
-
         const user = session.user;
 
-        // 2. Obtener los datos del perfil del alumno desde la tabla "alumnos"
-        const { data: alumno, error: profileError } = await supabaseClient
-            .from('alumnos')
-            .select('nombre, apellidos, curso') // Puedes añadir más campos si los necesitas
-            .eq('id_alumno', user.id)
-            .single();
+        // 2. CARGAR TODOS LOS DATOS EN PARALELO PARA MAYOR EFICIENCIA
+        const [
+            alumnoData,
+            retoData,
+            diarioData,
+            actividadData
+        ] = await Promise.all([
+            fetchAlumnoProfile(user.id),
+            fetchRetoActual(),
+            fetchUltimaReflexion(user.id),
+            fetchActividadSemanal(user.id)
+        ]);
 
-        if (profileError) {
-            console.error('Error al cargar el perfil del alumno:', profileError);
-            userNameDisplay.textContent = 'Error de perfil';
-            return;
-        }
-        
+        // 3. ACTUALIZAR LA INTERFAZ CON LOS DATOS OBTENIDOS
+        updateProfileUI(alumnoData);
+        updateRetoUI(retoData);
+        updateDiarioUI(diarioData);
+        updateProgresoUI(actividadData);
+    }
+
+    // --- FUNCIONES AUXILIARES PARA OBTENER DATOS ---
+
+    async function fetchAlumnoProfile(userId) {
+        const { data, error } = await supabaseClient.from('alumnos').select('nombre, apellidos').eq('id_alumno', userId).single();
+        if (error) console.error('Error al cargar perfil:', error);
+        return data;
+    }
+
+    async function fetchRetoActual() {
+        const { data, error } = await supabaseClient.from('retos').select('titulo, descripcion, enlace').eq('es_reto_actual', true).single();
+        if (error) console.error('Error al cargar reto:', error);
+        return data;
+    }
+
+    async function fetchUltimaReflexion(userId) {
+        const { data, error } = await supabaseClient.from('diario').select('reflexion').eq('id_alumno', userId).order('fecha_creacion', { ascending: false }).limit(1).single();
+        if (error) console.error('Error al cargar diario:', error);
+        return data;
+    }
+    
+    async function fetchActividadSemanal(userId) {
+        const sieteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { data, error, count } = await supabaseClient.from('actividad').select('*', { count: 'exact' }).eq('id_alumno', userId).gte('fecha_completado', sieteDiasAtras);
+        if (error) console.error('Error al cargar actividad:', error);
+        return { activities: data, count: count };
+    }
+
+    // --- FUNCIONES AUXILIARES PARA ACTUALIZAR LA INTERFAZ ---
+    
+    function updateProfileUI(alumno) {
         if (alumno) {
-            // 3. Actualizar la interfaz con los datos del alumno
             userNameDisplay.textContent = `${alumno.nombre} ${alumno.apellidos}`;
             welcomeTextDisplay.textContent = `¡Hola de nuevo, ${alumno.nombre}! Aquí tienes tu resumen semanal.`;
         }
     }
 
-    // 4. Configurar el botón de cerrar sesión
-    logoutButton.addEventListener('click', async () => {
-        const { error } = await supabaseClient.auth.signOut();
-        if (error) {
-            console.error('Error al cerrar sesión', error);
+    function updateRetoUI(reto) {
+        if (reto) {
+            retoTitulo.textContent = reto.titulo;
+            retoDescripcion.textContent = reto.descripcion;
+            retoEnlace.href = reto.enlace || '#';
         } else {
-            // No es necesario redirigir explícitamente, la recarga de página lo hará
-            // por la comprobación de sesión al principio.
-            window.location.href = 'login.html';
+            retoTitulo.textContent = "No hay reto esta semana";
+            retoDescripcion.textContent = "Vuelve más tarde para ver el próximo desafío.";
         }
+    }
+
+    function updateDiarioUI(diario) {
+        if (diario) {
+            diarioReflexion.textContent = `"${diario.reflexion}"`;
+        } else {
+            diarioReflexion.textContent = "Aún no has escrito ninguna reflexión. ¡Anímate a empezar!";
+        }
+    }
+
+    function updateProgresoUI(actividad) {
+        const objetivoSemanal = 20; // Puedes cambiar este valor
+        const count = actividad.count || 0;
+        
+        progresoContador.textContent = `${count} / ${objetivoSemanal}`;
+        const porcentaje = Math.min((count / objetivoSemanal) * 100, 100);
+        progresoBarra.style.width = `${porcentaje}%`;
+
+        // Lógica simple para la racha (puedes hacerla más compleja si quieres)
+        // Por ahora, solo muestra el número de actividades de la semana.
+        rachaContador.textContent = `${count} actividades esta semana`;
+    }
+
+    // --- CONFIGURACIÓN DEL BOTÓN DE CERRAR SESIÓN ---
+    logoutButton.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'login.html';
     });
 
-    // 5. Ejecutar la función principal cuando la página se cargue
+    // --- PUNTO DE ENTRADA ---
     document.addEventListener('DOMContentLoaded', () => {
-        loadUserData();
+        loadDashboardData();
     });
   </script>
 
