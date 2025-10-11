@@ -28,9 +28,10 @@
       background-color: var(--light);
       color: var(--primary);
       padding-top: 60px; /* Espacio para header fijo */
+      padding-bottom: 60px; /* Espacio para nav inferior en móvil */
     }
 
-    /* --- Header y Navegación --- */
+    /* --- Header --- */
     header {
       background: var(--primary);
       color: white;
@@ -42,7 +43,7 @@
       top: 0;
       left: 0;
       right: 0;
-      z-index: 1001; /* Mayor que el nav */
+      z-index: 1001;
     }
     .logo {
       font-size: 1.4rem;
@@ -75,52 +76,38 @@
       background: #2980b9;
     }
 
-    /* Botón de menú hamburguesa (oculto en desktop) */
-    .menu-toggle {
-      display: none;
-      flex-direction: column;
-      justify-content: space-around;
-      width: 30px;
-      height: 30px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      outline: none;
-    }
-    .menu-toggle span {
-      width: 100%;
-      height: 3px;
-      background: white;
-      transition: all 0.3s;
-      transform-origin: center;
-    }
-
+    /* --- Navegación Inferior (solo en móvil) --- */
     nav {
       position: fixed;
-      top: 60px; /* Altura del header */
+      bottom: 0;
       left: 0;
-      height: calc(100vh - 60px);
-      width: 250px;
+      right: 0;
       background: var(--dark);
-      padding: 1.5rem 0;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0.6rem 0;
       z-index: 1000;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      overflow-y: auto;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+      display: none; /* Oculto por defecto */
     }
-    nav.active {
-      transform: translateX(0);
-    }
+
     nav a {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       color: white;
       text-decoration: none;
-      padding: 0.8rem 1.5rem;
-      border-radius: 0;
+      font-size: 0.7rem; /* Texto pequeño */
+      padding: 0.3rem;
+      border-radius: 4px;
       transition: background 0.3s;
-      font-size: 0.95rem;
+      width: 100%; /* Ocupar espacio equitativamente */
+      text-align: center;
+    }
+    nav a i {
+        font-size: 1.2rem; /* Iconos más grandes */
+        margin-bottom: 0.2rem;
     }
     nav a:hover, nav a.active {
       background: var(--secondary);
@@ -130,25 +117,25 @@
     main {
       max-width: 1200px;
       margin: 2rem auto;
-      padding: 0 1rem; /* Menos padding en móviles */
+      padding: 0 1rem;
     }
 
     .page-header {
-      margin-bottom: 1.5rem; /* Menos espacio en móviles */
+      margin-bottom: 1.5rem;
       text-align: center;
     }
     .page-header h1 {
-      font-size: 1.8rem; /* Menor tamaño en móviles */
+      font-size: 1.8rem;
     }
     .page-header p {
       color: #7f8c8d;
-      font-size: 1rem; /* Menor tamaño en móviles */
+      font-size: 1rem;
     }
 
     /* --- Filtros --- */
     .filters {
       display: flex;
-      justify-content: center; /* Centrado */
+      justify-content: center;
       gap: 0.5rem;
       margin-bottom: 1.5rem;
       flex-wrap: wrap;
@@ -160,7 +147,7 @@
       border-radius: 20px;
       cursor: pointer;
       transition: all 0.3s;
-      font-size: 0.85rem; /* Menor tamaño en móviles */
+      font-size: 0.85rem;
     }
     .filter-btn:hover {
       border-color: var(--secondary);
@@ -174,8 +161,8 @@
     /* --- Grid de Retos --- */
     .retos-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
-      gap: 1.2rem; /* Menor espacio en móviles */
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
     }
 
     .reto-card {
@@ -218,24 +205,10 @@
         font-size: 0.95rem;
     }
 
-    .tags {
-        margin-bottom: 1rem;
-    }
-    .tag {
-        display: inline-block;
-        background: var(--light);
-        color: var(--primary);
-        padding: 0.2rem 0.6rem;
-        border-radius: 4px;
-        font-size: 0.75rem; /* Menor tamaño */
-        margin-right: 0.4rem;
-        margin-bottom: 0.3rem; /* Espacio debajo también */
-    }
-
     .status-badge {
         padding: 0.3rem 0.7rem;
         border-radius: 20px;
-        font-size: 0.75rem; /* Menor tamaño */
+        font-size: 0.75rem;
         font-weight: bold;
         color: white;
         position: absolute;
@@ -268,9 +241,22 @@
     }
 
     /* --- Media Queries --- */
+    @media (max-width: 767px) {
+      nav {
+        display: flex; /* Mostrar nav inferior en móvil */
+      }
+      body {
+        padding-bottom: 60px; /* Ajustar padding inferior */
+      }
+      main {
+        padding-bottom: 1rem; /* Espacio adicional antes del nav */
+      }
+    }
+
     @media (min-width: 768px) {
       body {
-        padding-top: 80px; /* Ajustar espacio para header más alto */
+        padding-top: 80px;
+        padding-bottom: 0; /* Quitar padding inferior en desktop */
       }
       header {
         padding: 1rem 2rem;
@@ -286,24 +272,32 @@
         font-size: 0.9rem;
       }
       nav {
-        position: static;
-        height: auto;
-        width: auto;
+        position: static; /* Colocar nav arriba en desktop */
         background: var(--dark);
         padding: 0.8rem 0;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        transform: none;
-        overflow-y: visible;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        margin-top: 1rem;
       }
       nav a {
         display: inline-block;
+        flex-direction: row;
+        font-size: 0.95rem;
         padding: 0.5rem 1.5rem;
+        margin: 0 0.2rem;
       }
-      .menu-toggle {
-        display: none; /* Ocultar en desktop */
+      nav a i {
+          margin-right: 0.5rem;
+          margin-bottom: 0;
+          font-size: 1rem;
       }
       main {
         padding: 0 1.5rem;
+        margin-top: 2rem;
       }
       .page-header h1 {
         font-size: 2rem;
@@ -328,7 +322,7 @@
 
     @media (min-width: 1024px) {
       .retos-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 columnas fijas en desktop */
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -341,20 +335,15 @@
       <span id="user-name">Cargando...</span>
       <button class="logout-btn" id="logout-button"><i class="fas fa-sign-out-alt"></i> Salir</button>
     </div>
-    <!-- Botón hamburguesa para móviles -->
-    <button class="menu-toggle" id="menu-toggle">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
   </header>
 
+  <!-- Navegación principal -->
   <nav id="main-nav">
-    <a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a>
-    <a href="retos.html" class="active"><i class="fas fa-bullseye"></i> Retos</a>
-    <a href="diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
-    <a href="gimnasia.html"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
-    <a href="recursos.html"><i class="fas fa-toolbox"></i> Recursos</a>
+    <a href="dashboard.html"><i class="fas fa-home"></i> <span>Inicio</span></a>
+    <a href="retos.html" class="active"><i class="fas fa-bullseye"></i> <span>Retos</span></a>
+    <a href="diario.html"><i class="fas fa-book-open"></i> <span>Diario</span></a>
+    <a href="gimnasia.html"><i class="fas fa-dumbbell"></i> <span>Gimnasia</span></a>
+    <a href="recursos.html"><i class="fas fa-toolbox"></i> <span>Recursos</span></a>
   </nav>
 
   <main>
@@ -384,21 +373,6 @@
     const userNameDisplay = document.getElementById('user-name');
     const logoutButton = document.getElementById('logout-button');
     const retosGrid = document.getElementById('retos-grid');
-    const menuToggle = document.getElementById('menu-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    // Toggle para el menú móvil
-    menuToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        mainNav.classList.toggle('active');
-    });
-
-    // Cerrar menú si se hace clic fuera
-    document.addEventListener('click', (e) => {
-        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-            mainNav.classList.remove('active');
-        }
-    });
 
     async function loadRetosPage() {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -462,7 +436,6 @@
                     <div class="reto-card-content">
                         <h3>${reto.titulo}</h3>
                         <p>${reto.descripcion}</p>
-                        <!-- Aquí podrías añadir etiquetas dinámicas si las tuvieras en la tabla -->
                     </div>
                     <a href="reto.html?id=${reto.id}" class="btn">${botonTexto}</a>
                 </div>
