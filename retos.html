@@ -27,61 +27,155 @@
     body {
       background-color: var(--light);
       color: var(--primary);
+      padding-top: 60px; /* Espacio para header fijo */
     }
 
-    header { /* ... (CSS de header y nav sin cambios) ... */
-      background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
+    /* --- Header y Navegación --- */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1001; /* Mayor que el nav */
     }
-    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
-    .user-info { display: flex; align-items: center; gap: 1rem; }
-    .user-info span { font-weight: 500; }
-    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
-    .logout-btn:hover { background: #2980b9; }
-    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
-    nav a:hover, nav a.active { background: var(--secondary); }
-    
+    .logo {
+      font-size: 1.4rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .user-info span {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .logout-btn {
+      background: var(--secondary);
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 0.9rem;
+      border-radius: 5px;
+      transition: background 0.3s;
+      cursor: pointer;
+      border: none;
+      font-size: 0.85rem;
+    }
+    .logout-btn:hover {
+      background: #2980b9;
+    }
+
+    /* Botón de menú hamburguesa (oculto en desktop) */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+    }
+    .menu-toggle span {
+      width: 100%;
+      height: 3px;
+      background: white;
+      transition: all 0.3s;
+      transform-origin: center;
+    }
+
+    nav {
+      position: fixed;
+      top: 60px; /* Altura del header */
+      left: 0;
+      height: calc(100vh - 60px);
+      width: 250px;
+      background: var(--dark);
+      padding: 1.5rem 0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    nav.active {
+      transform: translateX(0);
+    }
+    nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 0;
+      transition: background 0.3s;
+      font-size: 0.95rem;
+    }
+    nav a:hover, nav a.active {
+      background: var(--secondary);
+    }
+
+    /* --- Main Content --- */
     main {
       max-width: 1200px;
       margin: 2rem auto;
-      padding: 0 1.5rem;
+      padding: 0 1rem; /* Menos padding en móviles */
     }
 
     .page-header {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem; /* Menos espacio en móviles */
+      text-align: center;
     }
-    .page-header h1 { font-size: 2rem; margin-bottom: 0.2rem; }
-    .page-header p { color: #7f8c8d; font-size: 1.1rem; }
-    
+    .page-header h1 {
+      font-size: 1.8rem; /* Menor tamaño en móviles */
+    }
+    .page-header p {
+      color: #7f8c8d;
+      font-size: 1rem; /* Menor tamaño en móviles */
+    }
+
     /* --- Filtros --- */
     .filters {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
+      display: flex;
+      justify-content: center; /* Centrado */
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
     }
     .filter-btn {
-        background: white;
-        border: 1px solid #bdc3c7;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.3s;
+      background: white;
+      border: 1px solid #bdc3c7;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.85rem; /* Menor tamaño en móviles */
     }
     .filter-btn:hover {
-        border-color: var(--secondary);
+      border-color: var(--secondary);
     }
     .filter-btn.active {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
 
     /* --- Grid de Retos --- */
     .retos-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
+      gap: 1.2rem; /* Menor espacio en móviles */
     }
 
     .reto-card {
@@ -90,11 +184,22 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Para el borde superior */
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    
+    .reto-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+
+    .reto-card-header {
+        position: relative;
+        padding: 1rem 1.2rem;
+        padding-bottom: 0;
+    }
+
     .reto-card-content {
-        padding: 1.5rem;
+        padding: 1.2rem;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
@@ -102,15 +207,17 @@
 
     .reto-card h3 {
       margin-bottom: 0.5rem;
+      font-size: 1.2rem;
     }
-    
+
     .reto-card p {
         flex-grow: 1;
         color: #555;
         line-height: 1.6;
         margin-bottom: 1rem;
+        font-size: 0.95rem;
     }
-    
+
     .tags {
         margin-bottom: 1rem;
     }
@@ -120,25 +227,21 @@
         color: var(--primary);
         padding: 0.2rem 0.6rem;
         border-radius: 4px;
-        font-size: 0.8rem;
+        font-size: 0.75rem; /* Menor tamaño */
         margin-right: 0.4rem;
+        margin-bottom: 0.3rem; /* Espacio debajo también */
     }
 
     .status-badge {
         padding: 0.3rem 0.7rem;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 0.75rem; /* Menor tamaño */
         font-weight: bold;
         color: white;
         position: absolute;
         top: 1rem;
         right: 1rem;
-    }
-    
-    .reto-card-header {
-        position: relative;
-        padding: 1rem 1.5rem;
-        padding-bottom: 0;
+        z-index: 10;
     }
 
     .status-completado { background-color: var(--success); }
@@ -157,13 +260,77 @@
       font-size: 1rem;
       font-weight: bold;
       transition: background 0.3s;
-      margin-top: auto; /* Empuja el botón hacia abajo */
+      margin-top: auto;
       border-radius: 0 0 12px 12px;
     }
     .btn:hover {
       background: var(--dark);
     }
 
+    /* --- Media Queries --- */
+    @media (min-width: 768px) {
+      body {
+        padding-top: 80px; /* Ajustar espacio para header más alto */
+      }
+      header {
+        padding: 1rem 2rem;
+      }
+      .logo {
+        font-size: 1.6rem;
+      }
+      .user-info span {
+        font-size: 1rem;
+      }
+      .logout-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+      }
+      nav {
+        position: static;
+        height: auto;
+        width: auto;
+        background: var(--dark);
+        padding: 0.8rem 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transform: none;
+        overflow-y: visible;
+      }
+      nav a {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+      }
+      .menu-toggle {
+        display: none; /* Ocultar en desktop */
+      }
+      main {
+        padding: 0 1.5rem;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      .page-header p {
+        font-size: 1.1rem;
+      }
+      .retos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+      .reto-card-content {
+        padding: 1.5rem;
+      }
+      .reto-card h3 {
+        font-size: 1.3rem;
+      }
+      .reto-card p {
+        font-size: 1rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .retos-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columnas fijas en desktop */
+      }
+    }
   </style>
 </head>
 <body>
@@ -174,9 +341,15 @@
       <span id="user-name">Cargando...</span>
       <button class="logout-btn" id="logout-button"><i class="fas fa-sign-out-alt"></i> Salir</button>
     </div>
+    <!-- Botón hamburguesa para móviles -->
+    <button class="menu-toggle" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </header>
 
-  <nav>
+  <nav id="main-nav">
     <a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a>
     <a href="retos.html" class="active"><i class="fas fa-bullseye"></i> Retos</a>
     <a href="diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
@@ -189,7 +362,7 @@
       <h1>Biblioteca de Retos</h1>
       <p>Explora todos los desafíos disponibles, continúa los que dejaste a medias o empieza uno nuevo.</p>
     </div>
-    
+
     <div class="filters">
       <button class="filter-btn active" data-filter="todos">Todos</button>
       <button class="filter-btn" data-filter="no_empezado">No Empezados</button>
@@ -204,13 +377,28 @@
   </main>
 
   <script>
-    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const userNameDisplay = document.getElementById('user-name');
     const logoutButton = document.getElementById('logout-button');
     const retosGrid = document.getElementById('retos-grid');
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainNav = document.getElementById('main-nav');
+
+    // Toggle para el menú móvil
+    menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        mainNav.classList.toggle('active');
+    });
+
+    // Cerrar menú si se hace clic fuera
+    document.addEventListener('click', (e) => {
+        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+            mainNav.classList.remove('active');
+        }
+    });
 
     async function loadRetosPage() {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -223,7 +411,7 @@
 
         // 1. Obtener TODOS los retos disponibles
         const { data: todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
-        
+
         // 2. Obtener las resoluciones del usuario actual
         const { data: misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
 
@@ -232,15 +420,15 @@
             retosGrid.innerHTML = `<p style="color:red;">No se pudieron cargar los retos.</p>`;
             return;
         }
-        
+
         // 3. Combinar los datos para saber el estado de cada reto
         const resolucionesMap = new Map(misResoluciones.map(res => [res.id_reto, res.estado]));
-        
+
         const retosConEstado = todosLosRetos.map(reto => ({
             ...reto,
             estado: resolucionesMap.get(reto.id) || 'no_empezado'
         }));
-        
+
         // 4. Renderizar las tarjetas en el HTML
         renderRetos(retosConEstado);
     }
@@ -268,8 +456,10 @@
 
             const card = `
                 <div class="reto-card" data-status="${reto.estado}">
-                    <div class="reto-card-content">
+                    <div class="reto-card-header">
                         <span class="status-badge ${estadoClase}">${estadoTexto}</span>
+                    </div>
+                    <div class="reto-card-content">
                         <h3>${reto.titulo}</h3>
                         <p>${reto.descripcion}</p>
                         <!-- Aquí podrías añadir etiquetas dinámicas si las tuvieras en la tabla -->
@@ -280,7 +470,7 @@
             retosGrid.innerHTML += card;
         });
     }
-    
+
     // Lógica para los botones de filtro
     document.querySelectorAll('.filter-btn').forEach(button => {
         button.addEventListener('click', function() {
@@ -290,7 +480,7 @@
 
             const filter = this.getAttribute('data-filter');
             const cards = document.querySelectorAll('.reto-card');
-            
+
             cards.forEach(card => {
                 if (filter === 'todos' || card.getAttribute('data-status') === filter) {
                     card.style.display = 'flex';
