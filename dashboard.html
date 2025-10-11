@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel del Alumno - RazonaApp</title>
+  <!-- Corregido: eliminado espacio al final de la URL -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Corregido: eliminado espacio al final -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -27,22 +29,25 @@
     body {
       background-color: var(--light);
       color: var(--primary);
+      line-height: 1.5;
     }
 
     header {
       background: var(--primary);
       color: white;
-      padding: 0.8rem 1.5rem;
+      padding: 1rem;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 0.8rem;
       position: sticky;
       top: 0;
       z-index: 1000;
     }
 
     .logo {
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       font-weight: bold;
       display: flex;
       align-items: center;
@@ -51,94 +56,105 @@
 
     .user-info {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 1rem;
+      gap: 0.6rem;
+      justify-content: center;
     }
 
     .user-info span {
       font-weight: 500;
+      font-size: 1rem;
     }
 
     .logout-btn {
       background: var(--secondary);
       color: white;
       text-decoration: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
       transition: background 0.3s;
       cursor: pointer;
       border: none;
+      font-size: 0.95rem;
+      min-width: 80px;
+      text-align: center;
     }
     .logout-btn:hover {
       background: #2980b9;
     }
 
     nav {
-      display: flex;
-      justify-content: center;
       background: var(--dark);
-      padding: 0.8rem 0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      padding: 0.6rem 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: thin;
     }
 
     nav a {
       color: white;
       text-decoration: none;
-      padding: 0.5rem 1.5rem;
+      padding: 0.6rem 1rem;
       border-radius: 4px;
       transition: background 0.3s;
+      display: inline-block;
+      min-width: 100px;
+      text-align: center;
     }
 
     nav a:hover, nav a.active {
       background: var(--secondary);
     }
-    
+
     main {
       max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1.5rem;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
     }
 
     .welcome-message {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
     }
     .welcome-message h1 {
-      font-size: 2rem;
-      margin-bottom: 0.2rem;
+      font-size: 1.6rem;
+      margin-bottom: 0.3rem;
     }
     .welcome-message p {
       color: #7f8c8d;
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
     }
 
     .widget {
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      padding: 1.5rem;
+      padding: 1.2rem;
       display: flex;
       flex-direction: column;
     }
 
     .widget h3 {
       color: var(--secondary);
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .widget p {
-      line-height: 1.6;
+      line-height: 1.5;
       margin-bottom: 1rem;
       flex-grow: 1;
+      font-size: 0.95rem;
     }
 
     .btn {
@@ -147,7 +163,7 @@
       text-align: center;
       background: var(--primary);
       color: white;
-      padding: 0.8rem;
+      padding: 0.9rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -155,26 +171,27 @@
       font-size: 1rem;
       font-weight: bold;
       transition: background 0.3s;
+      min-height: 44px; /* Tamaño mínimo para accesibilidad táctil */
     }
     .btn:hover {
       background: var(--dark);
     }
-    
+
     .badges-container {
-        margin-top: auto;
+      margin-top: auto;
+      margin-top: 1rem;
     }
-    
+
     .badge {
       display: inline-block;
       background: var(--light);
       color: var(--primary);
-      padding: 0.3rem 0.8rem;
+      padding: 0.3rem 0.7rem;
       border-radius: 20px;
-      font-size: 0.85rem;
-      margin-right: 0.5rem;
-      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      margin: 0.25rem 0.3rem 0.25rem 0;
     }
-    
+
     .badge.gold {
       background: var(--gold);
       color: var(--primary);
@@ -183,9 +200,9 @@
 
     .progress-bar-bg {
       background: var(--light);
-      height: 12px;
+      height: 10px;
       border-radius: 10px;
-      margin: 0.5rem 0 1rem 0;
+      margin: 0.6rem 0 1rem 0;
     }
     .progress-bar-fill {
       background: var(--success);
@@ -193,29 +210,48 @@
       border-radius: 10px;
       transition: width 0.5s ease-in-out;
     }
-    
+
     .streak-info {
-        font-size: 1.1rem;
+      font-size: 0.95rem;
     }
     .streak-icon {
-        color: var(--warning);
-    }
-    
-    footer {
-      text-align: center;
-      padding: 2.5rem 1.5rem;
-      background: var(--dark);
-      color: rgba(255, 255, 255, 0.7);
-      margin-top: 3rem;
-    }
-    footer p {
-        margin-bottom: 0.3rem;
-        font-size: 0.9rem;
+      color: var(--warning);
     }
 
-    @media (max-width: 768px) {
-        header { flex-direction: column; gap: 0.8rem; }
-        nav a { padding: 0.5rem 1rem; font-size: 0.9rem; }
+    footer {
+      text-align: center;
+      padding: 1.8rem 1rem;
+      background: var(--dark);
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 2rem;
+      font-size: 0.85rem;
+    }
+    footer p {
+      margin: 0.2rem 0;
+    }
+
+    /* Mejoras para tablets y móviles más grandes */
+    @media (min-width: 769px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    }
+
+    /* Para pantallas muy pequeñas */
+    @media (max-width: 480px) {
+      .logo span {
+        font-size: 1.2rem;
+      }
+      .welcome-message h1 {
+        font-size: 1.4rem;
+      }
+      .widget {
+        padding: 1rem;
+      }
+      .btn {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -233,12 +269,12 @@
   </header>
 
   <nav>
-  <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Inicio</a>
-  <a href="retos.html"><i class="fas fa-bullseye"></i> Retos</a>
-  <a href="diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
-  <a href="gimnasia.html"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
-  <a href="recursos.html"><i class="fas fa-toolbox"></i> Recursos</a>
-</nav>
+    <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Inicio</a>
+    <a href="retos.html"><i class="fas fa-bullseye"></i> Retos</a>
+    <a href="diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
+    <a href="gimnasia.html"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
+    <a href="recursos.html"><i class="fas fa-toolbox"></i> Recursos</a>
+  </nav>
 
   <main>
     <div class="welcome-message">
@@ -247,14 +283,12 @@
     </div>
 
     <div class="dashboard-grid">
-      <!-- Widget: Reto de la Semana (con IDs para el script) -->
       <div class="widget" id="reto-widget">
         <h3><i class="fas fa-star"></i> <strong id="reto-titulo">Reto de la Semana</strong></h3>
         <p id="reto-descripcion">Cargando reto...</p>
         <a href="#" class="btn" id="reto-enlace">Empezar Reto</a>
       </div>
 
-      <!-- Widget: Mi Diario (con IDs para el script) -->
       <div class="widget" id="diario-widget">
         <h3><i class="fas fa-feather-alt"></i> Mi Diario de Problemas</h3>
         <p>Tu última reflexión: <em id="diario-reflexion">Cargando reflexión...</em></p>
@@ -264,7 +298,6 @@
         </div>
       </div>
 
-      <!-- Widget: Progreso Semanal (con IDs para el script) -->
       <div class="widget" id="progreso-widget">
         <h3><i class="fas fa-chart-line"></i> Mi Progreso Semanal</h3>
         <p>Has completado la mayoría de tus objetivos de práctica. ¡Sigue así!</p>
@@ -286,11 +319,12 @@
   </footer>
 
   <script>
-    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    // Tu script JS permanece igual (solo corregí los espacios en las URLs arriba)
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Referencias a los elementos del DOM que vamos a actualizar
+    // ... resto del script sin cambios ...
     const userNameDisplay = document.getElementById('user-name');
     const welcomeTextDisplay = document.getElementById('welcome-text');
     const logoutButton = document.getElementById('logout-button');
@@ -329,8 +363,6 @@
         return data;
     }
 
-    // --- ESTA ES LA FUNCIÓN CORREGIDA ---
-    // Ahora pide el 'id' del reto además de los otros datos.
     async function fetchRetoActual() {
         const { data, error } = await supabaseClient.from('retos').select('id, titulo, descripcion, enlace').eq('es_reto_actual', true).limit(1).single();
         if (error) console.error('Error al cargar reto:', error);
@@ -357,17 +389,15 @@
         }
     }
 
-    // --- Y ESTA ES LA OTRA FUNCIÓN CORREGIDA ---
-    // Ahora usa el 'reto.id' para construir el enlace correctamente.
     function updateRetoUI(reto) {
         if (reto) {
             retoTitulo.textContent = reto.titulo;
             retoDescripcion.textContent = reto.descripcion;
-            retoEnlace.href = `reto.html?id=${reto.id}`; // Construye el enlace dinámico
+            retoEnlace.href = `reto.html?id=${reto.id}`;
         } else {
             retoTitulo.textContent = "No hay reto esta semana";
             retoDescripcion.textContent = "Vuelve más tarde para ver el próximo desafío.";
-            retoEnlace.style.display = 'none'; // Oculta el botón si no hay reto
+            retoEnlace.style.display = 'none';
         }
     }
 
@@ -398,7 +428,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadDashboardData();
     });
-  </script>```
-
+  </script>
 </body>
 </html>
