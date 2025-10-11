@@ -323,4 +323,231 @@
         font-size: 1.6rem;
       }
       nav {
-        position: static
+        position: static;
+        background: var(--dark);
+        padding: 0.8rem 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        margin-top: 1rem;
+      }
+      nav a {
+        display: inline-block;
+        flex-direction: row;
+        font-size: 0.95rem;
+        padding: 0.5rem 1.5rem;
+        margin: 0 0.2rem;
+      }
+      nav a i {
+          margin-right: 0.5rem;
+          margin-bottom: 0;
+          font-size: 1rem;
+      }
+      main {
+        padding: 0 1.5rem;
+        margin-top: 2rem;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      .page-header p {
+        font-size: 1.1rem;
+      }
+      .gimnasia-container {
+        padding: 2.5rem;
+      }
+      #problema-display {
+        font-size: 3rem;
+      }
+      #respuesta-input {
+        font-size: 1.5rem;
+        max-width: 300px;
+      }
+      .btn {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+        min-width: 120px;
+      }
+      .stats {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      /* No hay cambios específicos para desktop aquí */
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="dashboard.html"><i class="fas fa-brain"></i><span>RazonaApp</span></a>
+    <div class="user-info">
+      <div class="user-name-display">
+        <i class="fas fa-user-circle"></i>
+        <span id="user-name">Cargando...</span>
+      </div>
+      <button class="logout-btn" id="logout-button">
+        <i class="fas fa-sign-out-alt"></i> Salir
+      </button>
+    </div>
+  </header>
+
+  <!-- Navegación principal -->
+  <nav id="main-nav">
+    <a href="dashboard.html"><i class="fas fa-home"></i> <span>Inicio</span></a>
+    <a href="retos.html"><i class="fas fa-bullseye"></i> <span>Retos</span></a>
+    <a href="diario.html"><i class="fas fa-book-open"></i> <span>Diario</span></a>
+    <a href="gimnasia.html" class="active"><i class="fas fa-dumbbell"></i> <span>Gimnasia</span></a>
+    <a href="recursos.html"><i class="fas fa-toolbox"></i> <span>Recursos</span></a>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Gimnasia Mental</h1>
+      <p>¡Pon a prueba tu agilidad! Resuelve estos problemas de cálculo lo más rápido que puedas.</p>
+    </div>
+
+    <div class="gimnasia-container">
+      <div id="problema-display">25 + 17 = ?</div>
+      <input type="number" id="respuesta-input" placeholder="Tu respuesta">
+      <div id="feedback-message"></div>
+      <div class="btn-container">
+        <button id="comprobar-btn" class="btn">Comprobar</button>
+        <button id="siguiente-btn" class="btn">Siguiente</button>
+      </div>
+      <div class="stats">
+        Aciertos en esta sesión: <strong id="aciertos-contador">0</strong>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Referencias al DOM
+    const userNameDisplay = document.getElementById('user-name');
+    const logoutButton = document.getElementById('logout-button');
+    const problemaDisplay = document.getElementById('problema-display');
+    const respuestaInput = document.getElementById('respuesta-input');
+    const comprobarBtn = document.getElementById('comprobar-btn');
+    const siguienteBtn = document.getElementById('siguiente-btn');
+    const feedbackMessage = document.getElementById('feedback-message');
+    const aciertosContador = document.getElementById('aciertos-contador');
+
+    let solucionActual = 0;
+    let aciertosSesion = 0;
+    let userId = null;
+
+    // --- FUNCIONES DE LA LÓGICA DEL JUEGO ---
+
+    function generarProblema() {
+        feedbackMessage.textContent = '';
+        respuestaInput.value = '';
+        respuestaInput.disabled = false;
+        comprobarBtn.disabled = false;
+        respuestaInput.focus();
+
+        const operadores = ['+', '-', '*'];
+        const operador = operadores[Math.floor(Math.random() * operadores.length)];
+        let num1, num2;
+
+        switch(operador) {
+            case '+':
+                num1 = Math.floor(Math.random() * 50) + 1;
+                num2 = Math.floor(Math.random() * 50) + 1;
+                solucionActual = num1 + num2;
+                problemaDisplay.textContent = `${num1} + ${num2} = ?`;
+                break;
+            case '-':
+                num1 = Math.floor(Math.random() * 50) + 20;
+                num2 = Math.floor(Math.random() * (num1 - 1)) + 1; // Para evitar resultados negativos
+                solucionActual = num1 - num2;
+                problemaDisplay.textContent = `${num1} - ${num2} = ?`;
+                break;
+            case '*':
+                num1 = Math.floor(Math.random() * 10) + 2;
+                num2 = Math.floor(Math.random() * 10) + 2;
+                solucionActual = num1 * num2;
+                problemaDisplay.textContent = `${num1} × ${num2} = ?`;
+                break;
+        }
+    }
+
+    async function comprobarRespuesta() {
+        const respuestaUsuario = parseInt(respuestaInput.value, 10);
+
+        if (isNaN(respuestaUsuario)) {
+            feedbackMessage.textContent = 'Por favor, introduce un número.';
+            feedbackMessage.className = 'feedback-incorrecto';
+            return;
+        }
+
+        respuestaInput.disabled = true;
+        comprobarBtn.disabled = true;
+
+        if (respuestaUsuario === solucionActual) {
+            feedbackMessage.textContent = '¡Correcto!';
+            feedbackMessage.className = 'feedback-correcto';
+            aciertosSesion++;
+            aciertosContador.textContent = aciertosSesion;
+
+            // Registrar la actividad en Supabase
+            if (userId) {
+                const { error } = await supabaseClient
+                    .from('actividad')
+                    .insert({ id_alumno: userId, tipo_actividad: 'Gimnasia Mental' });
+                if (error) console.error("Error al registrar actividad:", error);
+            }
+        } else {
+            feedbackMessage.textContent = `Incorrecto. La solución era ${solucionActual}.`;
+            feedbackMessage.className = 'feedback-incorrecto';
+        }
+    }
+
+    // --- LÓGICA DE LA PÁGINA ---
+
+    async function loadPage() {
+        // Corregido: Uso de la sintaxis correcta para Supabase v2
+        const {  { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError || !session) {
+            window.location.href = 'login.html';
+            return;
+        }
+        const user = session.user;
+        userId = user.id;
+        // Mostrar el email del usuario o una parte del ID
+        userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
+
+        generarProblema();
+    }
+
+    // Listeners de los botones
+    comprobarBtn.addEventListener('click', comprobarRespuesta);
+    siguienteBtn.addEventListener('click', generarProblema);
+    // Permitir enviar con la tecla Enter
+    respuestaInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            comprobarRespuesta();
+        }
+    });
+
+    logoutButton.addEventListener('click', async () => {
+        try {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadPage);
+  </script>
+
+</body>
+</html>
