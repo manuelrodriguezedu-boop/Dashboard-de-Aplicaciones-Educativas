@@ -8,13 +8,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
-      --primary: #2c3e50;
-      --secondary: #3498db;
-      --light: #ecf0f1;
-      --dark: #1a252f;
-      --success: #2ecc71;
-      --warning: #f39c12;
-      --danger: #e74c3c;
+      /* Paleta de Colores Corporativos */
+      --primary: #007934; /* Verde corporativo */
+      --secondary: #36933F; /* Verde secundario */
+      --light: #C9C9C9; /* Gris frío 3 */
+      --dark: #2E2725; /* Negro corporativo */
+      --success: #36933F; /* Verde secundario para éxito */
+      --warning: #007078; /* Azul verdoso para advertencia */
+      --danger: #555559; /* Gris frío 11 para peligro */
+      --card-bg: #ffffff; /* Blanco para tarjetas */
+      --text-main: #2E2725; /* Texto principal */
+      --text-light: #555559; /* Texto secundario */
+      --shadow: rgba(0, 0, 0, 0.08); /* Sombra */
     }
 
     * {
@@ -26,16 +31,16 @@
 
     body {
       background-color: var(--light);
-      color: var(--primary);
+      color: var(--text-main);
       padding-top: 70px; /* Espacio para header fijo */
       padding-bottom: 60px; /* Espacio para nav inferior en móvil */
     }
 
     /* --- Header Mejorado --- */
     header {
-      background: linear-gradient(135deg, var(--primary), #1a252f); /* Gradiente */
+      background: linear-gradient(135deg, var(--primary), #1d5c2a); /* Gradiente más oscuro */
       color: white;
-      padding: 0.8rem 1.2rem; /* Menos padding en móvil */
+      padding: 0.8rem 1.2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -44,15 +49,15 @@
       left: 0;
       right: 0;
       z-index: 1001;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
     .logo {
-      font-size: 1.3rem; /* Ligeramente más pequeño en móvil */
+      font-size: 1.3rem;
       font-weight: bold;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: white; /* Asegurar color */
+      color: white;
       text-decoration: none;
     }
     .logo i {
@@ -61,43 +66,42 @@
 
     .user-info {
       display: flex;
-      flex-direction: column; /* Apilar elementos verticalmente en móvil */
-      align-items: flex-end; /* Alinear a la derecha */
-      gap: 0.2rem; /* Espacio pequeño entre nombre y botón */
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.2rem;
     }
     .user-name-display {
       font-weight: 500;
-      font-size: 0.9rem; /* Tamaño más pequeño */
-      color: #ecf0f1; /* Color más claro */
+      font-size: 0.9rem;
+      color: #ecf0f1; /* Color claro para el nombre */
       display: flex;
       align-items: center;
-      gap: 0.3rem; /* Espacio entre icono y texto */
+      gap: 0.3rem;
     }
     .user-name-display i {
         color: var(--secondary); /* Icono de usuario en color secundario */
     }
     .logout-btn {
-      background: rgba(255, 255, 255, 0.15); /* Fondo semi-transparente */
+      background: rgba(255, 255, 255, 0.15);
       color: white;
       text-decoration: none;
-      padding: 0.4rem 0.8rem; /* Padding más compacto */
-      border-radius: 20px; /* Bordes más redondeados */
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
       transition: background 0.3s, transform 0.2s;
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil */
-      font-size: 0.8rem; /* Tamaño de texto más pequeño */
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.8rem;
       display: flex;
       align-items: center;
-      gap: 0.3rem; /* Espacio entre icono y texto */
+      gap: 0.3rem;
     }
     .logout-btn:hover {
-      background: rgba(255, 255, 255, 0.25); /* Hover más oscuro */
-      transform: scale(1.05); /* Pequeño efecto de aumento */
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
     }
     .logout-btn:active {
-      transform: scale(0.98); /* Efecto de presión */
+      transform: scale(0.98);
     }
-
 
     /* --- Navegación Inferior (solo en móvil) --- */
     nav {
@@ -112,7 +116,7 @@
       padding: 0.6rem 0;
       z-index: 1000;
       box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-      display: none; /* Oculto por defecto */
+      display: none;
     }
 
     nav a {
@@ -149,9 +153,10 @@
     }
     .page-header h1 {
       font-size: 1.8rem;
+      color: var(--text-main); /* Color del título */
     }
     .page-header p {
-      color: #7f8c8d;
+      color: var(--text-light); /* Color del texto secundario */
       font-size: 1rem;
     }
 
@@ -164,16 +169,18 @@
       flex-wrap: wrap;
     }
     .filter-btn {
-      background: white;
-      border: 1px solid #bdc3c7;
+      background: var(--card-bg);
+      border: 1px solid var(--secondary);
       padding: 0.5rem 1rem;
       border-radius: 20px;
       cursor: pointer;
       transition: all 0.3s;
       font-size: 0.85rem;
+      color: var(--text-main);
     }
     .filter-btn:hover {
-      border-color: var(--secondary);
+      background: var(--secondary);
+      color: white;
     }
     .filter-btn.active {
       background: var(--primary);
@@ -189,9 +196,9 @@
     }
 
     .reto-card {
-      background: white;
+      background: var(--card-bg);
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px var(--shadow);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -199,7 +206,7 @@
     }
     .reto-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      box-shadow: 0 6px 16px var(--shadow);
     }
 
     .reto-card-header {
@@ -218,11 +225,12 @@
     .reto-card h3 {
       margin-bottom: 0.5rem;
       font-size: 1.2rem;
+      color: var(--text-main);
     }
 
     .reto-card p {
         flex-grow: 1;
-        color: #555;
+        color: var(--text-light);
         line-height: 1.6;
         margin-bottom: 1rem;
         font-size: 0.95rem;
@@ -242,7 +250,7 @@
 
     .status-completado { background-color: var(--success); }
     .status-progreso { background-color: var(--warning); }
-    .status-no-empezado { background-color: #95a5a6; }
+    .status-no-empezado { background-color: var(--danger); }
 
     .btn {
       display: block;
@@ -260,7 +268,7 @@
       border-radius: 0 0 12px 12px;
     }
     .btn:hover {
-      background: var(--dark);
+      background: #005a26; /* Un tono más oscuro del primary */
     }
 
     /* --- Media Queries --- */
@@ -274,7 +282,6 @@
       main {
         padding-bottom: 1rem;
       }
-      /* Ajustes específicos para header en móvil */
       header {
         padding: 0.7rem 1rem;
       }
@@ -297,20 +304,20 @@
       }
       header {
         padding: 1rem 2rem;
-        flex-direction: row; /* Mantener horizontal */
+        flex-direction: row;
       }
       .user-info {
-        flex-direction: row; /* Volver a horizontal */
-        align-items: center; /* Alinear verticalmente al centro */
-        gap: 1rem; /* Espacio entre nombre y botón */
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
       }
       .user-name-display {
-        font-size: 1rem; /* Tamaño normal en desktop */
+        font-size: 1rem;
         gap: 0.5rem;
       }
       .logout-btn {
-        padding: 0.5rem 1rem; /* Padding normal */
-        font-size: 0.85rem; /* Tamaño normal */
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
         gap: 0.4rem;
       }
       .logo {
@@ -378,7 +385,7 @@
     <a class="logo" href="dashboard.html"><i class="fas fa-brain"></i><span>RazonaApp</span></a>
     <div class="user-info">
       <div class="user-name-display">
-        <i class="fas fa-user-circle"></i> <!-- Icono de usuario -->
+        <i class="fas fa-user-circle"></i>
         <span id="user-name">Cargando...</span>
       </div>
       <button class="logout-btn" id="logout-button">
@@ -425,15 +432,13 @@
     const retosGrid = document.getElementById('retos-grid');
 
     async function loadRetosPage() {
-        // Obtener la sesión
-        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        const {  { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             console.error("Error de sesión o sesión no encontrada:", sessionError);
             window.location.href = 'login.html';
             return;
         }
 
-        // Obtener el usuario de la sesión
         const user = session.user;
         if (!user) {
              console.error("Usuario no encontrado en la sesión.");
@@ -441,14 +446,10 @@
              return;
         }
 
-        // Mostrar el email del usuario (o una parte del ID si no tiene email)
         userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
 
-        // 1. Obtener TODOS los retos disponibles
-        const { data: todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
-
-        // 2. Obtener las resoluciones del usuario actual (usando user.id)
-        const { data: misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
+        const {  todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
+        const {  misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
 
         if (retosError || resolucionesError) {
             console.error("Error al cargar datos:", retosError || resolucionesError);
@@ -456,8 +457,6 @@
             return;
         }
 
-        // 3. Combinar los datos para saber el estado de cada reto
-        // Creamos un Mapa para acceder rápidamente al estado de un reto específico
         const resolucionesMap = new Map();
         if (misResoluciones) {
             misResoluciones.forEach(res => {
@@ -465,13 +464,11 @@
             });
         }
 
-
         const retosConEstado = (todosLosRetos || []).map(reto => ({
             ...reto,
-            estado: resolucionesMap.get(reto.id) || 'no_empezado' // Si no hay resolución, es 'no_empezado'
+            estado: resolucionesMap.get(reto.id) || 'no_empezado'
         }));
 
-        // 4. Renderizar las tarjetas en el HTML
         renderRetos(retosConEstado);
     }
 
@@ -512,10 +509,8 @@
         });
     }
 
-    // Lógica para los botones de filtro
     document.querySelectorAll('.filter-btn').forEach(button => {
         button.addEventListener('click', function() {
-            // Manejar la clase 'active'
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
 
