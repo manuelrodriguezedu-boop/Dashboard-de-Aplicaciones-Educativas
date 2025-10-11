@@ -455,13 +455,8 @@
         const {  todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
 
         // 5. Obtener las resoluciones del usuario actual (usando user.id)
+        // Corregido: Se usa 'id_alumno' en lugar de 'id_usuario'
         const {  misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
-
-        // --- Depuración ---
-        console.log("Usuario ID:", user.id);
-        console.log("Todos los retos:", todosLosRetos);
-        console.log("Mis resoluciones:", misResoluciones);
-        // -------------------
 
         if (retosError || resolucionesError) {
             console.error("Error al cargar datos:", retosError || resolucionesError);
@@ -478,19 +473,11 @@
             });
         }
 
-        // --- Depuración ---
-        console.log("Mapa de resoluciones:", resolucionesMap);
-        // -------------------
-
         // 7. Mapear los retos con su estado correspondiente
         const retosConEstado = (todosLosRetos || []).map(reto => ({
             ...reto,
             estado: resolucionesMap.get(reto.id) || 'no_empezado' // Si no hay resolución, es 'no_empezado'
         }));
-
-        // --- Depuración ---
-        console.log("Retos con estado:", retosConEstado);
-        // -------------------
 
         // 8. Renderizar las tarjetas en el HTML
         renderRetos(retosConEstado);
