@@ -394,11 +394,11 @@
             return;
         }
         const user = session.user;
-        // Mostrar el email del usuario
+        // Mostrar el email del usuario o una parte del ID
         userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
 
         // 2. Obtener las resoluciones del usuario, uniendo con la tabla de retos
-        const { data: resoluciones, error } = await supabaseClient
+        const {  resoluciones, error } = await supabaseClient
             .from('resoluciones')
             .select(`
                 id_reto,
