@@ -388,6 +388,7 @@
 
     async function loadDiarioData() {
         // 1. Proteger la ruta y obtener el usuario
+        // CORREGIDO: Uso de la sintaxis correcta para Supabase v2
         const {  { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             console.error("Error de sesión o sesión no encontrada:", sessionError);
