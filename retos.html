@@ -432,7 +432,7 @@
     const retosGrid = document.getElementById('retos-grid');
 
     async function loadRetosPage() {
-        // 1. Obtener la sesión
+        // 1. Obtener la sesión (Sintaxis corregida)
         const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             console.error("Error de sesión o sesión no encontrada:", sessionError);
@@ -451,12 +451,11 @@
         // 3. Mostrar el email del usuario (o una parte del ID si no tiene email)
         userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
 
-        // 4. Obtener TODOS los retos disponibles
-        const {  todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
+        // 4. Obtener TODOS los retos disponibles (Sintaxis corregida)
+        const { data: todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
 
-        // 5. Obtener las resoluciones del usuario actual (usando user.id)
-        // Corregido: Se usa 'id_alumno' en lugar de 'id_usuario'
-        const {  misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
+        // 5. Obtener las resoluciones del usuario actual (usando user.id) (Sintaxis corregida)
+        const { data: misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
 
         if (retosError || resolucionesError) {
             console.error("Error al cargar datos:", retosError || resolucionesError);
