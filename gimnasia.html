@@ -513,6 +513,7 @@
     // --- LÓGICA DE LA PÁGINA ---
 
     async function loadPage() {
+        // Corregido: Uso de la sintaxis correcta para Supabase v2
         const {  { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             window.location.href = 'login.html';
@@ -520,6 +521,7 @@
         }
         const user = session.user;
         userId = user.id;
+        // Mostrar el email del usuario o una parte del ID
         userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
 
         generarProblema();
