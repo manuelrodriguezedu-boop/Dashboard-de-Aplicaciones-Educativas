@@ -425,20 +425,30 @@
     const retosGrid = document.getElementById('retos-grid');
 
     async function loadRetosPage() {
-        const {  { session } } = await supabaseClient.auth.getSession();
-        if (!session) {
+        // Obtener la sesión
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError || !session) {
+            console.error("Error de sesión o sesión no encontrada:", sessionError);
             window.location.href = 'login.html';
             return;
         }
+
+        // Obtener el usuario de la sesión
         const user = session.user;
-        // Mostrar un prefijo opcional o el email como nombre
-        userNameDisplay.textContent = user.email || 'Usuario';
+        if (!user) {
+             console.error("Usuario no encontrado en la sesión.");
+             window.location.href = 'login.html';
+             return;
+        }
+
+        // Mostrar el email del usuario (o una parte del ID si no tiene email)
+        userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
 
         // 1. Obtener TODOS los retos disponibles
-        const {  todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
+        const { data: todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
 
-        // 2. Obtener las resoluciones del usuario actual
-        const {  misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
+        // 2. Obtener las resoluciones del usuario actual (usando user.id)
+        const { data: misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
 
         if (retosError || resolucionesError) {
             console.error("Error al cargar datos:", retosError || resolucionesError);
@@ -447,11 +457,18 @@
         }
 
         // 3. Combinar los datos para saber el estado de cada reto
-        const resolucionesMap = new Map(misResoluciones.map(res => [res.id_reto, res.estado]));
+        // Creamos un Mapa para acceder rápidamente al estado de un reto específico
+        const resolucionesMap = new Map();
+        if (misResoluciones) {
+            misResoluciones.forEach(res => {
+                resolucionesMap.set(res.id_reto, res.estado);
+            });
+        }
 
-        const retosConEstado = todosLosRetos.map(reto => ({
+
+        const retosConEstado = (todosLosRetos || []).map(reto => ({
             ...reto,
-            estado: resolucionesMap.get(reto.id) || 'no_empezado'
+            estado: resolucionesMap.get(reto.id) || 'no_empezado' // Si no hay resolución, es 'no_empezado'
         }));
 
         // 4. Renderizar las tarjetas en el HTML
@@ -516,8 +533,12 @@
     });
 
     logoutButton.addEventListener('click', async () => {
-        await supabaseClient.auth.signOut();
-        window.location.href = 'login.html';
+        try {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
     });
 
     document.addEventListener('DOMContentLoaded', loadRetosPage);
