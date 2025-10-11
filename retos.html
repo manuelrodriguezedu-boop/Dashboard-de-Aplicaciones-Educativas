@@ -432,13 +432,15 @@
     const retosGrid = document.getElementById('retos-grid');
 
     async function loadRetosPage() {
-        const {  { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        // 1. Obtener la sesión
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             console.error("Error de sesión o sesión no encontrada:", sessionError);
             window.location.href = 'login.html';
             return;
         }
 
+        // 2. Obtener el usuario de la sesión
         const user = session.user;
         if (!user) {
              console.error("Usuario no encontrado en la sesión.");
@@ -446,9 +448,13 @@
              return;
         }
 
+        // 3. Mostrar el email del usuario (o una parte del ID si no tiene email)
         userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
 
+        // 4. Obtener TODOS los retos disponibles
         const {  todosLosRetos, error: retosError } = await supabaseClient.from('retos').select('*').order('id');
+
+        // 5. Obtener las resoluciones del usuario actual (usando user.id)
         const {  misResoluciones, error: resolucionesError } = await supabaseClient.from('resoluciones').select('id_reto, estado').eq('id_alumno', user.id);
 
         if (retosError || resolucionesError) {
@@ -457,6 +463,8 @@
             return;
         }
 
+        // 6. Combinar los datos para saber el estado de cada reto
+        // Creamos un Mapa para acceder rápidamente al estado de un reto específico
         const resolucionesMap = new Map();
         if (misResoluciones) {
             misResoluciones.forEach(res => {
@@ -464,11 +472,13 @@
             });
         }
 
+        // 7. Mapear los retos con su estado correspondiente
         const retosConEstado = (todosLosRetos || []).map(reto => ({
             ...reto,
-            estado: resolucionesMap.get(reto.id) || 'no_empezado'
+            estado: resolucionesMap.get(reto.id) || 'no_empezado' // Si no hay resolución, es 'no_empezado'
         }));
 
+        // 8. Renderizar las tarjetas en el HTML
         renderRetos(retosConEstado);
     }
 
@@ -509,8 +519,10 @@
         });
     }
 
+    // Lógica para los botones de filtro
     document.querySelectorAll('.filter-btn').forEach(button => {
         button.addEventListener('click', function() {
+            // Manejar la clase 'active'
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
 
