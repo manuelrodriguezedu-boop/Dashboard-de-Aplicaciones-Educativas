@@ -514,7 +514,7 @@
 
     async function loadPage() {
         // CORREGIDO: Uso de la sintaxis correcta para Supabase v2
-        const {  { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             console.error("Error de sesión o sesión no encontrada:", sessionError);
             window.location.href = 'login.html';
