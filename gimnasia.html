@@ -513,15 +513,31 @@
     // --- LÓGICA DE LA PÁGINA ---
 
     async function loadPage() {
+        console.log("Cargando página..."); // Depuración 1
         // CORREGIDO: Se usa la línea original del código funcional
         const {  { session } } = await supabaseClient.auth.getSession();
+        console.log("Respuesta de getSession:", {  { session } }); // Depuración 2
+
         if (!session) {
+            console.log("No hay sesión activa, redirigiendo a login..."); // Depuración 3
             window.location.href = 'login.html';
             return;
         }
+        console.log("Sesión encontrada:", session); // Depuración 4
+
         const user = session.user; // Obtener el usuario de la sesión
+        console.log("Usuario obtenido de la sesión:", user); // Depuración 5
+
+        if (!user) {
+             console.error("Usuario no encontrado en la sesión.");
+             window.location.href = 'login.html';
+             return;
+        }
+
         userId = user.id;
+        console.log("ID de usuario almacenado:", userId); // Depuración 6
         userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`; // Mostrar email o parte del ID
+        console.log("Nombre de usuario mostrado:", userNameDisplay.textContent); // Depuración 7
 
         generarProblema();
     }
