@@ -388,8 +388,8 @@
 
     async function loadDiarioData() {
         // 1. Proteger la ruta y obtener el usuario
-        // CORREGIDO: Uso de la sintaxis correcta para Supabase v2 (sin espacios extra)
-        const {  { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        // CORREGIDO: Sintaxis correcta para desestructurar el objeto 'data'
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (sessionError || !session) {
             console.error("Error de sesión o sesión no encontrada:", sessionError);
             window.location.href = 'login.html';
@@ -407,7 +407,8 @@
         userNameDisplay.textContent = user.email || `Usuario ${user.id.slice(0, 8)}`;
 
         // 2. Obtener las resoluciones del usuario, uniendo con la tabla de retos
-        const {  resoluciones, error } = await supabaseClient
+        // CORREGIDO: Sintaxis correcta para desestructurar el objeto 'data' a 'resoluciones'
+        const { data: resoluciones, error } = await supabaseClient
             .from('resoluciones')
             .select(`
                 id_reto,
