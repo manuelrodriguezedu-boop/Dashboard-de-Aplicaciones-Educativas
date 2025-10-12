@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guía: Registrar una Cuenta - RazonaApp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* --- Paleta de Colores y Estilos Corporativos --- */
+    :root {
+      --primary: #007934;
+      --secondary: #36933F;
+      --light: #C9C9C9;
+      --dark: #2E2725;
+      --card-bg: #ffffff;
+      --text-main: #2E2725;
+      --text-light: #555559;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --border-color: #e0e0e0;
+    }
 
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
+    header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: var(--primary); }
+    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .content-container {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    h1 {
+      font-size: 2rem; color: var(--primary); border-bottom: 2px solid var(--light);
+      padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;
+    }
+    
+    p, li { color: var(--text-light); margin-bottom: 1rem; }
+    
+    ol { padding-left: 20px; }
+    ol li::marker { font-weight: bold; color: var(--secondary); }
+    
+    .screenshot-placeholder {
+        background-color: #f0f0f0;
+        border: 2px dashed var(--light);
+        border-radius: 8px;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: #aaa;
+        font-weight: bold;
+        margin: 1.5rem 0;
+    }
+
+    .note {
+        background-color: rgba(54, 147, 63, 0.05); /* Verde con 5% de opacidad */
+        border-left: 4px solid var(--secondary);
+        padding: 1rem;
+        margin: 1.5rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    .note strong { color: var(--primary); }
+    
+    .btn-back {
+        display: inline-block;
+        margin-top: 2rem;
+        background-color: var(--dark);
+        color: white;
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .btn-back:hover {
+        background-color: var(--text-main);
+    }
+    
+    footer { text-align: center; padding: 2.5rem 1.5rem; background: var(--dark); color: rgba(255, 255, 255, 0.7); margin-top: 3rem; }
+    footer p { margin-bottom: 0.3rem; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info"><span id="user-name">Guía de Ayuda</span><a href="index.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver</a></div>
+  </header>
+
+   <main>
+    <div class="content-container">
+      <h1><i class="fas fa-user-plus"></i> Cómo Registrar una Nueva Cuenta</h1>
+      <p>Crear tu cuenta en RazonaApp es el primer paso para empezar a potenciar tu razonamiento matemático. Sigue esta guía para registrarte en menos de dos minutos.</p>
+
+      <ol>
+        <li>
+          <strong>Accede a la página de registro.</strong><br>
+          Desde la página de inicio de sesión, busca y haz clic en el enlace que dice "Regístrate aquí".
+          <div class="screenshot-placeholder">[ Captura de pantalla del enlace "Regístrate aquí" en la página de login ]</div>
+        </li>
+        
+        <li>
+          <strong>Rellena tus datos.</strong><br>
+          Aparecerá el formulario de registro. Asegúrate de rellenar todos los campos con tu información correcta: Nombre, Apellidos, Curso, Grupo, Correo Electrónico y una Contraseña segura.
+          <div class="screenshot-placeholder">[ Captura de pantalla del formulario de registro completo ]</div>
+          <div class="note">
+            <strong>Consejo:</strong> Utiliza una contraseña que recuerdes pero que sea segura. Debe tener al menos 6 caracteres.
+          </div>
+        </li>
+        
+        <li>
+          <strong>Confirma tu contraseña.</strong><br>
+          Vuelve a escribir tu contraseña en el campo "Confirmar Contraseña" para asegurarte de que no hay errores.
+        </li>
+        
+        <li>
+          <strong>Envía el formulario.</strong><br>
+          Una vez que todos los campos estén completos, haz clic en el botón azul "Registrar mi cuenta".
+        </li>
+        
+        <li>
+          <strong>¡Verifica tu correo electrónico!</strong><br>
+          Este es el paso más importante. El sistema te enviará un correo electrónico a la dirección que proporcionaste. Abre ese correo y haz clic en el botón o enlace de confirmación para activar tu cuenta.
+          <div class="screenshot-placeholder">[ Captura de pantalla del email de confirmación ]</div>
+          <div class="note">
+            <strong>¡Importante!</strong> Si no encuentras el correo, revisa tu carpeta de "Spam" o "Correo no deseado". No podrás iniciar sesión hasta que hayas verificado tu cuenta.
+          </div>
+        </li>
+        
+        <li>
+          <strong>¡Listo para empezar!</strong><br>
+          Una vez verificado tu correo, serás redirigido a la página de inicio de sesión, donde ya podrás entrar a RazonaApp con tu email y tu nueva contraseña.
+        </li>
+      </ol>
+
+      <a href="manual_usuario.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Índice del Manual</a>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Manuel Rodríguez Peñalver. Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
