@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Guía: Tu Panel Personal - RazonaApp</title>
+  <title>Guía: Resolver un Reto - RazonaApp</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     /* --- Paleta de Colores y Estilos Corporativos --- */
@@ -40,12 +40,11 @@
     }
 
     h1, h2, h3 {
-      border-bottom: 2px solid var(--light);
       padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;
     }
-    h1 { font-size: 2rem; color: var(--primary); }
-    h2 { font-size: 1.5rem; color: var(--secondary); margin-top: 2.5rem; }
-    h3 { font-size: 1.2rem; color: var(--primary); margin-top: 2rem; border-bottom-style: dashed; }
+    h1 { font-size: 2rem; color: var(--primary); border-bottom: 2px solid var(--light); }
+    h2 { font-size: 1.5rem; color: var(--secondary); margin-top: 2.5rem; border-bottom: 1px solid var(--border-color); }
+    h3 { font-size: 1.2rem; color: var(--primary); margin-top: 2rem; border-bottom: none; }
     
     p, li { color: var(--text-light); margin-bottom: 1rem; }
     
@@ -60,20 +59,19 @@
         margin: 1.5rem 0;
     }
     
+    .note {
+        background-color: rgba(0, 112, 120, 0.05);
+        border-left: 4px solid var(--warning);
+        padding: 1rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;
+    }
+    .note strong { color: var(--primary); }
+
     .btn-back {
-        display: inline-block;
-        margin-top: 2rem;
-        background-color: var(--dark);
-        color: white;
-        text-decoration: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 6px;
-        font-weight: bold;
+        display: inline-block; margin-top: 2rem; background-color: var(--dark); color: white;
+        text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 6px; font-weight: bold;
         transition: background-color 0.3s;
     }
-    .btn-back:hover {
-        background-color: var(--text-main);
-    }
+    .btn-back:hover { background-color: var(--text-main); }
     
     footer { text-align: center; padding: 2.5rem 1.5rem; background: var(--dark); color: rgba(255, 255, 255, 0.7); margin-top: 3rem; }
     footer p { margin-bottom: 0.3rem; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
@@ -89,31 +87,44 @@
  
   <main>
     <div class="content-container">
-      <h1><i class="fas fa-tachometer-alt"></i> Entendiendo tu Panel Personal</h1>
-      <p>El Panel Personal es tu centro de operaciones en RazonaApp. Al iniciar sesión, es la primera página que verás y te ofrece un resumen rápido de tu progreso y de las tareas más importantes.</p>
-      <div class="screenshot-placeholder">[ Captura de pantalla completa del Dashboard del alumno ]</div>
+      <h1><i class="fas fa-pencil-ruler"></i> Cómo Resolver un Reto (Método Pólya)</h1>
+      <p>La página de resolución es el corazón de RazonaApp. No se trata solo de encontrar la respuesta correcta, sino de aprender a pensar como un matemático. Para ello, utilizamos un espacio de trabajo guiado basado en las 4 fases del famoso método de George Pólya.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla de la página reto.html completa ]</div>
 
-      <h2><i class="fas fa-bars"></i> Cabecera y Navegación</h2>
-      <p>En la parte superior de la página, siempre encontrarás la barra de navegación. Te permite moverte fácilmente entre las distintas secciones de la aplicación. La cabecera muestra tu nombre y el botón "Salir" para cerrar tu sesión de forma segura.</p>
-
-      <h2><i class="fas fa-th-large"></i> Los Widgets del Panel</h2>
-      <p>El panel está organizado en tres "widgets" o tarjetas principales:</p>
-
-      <h3><i class="fas fa-star"></i> 1. Reto de la Semana</h3>
-      <p>Esta tarjeta te muestra el desafío principal que se ha propuesto para la semana actual. Contiene una breve descripción del problema para que sepas de qué trata. Haz clic en el botón <strong>"Empezar Reto"</strong> para ir directamente a la página de resolución y ponerte manos a la obra.</p>
-      <div class="screenshot-placeholder">[ Captura de pantalla del widget "Reto de la Semana" ]</div>
-
-      <h3><i class="fas fa-feather-alt"></i> 2. Mi Diario de Problemas</h3>
-      <p>Aquí verás un extracto de la última reflexión que escribiste en tu diario después de resolver un problema. También te muestra algunas de tus insignias y estadísticas, como el total de retos que has resuelto. Es un recordatorio de tu progreso y de lo que has aprendido.</p>
-      <div class="screenshot-placeholder">[ Captura de pantalla del widget "Mi Diario" ]</div>
-
-      <h3><i class="fas fa-chart-line"></i> 3. Mi Progreso Semanal</h3>
-      <p>Este widget te ayuda a seguir tus hábitos de práctica. Muestra:</p>
+      <h2><i class="fas fa-search"></i> Fase 1: Comprender el Problema</h2>
+      <p>El primer paso, y el más importante. Si no entiendes bien el problema, es imposible resolverlo. Tómate tu tiempo en esta fase.</p>
       <ul>
-          <li><strong>Barra de Progreso:</strong> Compara cuántos ejercicios de "Gimnasia Mental" has completado durante la semana con el objetivo propuesto.</li>
-          <li><strong>Racha Actual:</strong> Te indica cuántos días seguidos llevas practicando. ¡Intenta que no se rompa!</li>
+        <li><strong>¿Cuáles son los datos clave?</strong>: Anota aquí toda la información relevante que te da el enunciado. Números, condiciones, etc.</li>
+        <li><strong>¿Cuál es la incógnita o el objetivo final?</strong>: Escribe con tus propias palabras qué es lo que tienes que averiguar.</li>
       </ul>
-      <div class="screenshot-placeholder">[ Captura de pantalla del widget "Mi Progreso Semanal" ]</div>
+
+      <h2><i class="fas fa-lightbulb"></i> Fase 2: Diseñar un Plan</h2>
+      <p>Antes de empezar a hacer cálculos, piensa en una estrategia. ¿Cómo vas a abordar el problema?</p>
+      <ul>
+        <li><strong>¿Qué estrategia/heurística usarás?</strong>: Selecciona del menú desplegable la estrategia principal que crees que te ayudará (buscar un problema similar, simplificarlo, dividirlo en partes...).</li>
+        <li><strong>Describe tu plan paso a paso</strong>: Escribe una secuencia de pasos que vas a seguir. Por ejemplo: "1. Calcular el área del rectángulo. 2. Calcular el área del semicírculo. 3. Sumar ambas áreas".</li>
+      </ul>
+
+      <h2><i class="fas fa-calculator"></i> Fase 3: Ejecutar el Plan</h2>
+      <p>¡Manos a la obra! Aquí es donde llevas a cabo los pasos que definiste en la fase anterior. Sé ordenado y claro en tus cálculos.</p>
+      <ul>
+        <li>Puedes escribir tus operaciones, dibujar esquemas o incluso explicar tu razonamiento. Si prefieres hacerlo en tu cuaderno, puedes tomar una foto y subirla (funcionalidad futura).</li>
+      </ul>
+      <div class="screenshot-placeholder">[ Captura de pantalla de la Fase 3 desplegada ]</div>
+
+      <h2><i class="fas fa-check-double"></i> Fase 4: Revisar y Reflexionar</h2>
+      <p>Has encontrado una solución, pero el trabajo no ha terminado. Ahora toca mirar atrás y consolidar el aprendizaje.</p>
+      <ul>
+        <li>Responde a las preguntas: ¿La solución tiene sentido en el contexto del problema? ¿Un resultado de 500 metros es lógico para una piscina? ¿Qué has aprendido con este problema? ¿Se te ocurre otra forma de haberlo resuelto?</li>
+      </ul>
+      
+      <div class="note">
+        <strong>Guardar vs. Completar</strong><br>
+        <ul>
+            <li><strong>Guardar Progreso:</strong> Usa este botón si quieres guardar tu trabajo para continuar más tarde. El reto aparecerá como "En Progreso" en tu diario.</li>
+            <li><strong>Marcar como Completado:</strong> Úsalo solo cuando hayas terminado las 4 fases y estés satisfecho con tu trabajo. Esto enviará tu resolución para que el profesor pueda verla.</li>
+        </ul>
+      </div>
       
       <a href="manual_usuario.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Índice del Manual</a>
     </div>
