@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guía: Cómo Evaluar un Reto - RazonaApp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* --- Paleta de Colores y Estilos Corporativos --- */
+    :root {
+      --primary: #007934;
+      --secondary: #36933F;
+      --light: #C9C9C9;
+      --dark: #2E2725;
+      --card-bg: #ffffff;
+      --text-main: #2E2725;
+      --text-light: #555559;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --border-color: #e0e0e0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
+    header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: var(--primary); }
+    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .content-container {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    h1, h2 {
+      border-bottom: 2px solid var(--light);
+      padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;
+    }
+    h1 { font-size: 2rem; color: var(--primary); }
+    h2 { font-size: 1.5rem; color: var(--secondary); margin-top: 2.5rem; }
+    
+    p, li { color: var(--text-light); margin-bottom: 1rem; }
+    
+    .screenshot-placeholder {
+        background-color: #f0f0f0;
+        border: 2px dashed var(--light);
+        border-radius: 8px;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: #aaa;
+        font-weight: bold;
+        margin: 1.5rem 0;
+    }
+    
+    .note {
+        background-color: rgba(0, 112, 120, 0.05);
+        border-left: 4px solid var(--warning);
+        padding: 1rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;
+    }
+    .note strong { color: var(--primary); }
+
+    .btn-back {
+        display: inline-block; margin-top: 2rem; background-color: var(--dark); color: white;
+        text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 6px; font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .btn-back:hover { background-color: var(--text-main); }
+    
+    footer { text-align: center; padding: 2.5rem 1.5rem; background: var(--dark); color: rgba(255, 255, 255, 0.7); margin-top: 3rem; }
+    footer p { margin-bottom: 0.3rem; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info"><span id="user-name">Guía de Ayuda</span><a href="index.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver</a></div>
+  </header>
+
+  <main>
+    <div class="content-container">
+      <h1><i class="fas fa-edit"></i> Cómo Evaluar la Resolución de un Alumno</h1>
+      <p>La página de evaluación es donde proporcionas feedback cualitativo y cuantitativo al alumno. Está diseñada para que puedas ver su proceso de pensamiento y puntuarlo de forma objetiva usando la rúbrica del plan.</p>
+
+      <h2><i class="fas fa-user-edit"></i> 1. Revisar el Trabajo del Alumno</h2>
+      <p>Al acceder a la página, la primera parte muestra la información básica (nombre del alumno y título del reto) y, a continuación, el trabajo completo que el alumno ha enviado, separado por las 4 fases de Pólya que ha rellenado.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla de la sección superior de evaluar_reto.html, mostrando los datos del alumno y su trabajo ]</div>
+      <p>Tómate tu tiempo para leer y comprender su razonamiento, identificando tanto sus aciertos como las áreas de mejora en cada una de las fases.</p>
+
+      <h2><i class="fas fa-clipboard-check"></i> 2. Rellenar la Rúbrica Digital</h2>
+      <p>Debajo del trabajo del alumno, encontrarás la rúbrica de evaluación. Debes asignar una puntuación del 1 al 4 para cada uno de los cuatro criterios, basándote en la rúbrica detallada en el plan de impulso al razonamiento matemático.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla del formulario de la rúbrica ]</div>
+      <ul>
+        <li><strong>Comprensión:</strong> Evalúa si el alumno identificó correctamente los datos, la incógnita y entendió el problema en su totalidad.</li>
+        <li><strong>Planificación:</strong> Valora si el plan era lógico, coherente y adecuado para resolver el problema.</li>
+        <li><strong>Ejecución:</strong> Puntúa la corrección de los cálculos, la claridad del proceso y si se siguió el plan trazado.</li>
+        <li><strong>Revisión:</strong> Evalúa si el alumno reflexionó sobre su solución, comprobó su validez y consideró alternativas.</li>
+      </ul>
+      
+      <h3>Comentarios</h3>
+      <p>El campo de texto "Comentarios" es fundamental. Úsalo para proporcionar feedback constructivo y personalizado. Destaca sus puntos fuertes y dale pistas o sugerencias claras sobre cómo podría mejorar en futuras ocasiones.</p>
+
+      <h3>Enviar la Evaluación</h3>
+      <p>Una vez que hayas completado toda la rúbrica y los comentarios, haz clic en el botón <strong>"Enviar Evaluación"</strong>. En ese momento:</p>
+      <ul>
+        <li>Se guardará la evaluación en la base de datos.</li>
+        <li>La resolución del alumno se marcará como "Evaluado".</li>
+        <li>El reto desaparecerá de tu lista de "Entregas Pendientes".</li>
+      </ul>
+      
+      <a href="manual_usuario.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Índice del Manual</a>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Manuel Rodríguez Peñalver. Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
