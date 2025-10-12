@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guía: Biblioteca de Retos - RazonaApp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* --- Paleta de Colores y Estilos Corporativos --- */
+    :root {
+      --primary: #007934;
+      --secondary: #36933F;
+      --light: #C9C9C9;
+      --dark: #2E2725;
+      --warning: #007078;
+      --success: #36933F;
+      --card-bg: #ffffff;
+      --text-main: #2E2725;
+      --text-light: #555559;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --border-color: #e0e0e0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
+    header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: var(--primary); }
+    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .content-container {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    h1, h2, h3 {
+      padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;
+    }
+    h1 { font-size: 2rem; color: var(--primary); border-bottom: 2px solid var(--light); }
+    h2 { font-size: 1.5rem; color: var(--secondary); margin-top: 2.5rem; border-bottom: 1px solid var(--border-color); }
+    h3 { font-size: 1.2rem; color: var(--primary); margin-top: 2rem; border-bottom: none; }
+    
+    p, li { color: var(--text-light); margin-bottom: 1rem; }
+    
+    .screenshot-placeholder {
+        background-color: #f0f0f0;
+        border: 2px dashed var(--light);
+        border-radius: 8px;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: #aaa;
+        font-weight: bold;
+        margin: 1.5rem 0;
+    }
+    
+    .status-badge {
+        padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white;
+    }
+    .status-completado { background-color: var(--success); }
+    .status-progreso { background-color: var(--warning); }
+    .status-no-empezado { background-color: var(--danger); }
+    
+    .btn-back {
+        display: inline-block; margin-top: 2rem; background-color: var(--dark); color: white;
+        text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 6px; font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .btn-back:hover { background-color: var(--text-main); }
+    
+    footer { text-align: center; padding: 2.5rem 1.5rem; background: var(--dark); color: rgba(255, 255, 255, 0.7); margin-top: 3rem; }
+    footer p { margin-bottom: 0.3rem; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info"><span id="user-name">Guía de Ayuda</span><a href="index.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver</a></div>
+  </header>
+
+  
+
+  <main>
+    <div class="content-container">
+      <h1><i class="fas fa-th-list"></i> Explorando la Biblioteca de Retos</h1>
+      <p>La Biblioteca de Retos es tu centro de exploración. Aquí puedes ver todos los desafíos disponibles en RazonaApp, no solo el de la semana. Es el lugar perfecto para repasar, ponerte al día o simplemente buscar un nuevo problema que te interese.</p>
+
+      <h2><i class="fas fa-filter"></i> Cómo usar los Filtros</h2>
+      <p>En la parte superior de la página encontrarás varios botones de filtro. Te permiten organizar la vista para encontrar rápidamente lo que buscas.</p>
+      <ul>
+        <li><strong>Todos:</strong> Muestra todos los retos disponibles, sin importar su estado.</li>
+        <li><strong>No Empezados:</strong> Filtra la vista para mostrar únicamente los retos que aún no has comenzado.</li>
+        <li><strong>En Progreso:</strong> Muestra solo los retos que has empezado y guardado, pero que todavía no has completado.</li>
+        <li><strong>Completados:</strong> Te permite ver todos los retos que ya has finalizado y enviado.</li>
+      </ul>
+      <div class="screenshot-placeholder">[ Captura de pantalla de la barra de filtros, con uno de ellos activo ]</div>
+
+      <h2><i class="fas fa-tasks"></i> Entendiendo las Tarjetas de Reto</h2>
+      <p>Cada problema se presenta en una "tarjeta" que te da información clave de un vistazo.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla de una o dos tarjetas de reto ]</div>
+
+      <h3>1. La Insignia de Estado</h3>
+      <p>En la esquina superior derecha de cada tarjeta, verás una insignia de color que te indica tu progreso en ese reto:</p>
+      <ul>
+        <li><span class="status-badge status-no-empezado">No Empezado</span>: Aún no has interactuado con este reto.</li>
+        <li><span class="status-badge status-progreso">En Progreso</span>: Has empezado a trabajar en él y has guardado tu avance.</li>
+        <li><span class="status-badge status-completado">Completado</span>: Has finalizado las 4 fases y lo has marcado como completado.</li>
+      </ul>
+      
+      <h3>2. El Botón de Acción</h3>
+      <p>El botón azul en la parte inferior de la tarjeta es dinámico y cambia según el estado del reto:</p>
+      <ul>
+        <li><strong>Resolver:</strong> Si el reto está "No Empezado", este botón te llevará a la página de resolución para que empieces desde cero.</li>
+        <li><strong>Continuar:</strong> Si el reto está "En Progreso", te llevará a la página de resolución cargando todo el trabajo que habías guardado.</li>
+        <li><strong>Revisar:</strong> Si el reto está "Completado", te permitirá ver la resolución que enviaste, ideal para repasar antes de un examen.</li>
+      </ul>
+      
+      <a href="manual_usuario.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Índice del Manual</a>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Manuel Rodríguez Peñalver. Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
