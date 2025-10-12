@@ -1,1 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guía: Tu Panel Personal - RazonaApp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* --- Paleta de Colores y Estilos Corporativos --- */
+    :root {
+      --primary: #007934;
+      --secondary: #36933F;
+      --light: #C9C9C9;
+      --dark: #2E2725;
+      --card-bg: #ffffff;
+      --text-main: #2E2725;
+      --text-light: #555559;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --border-color: #e0e0e0;
+    }
 
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
+    header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: var(--primary); }
+    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .content-container {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    h1, h2, h3 {
+      border-bottom: 2px solid var(--light);
+      padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;
+    }
+    h1 { font-size: 2rem; color: var(--primary); }
+    h2 { font-size: 1.5rem; color: var(--secondary); margin-top: 2.5rem; }
+    h3 { font-size: 1.2rem; color: var(--primary); margin-top: 2rem; border-bottom-style: dashed; }
+    
+    p, li { color: var(--text-light); margin-bottom: 1rem; }
+    
+    .screenshot-placeholder {
+        background-color: #f0f0f0;
+        border: 2px dashed var(--light);
+        border-radius: 8px;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: #aaa;
+        font-weight: bold;
+        margin: 1.5rem 0;
+    }
+    
+    .btn-back {
+        display: inline-block;
+        margin-top: 2rem;
+        background-color: var(--dark);
+        color: white;
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .btn-back:hover {
+        background-color: var(--text-main);
+    }
+    
+    footer { text-align: center; padding: 2.5rem 1.5rem; background: var(--dark); color: rgba(255, 255, 255, 0.7); margin-top: 3rem; }
+    footer p { margin-bottom: 0.3rem; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info"><span id="user-name">Guía de Ayuda</span><a href="index.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver</a></div>
+  </header>
+
+ 
+  <main>
+    <div class="content-container">
+      <h1><i class="fas fa-tachometer-alt"></i> Entendiendo tu Panel Personal</h1>
+      <p>El Panel Personal es tu centro de operaciones en RazonaApp. Al iniciar sesión, es la primera página que verás y te ofrece un resumen rápido de tu progreso y de las tareas más importantes.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla completa del Dashboard del alumno ]</div>
+
+      <h2><i class="fas fa-bars"></i> Cabecera y Navegación</h2>
+      <p>En la parte superior de la página, siempre encontrarás la barra de navegación. Te permite moverte fácilmente entre las distintas secciones de la aplicación. La cabecera muestra tu nombre y el botón "Salir" para cerrar tu sesión de forma segura.</p>
+
+      <h2><i class="fas fa-th-large"></i> Los Widgets del Panel</h2>
+      <p>El panel está organizado en tres "widgets" o tarjetas principales:</p>
+
+      <h3><i class="fas fa-star"></i> 1. Reto de la Semana</h3>
+      <p>Esta tarjeta te muestra el desafío principal que se ha propuesto para la semana actual. Contiene una breve descripción del problema para que sepas de qué trata. Haz clic en el botón <strong>"Empezar Reto"</strong> para ir directamente a la página de resolución y ponerte manos a la obra.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla del widget "Reto de la Semana" ]</div>
+
+      <h3><i class="fas fa-feather-alt"></i> 2. Mi Diario de Problemas</h3>
+      <p>Aquí verás un extracto de la última reflexión que escribiste en tu diario después de resolver un problema. También te muestra algunas de tus insignias y estadísticas, como el total de retos que has resuelto. Es un recordatorio de tu progreso y de lo que has aprendido.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla del widget "Mi Diario" ]</div>
+
+      <h3><i class="fas fa-chart-line"></i> 3. Mi Progreso Semanal</h3>
+      <p>Este widget te ayuda a seguir tus hábitos de práctica. Muestra:</p>
+      <ul>
+          <li><strong>Barra de Progreso:</strong> Compara cuántos ejercicios de "Gimnasia Mental" has completado durante la semana con el objetivo propuesto.</li>
+          <li><strong>Racha Actual:</strong> Te indica cuántos días seguidos llevas practicando. ¡Intenta que no se rompa!</li>
+      </ul>
+      <div class="screenshot-placeholder">[ Captura de pantalla del widget "Mi Progreso Semanal" ]</div>
+      
+      <a href="manual_usuario.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Índice del Manual</a>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Manuel Rodríguez Peñalver. Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
