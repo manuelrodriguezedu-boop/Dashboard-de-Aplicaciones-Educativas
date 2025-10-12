@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manual de Usuario - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* --- Paleta de Colores Corporativos --- */
+    :root {
+      --primary: #007934; /* Verde corporativo */
+      --secondary: #36933F; /* Verde secundario */
+      --light: #C9C9C9; /* Gris frío 3 */
+      --dark: #2E2725; /* Negro corporativo */
+      --success: #36933F; /* Verde secundario para éxito */
+      --error: #e74c3c; /* Rojo para error */
+      --warning: #007078; /* Azul verdoso */
+      --danger: #555559; /* Gris frío 11 */
+      --card-bg: #ffffff; /* Blanco para tarjetas */
+      --text-main: #2E2725; /* Texto principal */
+      --text-light: #555559; /* Texto secundario */
+      --shadow: rgba(0, 0, 0, 0.08); /* Sombra */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* --- Cabecera y Navegación (Estilo Corporativo) --- */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: var(--primary); }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: var(--dark);
+      padding: 0.8rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    
+    /* --- Contenido Principal del Manual --- */
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .content-container {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: var(--primary);
+      border-bottom: 2px solid var(--light);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: var(--secondary);
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.5rem;
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    p {
+        margin-bottom: 1rem;
+        color: var(--text-light);
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    li a {
+      display: block;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 500;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      transition: background-color 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    li a:hover {
+        background-color: rgba(54, 147, 63, 0.1); /* Verde secundario con 10% de opacidad */
+        color: var(--secondary);
+    }
+
+    li a i {
+        color: var(--secondary);
+        width: 20px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: var(--dark);
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 3rem;
+    }
+    footer p {
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <i class="fas fa-brain"></i>
+      <span>RazonaApp</span>
+    </div>
+    <div class="user-info">
+      <span id="user-name">Guía de Ayuda</span>
+      <a href="index.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver</a>
+    </div>
+  </header>
+
+   <main>
+    <div class="content-container">
+      <h1><i class="fas fa-book"></i> Manual de Usuario</h1>
+      <p>Esta guía está diseñada para ayudarte a sacar el máximo provecho de todas las herramientas y funcionalidades que ofrece RazonaApp. Selecciona una sección para empezar.</p>
+
+      <h2><i class="fas fa-rocket"></i> Primeros Pasos</h2>
+      <ul>
+        <li><a href="manual_registro.html"><i class="fas fa-user-plus"></i> Cómo registrar una nueva cuenta</a></li>
+        <li><a href="manual_login.html"><i class="fas fa-sign-in-alt"></i> Cómo iniciar sesión</a></li>
+        <li><a href="manual_reset_password.html"><i class="fas fa-key"></i> Cómo restablecer tu contraseña</a></li>
+      </ul>
+
+      <h2><i class="fas fa-user-graduate"></i> Guía para el Alumno</h2>
+      <ul>
+        <li><a href="manual_dashboard.html"><i class="fas fa-tachometer-alt"></i> Entendiendo tu Panel Personal</a></li>
+        <li><a href="manual_resolver_reto.html"><i class="fas fa-pencil-ruler"></i> Cómo resolver un reto (Método Pólya)</a></li>
+        <li><a href="manual_biblioteca_retos.html"><i class="fas fa-th-list"></i> Explorando la Biblioteca de Retos</a></li>
+        <li><a href="manual_diario.html"><i class="fas fa-history"></i> Usando tu Diario de Problemas</a></li>
+        <li><a href="manual_gimnasia.html"><i class="fas fa-brain"></i> Practicando con la Gimnasia Mental</a></li>
+        <li><a href="manual_recursos.html"><i class="fas fa-tools"></i> Accediendo a la Caja de Herramientas</a></li>
+      </ul>
+
+      <h2><i class="fas fa-chalkboard-teacher"></i> Guía para el Profesorado</h2>
+      <ul>
+        <li><a href="manual_profesor_dashboard.html"><i class="fas fa-tasks"></i> El Panel del Profesor: Ver entregas</a></li>
+        <li><a href="manual_evaluar.html"><i class="fas fa-edit"></i> Cómo evaluar la resolución de un alumno</a></li>
+        <li><a href="manual_gestion_contenido.html"><i class="fas fa-cogs"></i> (Próximamente) Gestión de retos y alumnos</a></li>
+      </ul>
+      
+      <h2><i class="fas fa-question-circle"></i> Preguntas Frecuentes (FAQ)</h2>
+      <ul>
+        <li><a href="manual_faq.html"><i class="fas fa-exclamation-triangle"></i> Solución a problemas comunes</a></li>
+      </ul>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Manuel Rodríguez Peñalver. Todos los derechos reservados.</p>
+  </footer>
+  
+  <script>
+    // Script mínimo, no necesita conexión a Supabase.
+  </script>
+
+</body>
+</html>
