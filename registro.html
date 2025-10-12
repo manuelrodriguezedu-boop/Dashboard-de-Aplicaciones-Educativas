@@ -32,24 +32,23 @@
     body {
       background-color: var(--light);
       color: var(--text-main);
-      /* Eliminado padding-top/bottom aquí si el header/footer no son fijos y main es el centro */
       display: flex;
       flex-direction: column;
-      justify-content: center; /* Centra el contenido verticalmente */
-      align-items: center; /* Centra el contenido horizontalmente */
-      min-height: 100vh; /* Ocupa al menos el 100% del viewport */
-      padding: 20px 0; /* Un poco de padding para que no se pegue en pantallas pequeñas */
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 0;
     }
 
     /* --- Header Mejorado --- */
     header {
-      background: linear-gradient(135deg, var(--primary), #1d5c2a); /* Gradiente más oscuro */
+      background: linear-gradient(135deg, var(--primary), #1d5c2a);
       color: white;
       padding: 0.8rem 1.2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: fixed; /* Header fijo */
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
@@ -66,25 +65,25 @@
       text-decoration: none;
     }
     .logo i {
-        color: var(--secondary); /* Icono del logo en color secundario */
+        color: var(--secondary);
     }
 
     .user-info {
       display: flex;
-      flex-direction: column; /* Apilar elementos verticalmente en móvil */
-      align-items: flex-end; /* Alinear a la derecha */
+      flex-direction: column;
+      align-items: flex-end;
       gap: 0.2rem;
     }
     .user-name-display {
       font-weight: 500;
       font-size: 0.9rem;
-      color: #ecf0f1; /* Color claro para el nombre */
+      color: #ecf0f1;
       display: flex;
       align-items: center;
       gap: 0.3rem;
     }
     .user-name-display i {
-        color: var(--secondary); /* Icono de usuario en color secundario */
+        color: var(--secondary);
     }
     .logout-btn {
       background: rgba(255, 255, 255, 0.15);
@@ -147,12 +146,12 @@
 
     /* --- Main Content (Formulario de Registro) --- */
     main {
-      max-width: 500px; /* Ancho máximo para el formulario */
+      max-width: 500px;
       width: 100%;
       padding: 0 1rem;
-      margin-top: 80px; /* Espacio para el header fijo */
-      margin-bottom: 20px; /* Espacio para el footer */
-      flex-grow: 1; /* Permite que main ocupe el espacio disponible */
+      margin-top: 80px;
+      margin-bottom: 20px;
+      flex-grow: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -166,10 +165,10 @@
       text-align: center;
     }
 
-    .auth-container .logo { /* Estilo específico para el logo dentro del auth-container */
-        color: var(--primary); /* Cambiado a primary para este logo */
+    .auth-container .logo {
+        color: var(--primary);
         margin-bottom: 1rem;
-        font-size: 2rem; /* Más grande que el header */
+        font-size: 2rem;
         justify-content: center;
     }
     .auth-container .logo i {
@@ -227,8 +226,8 @@
     .password-toggle {
       position: absolute;
       right: 10px;
-      top: 50%; /* Centra verticalmente */
-      transform: translateY(-50%); /* Ajusta la posición para centrar */
+      top: 65%; /* Ajusta si el padding del input cambia */
+      transform: translateY(-50%);
       cursor: pointer;
       color: var(--text-light);
       font-size: 0.9rem;
@@ -239,7 +238,7 @@
 
     /* Ajuste para el input cuando tiene el icono */
     .form-group.has-toggle input {
-      padding-right: 35px; /* Espacio para el icono */
+      padding-right: 35px;
     }
 
     .submit-btn {
@@ -257,7 +256,7 @@
     }
 
     .submit-btn:hover {
-      background: #005a26; /* Un tono más oscuro del primary */
+      background: #005a26;
     }
 
     .submit-btn:disabled {
@@ -282,7 +281,7 @@
       text-decoration: underline;
     }
 
-    #error-message, #success-message { /* Añadido #success-message */
+    #error-message, #success-message {
       color: var(--danger);
       margin-top: 1rem;
       font-weight: bold;
@@ -290,20 +289,19 @@
       font-size: 0.9rem;
     }
     #success-message {
-      color: var(--success); /* Éxito en verde */
+      color: var(--success);
     }
 
 
     footer {
       text-align: center;
-      padding: 1.2rem 1rem; /* Ajustado padding */
+      padding: 1.2rem 1rem;
       background: var(--dark);
       color: rgba(255, 255, 255, 0.7);
-      margin-top: auto; /* Empuja el footer hacia abajo */
+      margin-top: auto;
       font-size: 0.85rem;
       width: 100%;
-      position: relative; /* Relativo si el body es flex y min-height 100vh */
-      /* bottom: 0; */ /* No necesario con flex-grow en main y auto margin en footer */
+      position: relative;
     }
     footer p {
       margin: 0.2rem 0;
@@ -312,16 +310,16 @@
     /* Media Queries para Responsive */
     @media (max-width: 767px) {
       body {
-        padding-top: 70px; /* Header fijo */
-        padding-bottom: 60px; /* Navegación móvil fija */
-        justify-content: flex-start; /* Alinea al inicio para que el main no quede muy pegado */
+        padding-top: 70px;
+        padding-bottom: 60px;
+        justify-content: flex-start;
       }
       nav {
-        display: flex; /* Mostrar navegación en móvil */
+        display: flex;
       }
       main {
-        margin-top: 1rem; /* Menos margen arriba para móviles */
-        margin-bottom: 1rem; /* Menos margen abajo para móviles */
+        margin-top: 1rem;
+        margin-bottom: 1rem;
       }
       .logo {
         font-size: 1.2rem;
@@ -337,8 +335,8 @@
         font-size: 1.3rem;
       }
       .form-row {
-        flex-direction: column; /* Cambia a columna en móviles pequeños */
-        gap: 0; /* No hay gap entre campos apilados */
+        flex-direction: column;
+        gap: 0;
       }
       .submit-btn {
         font-size: 0.95rem;
@@ -350,11 +348,11 @@
 
     @media (min-width: 768px) {
       body {
-        padding-top: 0; /* No necesita padding superior si el header no es fijo O si main maneja el margen */
-        padding-bottom: 0; /* No necesita padding inferior si el footer no es fijo */
+        padding-top: 0;
+        padding-bottom: 0;
       }
       header {
-        position: fixed; /* Asegurarse de que el header sea fijo en desktop también */
+        position: fixed;
         padding: 1rem 2rem;
         flex-direction: row;
       }
@@ -376,14 +374,11 @@
         font-size: 1.6rem;
       }
       nav {
-        /* En desktop, la navegación que defines en el HTML no es esta (sería la de la cabecera) */
-        /* Si quieres una nav debajo del header en desktop, tendrías que moverla */
-        /* Para esta página de registro, la nav global no debería mostrarse */
-        display: none; /* Asegura que la nav inferior esté oculta en desktop en esta página */
+        display: none;
       }
       main {
-        margin-top: 80px; /* Compensar el header fijo */
-        margin-bottom: 0; /* Footer ya no es fixed */
+        margin-top: 80px;
+        margin-bottom: 0;
       }
       .auth-container {
         padding: 2.5rem;
@@ -405,7 +400,7 @@
         font-size: 0.9rem;
       }
       footer {
-        position: relative; /* Asegura que el footer se mantenga al final del contenido */
+        position: relative;
       }
     }
 
@@ -421,16 +416,14 @@
     <div class="user-info">
       <div class="user-name-display">
         <i class="fas fa-user-circle"></i>
-        <span id="user-name">Invitado</span> <!-- En página de login/registro, es "Invitado" -->
+        <span id="user-name">Invitado</span>
       </div>
-      <!-- Botón de logout no es relevante aquí, pero se mantiene por consistencia -->
       <button class="logout-btn" id="logout-button" style="display: none;">
         <i class="fas fa-sign-out-alt"></i> Salir
       </button>
     </div>
   </header>
 
-  <!-- Navegación principal (oculta en esta página) -->
   <nav id="main-nav" style="display: none;">
     <a href="dashboard.html"><i class="fas fa-home"></i> <span>Inicio</span></a>
     <a href="retos.html"><i class="fas fa-bullseye"></i> <span>Retos</span></a>
@@ -447,20 +440,17 @@
       <h2>Crear Nueva Cuenta</h2>
 
       <form id="register-form">
-        <!-- Campo para la columna "nombre" -->
         <div class="form-row">
           <div class="form-group">
             <label for="name">Nombre</label>
             <input type="text" id="name" placeholder="Tu nombre" required>
           </div>
-          <!-- Campo para la columna "apellidos" -->
           <div class="form-group">
             <label for="lastname">Apellidos</label>
             <input type="text" id="lastname" placeholder="Tus apellidos" required>
           </div>
         </div>
 
-        <!-- Campo para la columna "curso" -->
         <div class="form-row">
           <div class="form-group">
             <label for="course">Curso</label>
@@ -471,7 +461,6 @@
               <option value="3ESO">3º ESO</option>
             </select>
           </div>
-          <!-- Campo para la columna "grupo" -->
           <div class="form-group">
             <label for="group">Grupo</label>
             <select id="group" required>
@@ -482,7 +471,6 @@
           </div>
         </div>
 
-        <!-- Campos para la tabla de autenticación de Supabase -->
         <div class="form-group">
           <label for="email">Correo Electrónico</label>
           <input type="email" id="email" placeholder="tucorreo@ejemplo.com" required>
@@ -502,7 +490,7 @@
 
         <button type="submit" class="submit-btn" id="submit-button">Registrar mi cuenta</button>
         <p id="error-message"></p>
-        <p id="success-message"></p> <!-- Mensaje de éxito -->
+        <p id="success-message"></p>
       </form>
 
       <p class="toggle-link">
@@ -527,7 +515,7 @@
     const registerForm = document.getElementById('register-form');
     const submitButton = document.getElementById('submit-button');
     const errorMessage = document.getElementById('error-message');
-    const successMessage = document.getElementById('success-message'); // Nuevo
+    const successMessage = document.getElementById('success-message');
 
     // Campos de formulario para datos de 'alumnos'
     const nameInput = document.getElementById('name');
@@ -560,9 +548,8 @@
 
     // 4. LÓGICA DEL FORMULARIO DE REGISTRO
     registerForm.addEventListener('submit', async (event) => {
-      event.preventDefault(); // Prevenir el envío por defecto del formulario
+      event.preventDefault();
 
-      // Ocultar mensajes previos
       errorMessage.style.display = 'none';
       successMessage.style.display = 'none';
       submitButton.disabled = true;
@@ -599,12 +586,12 @@
           return;
       }
 
-
       // Paso 1: Registrar el usuario en la autenticación de Supabase
       const { data: authData, error: authError } = await supabaseClient.auth.signUp({
         email: email,
         password: password
-        // No se pasa 'data' adicional aquí para la tabla 'alumnos'
+        // No se pasa 'data' adicional aquí para la tabla 'alumnos'.
+        // Supabase solo requiere email y password para la autenticación básica.
       });
 
       if (authError) {
@@ -618,11 +605,13 @@
       // Si el registro de autenticación fue exitoso:
       if (authData.user) {
           // Paso 2: Insertar datos adicionales en la tabla 'alumnos'
+          // Es crucial que 'id_alumno' en tu tabla 'alumnos' sea el mismo que 'authData.user.id'
+          // Y que tengas políticas RLS configuradas para permitir esta inserción.
           const { error: insertError } = await supabaseClient
               .from('alumnos') // Asegúrate de que este sea el nombre correcto de tu tabla de perfiles
               .insert([
                   {
-                      id_alumno: authData.user.id, // Usamos el ID del usuario recién creado
+                      id_alumno: authData.user.id, // Usamos el ID del usuario recién creado por Supabase Auth
                       nombre: name,
                       apellidos: lastname,
                       curso: course,
@@ -631,12 +620,14 @@
               ]);
 
           if (insertError) {
-              // Esto puede ocurrir si hay un problema con RLS, duplicados, etc.
+              // Esto puede ocurrir si hay un problema con RLS, duplicados, o la estructura de la tabla.
               console.error("Error al insertar datos del alumno:", insertError);
-              errorMessage.textContent = `Error al guardar los datos del perfil. ${insertError.message}`;
+              errorMessage.textContent = `Error al guardar los datos del perfil. Por favor, inténtalo de nuevo o contacta a soporte. Detalles: ${insertError.message}`;
               errorMessage.style.display = 'block';
-              // Considera también borrar el usuario de auth si la inserción de perfil falla
-              // (esto requeriría una función de backend o manejo cuidadoso)
+              // IMPORTANTE: Si la inserción del perfil falla, el usuario ya ha sido creado en `auth.users`.
+              // Podrías considerar borrarlo de `auth.users` aquí para evitar usuarios "huérfanos"
+              // Esto requeriría una llamada a `supabaseClient.auth.admin.deleteUser(authData.user.id)` si estás en un entorno de servidor,
+              // o una función de Supabase (Edge Function/Database Function) para manejar esta lógica de compensación.
               submitButton.disabled = false;
               submitButton.textContent = 'Registrar mi cuenta';
               return;
@@ -645,12 +636,11 @@
           successMessage.textContent = '¡Registro completado! Revisa tu correo para verificar tu cuenta. Serás redirigido a la página de inicio de sesión.';
           successMessage.style.display = 'block';
 
-          // Redirigir después de un breve retraso para que el usuario vea el mensaje de éxito
           setTimeout(() => {
               window.location.href = 'login.html';
           }, 3000); // Redirige después de 3 segundos
       } else {
-        // Esto podría ocurrir si signUp no devuelve user pero tampoco un error explícito
+        // Esto podría ocurrir si signUp no devuelve un usuario pero tampoco un error explícito (caso raro).
         errorMessage.textContent = 'Hubo un problema desconocido al registrar la cuenta.';
         errorMessage.style.display = 'block';
       }
@@ -659,9 +649,22 @@
       submitButton.textContent = 'Registrar mi cuenta';
     });
 
-    // Ocultar el botón de logout y la navegación en esta página
-    document.getElementById('logout-button').style.display = 'none';
-    document.getElementById('main-nav').style.display = 'none';
+    // Ocultar el botón de logout y la navegación en esta página de registro
+    // Aunque ya están ocultos por CSS, es una buena práctica asegurar si el CSS falla o se cambia.
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) logoutButton.style.display = 'none';
+
+    const mainNav = document.getElementById('main-nav');
+    if (mainNav) mainNav.style.display = 'none';
+
+    // Opcional: Para el logo del header, que apunte a login.html en lugar de dashboard
+    // si el usuario aún no está logueado.
+    const headerLogo = document.querySelector('header .logo');
+    if (headerLogo) {
+        // En una página de registro, el usuario no está logueado, así que el logo debería llevarlo a login
+        headerLogo.setAttribute('href', 'login.html');
+    }
+
   </script>
 
 </body>
