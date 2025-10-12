@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guía: Caja de Herramientas - RazonaApp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* --- Paleta de Colores y Estilos Corporativos --- */
+    :root {
+      --primary: #007934;
+      --secondary: #36933F;
+      --light: #C9C9C9;
+      --dark: #2E2725;
+      --card-bg: #ffffff;
+      --text-main: #2E2725;
+      --text-light: #555559;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --border-color: #e0e0e0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
+    header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-info span { font-weight: 500; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: var(--primary); }
+    nav { display: flex; justify-content: center; background: var(--dark); padding: 0.8rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a:hover, nav a.active { background: var(--secondary); }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .content-container {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    h1, h2 {
+      border-bottom: 2px solid var(--light);
+      padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;
+    }
+    h1 { font-size: 2rem; color: var(--primary); }
+    h2 { font-size: 1.5rem; color: var(--secondary); margin-top: 2.5rem; }
+    
+    p, li { color: var(--text-light); margin-bottom: 1rem; }
+    
+    ul { padding-left: 20px; }
+    
+    .screenshot-placeholder {
+        background-color: #f0f0f0;
+        border: 2px dashed var(--light);
+        border-radius: 8px;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: #aaa;
+        font-weight: bold;
+        margin: 1.5rem 0;
+    }
+    
+    .btn-back {
+        display: inline-block; margin-top: 2rem; background-color: var(--dark); color: white;
+        text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 6px; font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .btn-back:hover { background-color: var(--text-main); }
+    
+    footer { text-align: center; padding: 2.5rem 1.5rem; background: var(--dark); color: rgba(255, 255, 255, 0.7); margin-top: 3rem; }
+    footer p { margin-bottom: 0.3rem; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
+    <div class="user-info"><span id="user-name">Guía de Ayuda</span><a href="index.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver</a></div>
+  </header>
+
+  <main>
+    <div class="content-container">
+      <h1><i class="fas fa-tools"></i> Accediendo a la Caja de Herramientas</h1>
+      <p>La sección de "Recursos" es tu caja de herramientas digital. Aquí encontrarás accesos directos a aplicaciones externas y manipulativos virtuales que te ayudarán a visualizar problemas, experimentar con conceptos y potenciar tu aprendizaje matemático.</p>
+
+      <h2><i class="fas fa-desktop"></i> Herramientas Digitales</h2>
+      <p>Estos son enlaces a sitios web externos muy potentes, seleccionados para ayudarte en diferentes áreas de las matemáticas. Al hacer clic, se abrirán en una nueva pestaña para que no pierdas tu sesión en RazonaApp.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla de la sección "Herramientas Digitales" ]</div>
+      <ul>
+        <li>
+          <strong>GeoGebra:</strong> Ideal para todo lo relacionado con la geometría. Úsalo para dibujar figuras, representar funciones, analizar gráficos y experimentar con conceptos de forma interactiva.
+        </li>
+        <li>
+          <strong>Scratch:</strong> Tu puerta de entrada al pensamiento algorítmico. Úsalo para crear pequeños programas o animaciones usando bloques, lo que te ayudará a estructurar tus ideas de forma lógica.
+        </li>
+        <li>
+          <strong>Hojas de Cálculo (Google Sheets):</strong> Una herramienta imprescindible para organizar datos. Úsala para crear tablas, hacer cálculos automáticos y generar gráficos para visualizar tus resultados.
+        </li>
+      </ul>
+
+      <h2><i class="fas fa-hand-paper"></i> Manipulativos Virtuales</h2>
+      <p>Estos recursos simulan objetos físicos que puedes manipular en la pantalla. Son perfectos para entender conceptos abstractos de una manera más concreta y visual.</p>
+      <div class="screenshot-placeholder">[ Captura de pantalla de la sección "Manipulativos Virtuales" ]</div>
+      <ul>
+        <li>
+          <strong>Regletas Cuisenaire:</strong> Te permiten "tocar" los números. Úsalas para explorar sumas, restas, multiplicaciones, divisiones y, sobre todo, para entender las fracciones de una forma muy intuitiva.
+        </li>
+        <li>
+          <strong>Geoplano:</strong> Un tablero virtual con clavijas donde puedes crear polígonos usando "gomas elásticas". Es fantástico para investigar propiedades de figuras, áreas y perímetros.
+        </li>
+        <li>
+          <strong>Tangram:</strong> El clásico puzzle de origen chino. Úsalo para desarrollar tu visión espacial y tu capacidad para componer y descomponer figuras geométricas.
+        </li>
+      </ul>
+      
+      <a href="manual_usuario.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Índice del Manual</a>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Manuel Rodríguez Peñalver. Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
