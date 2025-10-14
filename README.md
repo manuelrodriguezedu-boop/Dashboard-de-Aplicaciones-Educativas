@@ -1,7 +1,7 @@
 **Dashboard de Aplicaciones Educativas**
 🚀 Herramientas digitales diseñadas para docentes y estudiantes, creadas con el objetivo de facilitar la enseñanza y el aprendizaje en entornos digitales.
 
-📌 Incluye:
+📌 Incluye: 
 
 📊 Competencia Digital: Autoevaluación para medir habilidades en ciudadanía digital, comunicación, creación de contenidos y pensamiento computacional.
 
