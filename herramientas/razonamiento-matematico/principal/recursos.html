@@ -482,7 +482,7 @@
     logoutButton.addEventListener('click', async () => {
         try {
             await supabaseClient.auth.signOut();
-            window.location.href = 'login.html';
+            window.location.href = '../../../index.html';
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
