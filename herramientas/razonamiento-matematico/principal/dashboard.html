@@ -555,7 +555,7 @@
     logoutButton.addEventListener('click', async () => {
     try {
         await supabaseClient.auth.signOut();
-        window.location.href = 'https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/index.html';  // <- redirige al index del directorio raíz
+        window.location.href = '../../index.html';  // <- redirige al index del directorio raíz
     } catch (error) {
         console.error('Error al cerrar sesión:', error);
     }
