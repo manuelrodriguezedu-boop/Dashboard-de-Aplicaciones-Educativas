@@ -7,7 +7,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     /* ... (El CSS no cambia) ... */
-    :root { --primary: #007934; --secondary: #36933F; --light: #C9C9C9; --dark: #2E2725; --card-bg: #ffffff; --text-main: #2E2725; --text-light: #555559; --shadow: rgba(0, 0, 0, 0.08); }
+    :root {
+      --primary: #007934; --secondary: #36933F; --light: #C9C9C9; --dark: #2E2725;
+      --card-bg: #ffffff; --text-main: #2E2725; --text-light: #555559; --shadow: rgba(0, 0, 0, 0.08);
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
     header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
@@ -39,52 +42,51 @@
     <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
     <div class="user-info">
       <span id="user-name">Guía de Ayuda</span>
-      <!-- CORRECCIÓN: Ruta relativa a la RAÍZ del sitio -->
-      <a href="/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/principal/dashboard.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver al Panel</a>
+      <!-- CORRECCIÓN: Salir de 'manuales' y entrar en 'principal' -->
+      <a href="../principal/dashboard.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver al Panel</a>
     </div>
   </header>
   
   <nav>
-    <!-- CORRECCIÓN: Rutas relativas a la RAÍZ del sitio -->
-    <a href="/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/principal/dashboard.html"><i class="fas fa-home"></i> Inicio</a>
-    <a href="/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/principal/retos.html"><i class="fas fa-bullseye"></i> Retos</a>
-    <a href="/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/principal/diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
-    <a href="/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/principal/gimnasia.html"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
-    <a href="/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/principal/recursos.html"><i class="fas fa-toolbox"></i> Recursos</a>
+    <!-- CORRECCIÓN: Salir de 'manuales' y entrar en 'principal' para cada enlace -->
+    <a href="../principal/dashboard.html"><i class="fas fa-home"></i> Inicio</a>
+    <a href="../principal/retos.html"><i class="fas fa-bullseye"></i> Retos</a>
+    <a href="../principal/diario.html"><i class="fas fa-book-open"></i> Mi Diario</a>
+    <a href="../principal/gimnasia.html"><i class="fas fa-dumbbell"></i> Gimnasia Mental</a>
+    <a href="../principal/recursos.html"><i class="fas fa-toolbox"></i> Recursos</a>
   </nav>
 
    <main>
     <div class="content-container">
-      <h1><i class="fas fa-book"></i> Manual de Usuario del Alumno</h1>
+      <h1><i class="fas fa-book"></i> Manual de Usuario</h1>
       <p>Esta guía está diseñada para ayudarte a sacar el máximo provecho de todas las herramientas y funcionalidades que ofrece RazonaApp. Selecciona una sección para empezar.</p>
 
-      <!-- Estas rutas son correctas porque están en la misma carpeta -->
-      <h2><i class="fas fa-rocket"></i> Primeros Pasos</h2>
-      <ul>
-        <li><a href="manual_registro.html"><i class="fas fa-user-plus"></i> Cómo registrar una nueva cuenta</a></li>
-        <li><a href="manual_login.html"><i class="fas fa-sign-in-alt"></i> Cómo iniciar sesión</a></li>
-        <li><a href="manual_reset_password.html"><i class="fas fa-key"></i> Cómo restablecer tu contraseña</a></li>
-      </ul>
-
+      <!-- CORRECCIÓN: Los enlaces ahora apuntan a la subcarpeta 'alumno/' -->
       <h2><i class="fas fa-user-graduate"></i> Guía para el Alumno</h2>
       <ul>
-        <li><a href="/../manual_dashboard.html"><i class="fas fa-tachometer-alt"></i> Entendiendo tu Panel Personal</a></li>
-        <li><a href="manual_resolver_reto.html"><i class="fas fa-pencil-ruler"></i> Cómo resolver un reto (Método Pólya)</a></li>
-        <li><a href="manual_biblioteca_retos.html"><i class="fas fa-th-list"></i> Explorando la Biblioteca de Retos</a></li>
-        <li><a href="manual_diario.html"><i class="fas fa-history"></i> Usando tu Diario de Problemas</a></li>
-        <li><a href="manual_gimnasia.html"><i class="fas fa-brain"></i> Practicando con la Gimnasia Mental</a></li>
-        <li><a href="manual_recursos.html"><i class="fas fa-tools"></i> Accediendo a la Caja de Herramientas</a></li>
+        <li><a href="alumno/manual_registro.html"><i class="fas fa-user-plus"></i> Cómo registrar una nueva cuenta</a></li>
+        <li><a href="alumno/manual_login.html"><i class="fas fa-sign-in-alt"></i> Cómo iniciar sesión</a></li>
+        <li><a href="alumno/manual_reset_password.html"><i class="fas fa-key"></i> Cómo restablecer tu contraseña</a></li>
+        <li><a href="alumno/manual_dashboard.html"><i class="fas fa-tachometer-alt"></i> Entendiendo tu Panel Personal</a></li>
+        <li><a href="alumno/manual_resolver_reto.html"><i class="fas fa-pencil-ruler"></i> Cómo resolver un reto (Método Pólya)</a></li>
+        <li><a href="alumno/manual_biblioteca_retos.html"><i class="fas fa-th-list"></i> Explorando la Biblioteca de Retos</a></li>
+        <li><a href="alumno/manual_diario.html"><i class="fas fa-history"></i> Usando tu Diario de Problemas</a></li>
+        <li><a href="alumno/manual_gimnasia.html"><i class="fas fa-brain"></i> Practicando con la Gimnasia Mental</a></li>
+        <li><a href="alumno/manual_recursos.html"><i class="fas fa-tools"></i> Accediendo a la Caja de Herramientas</a></li>
       </ul>
-      
-      <!-- CORRECCIÓN: Ruta relativa a la RAÍZ del sitio -->
+
+      <!-- CORRECCIÓN: El enlace ahora apunta a la subcarpeta 'profesor/' -->
       <h2><i class="fas fa-chalkboard-teacher"></i> Guía para el Profesorado</h2>
       <ul>
-        <li><a href="/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/manuales/profesor/index.html"><i class="fas fa-external-link-alt"></i> Acceder al Manual del Profesor</a></li>
+        <li><a href="profesor/manual_profesor_dashboard.html"><i class="fas fa-tasks"></i> El Panel del Profesor: Ver entregas</a></li>
+        <li><a href="profesor/manual_evaluar.html"><i class="fas fa-edit"></i> Cómo evaluar la resolución de un alumno</a></li>
+        <li><a href="profesor/manual_gestion_contenido.html"><i class="fas fa-cogs"></i> (Próximamente) Gestión de retos y alumnos</a></li>
       </ul>
       
+      <!-- CORRECCIÓN: Asumo que faq también está en 'alumno/' -->
       <h2><i class="fas fa-question-circle"></i> Preguntas Frecuentes (FAQ)</h2>
       <ul>
-        <li><a href="manual_faq.html"><i class="fas fa-exclamation-triangle"></i> Solución a problemas comunes</a></li>
+        <li><a href="alumno/manual_faq.html"><i class="fas fa-exclamation-triangle"></i> Solución a problemas comunes</a></li>
       </ul>
     </div>
   </main>
