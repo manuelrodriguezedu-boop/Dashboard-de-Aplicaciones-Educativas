@@ -160,7 +160,7 @@
     <a href="diario.html"><i class="fas fa-book-open"></i> <span>Diario</span></a>
     <a href="gimnasia.html"><i class="fas fa-dumbbell"></i> <span>Gimnasia</span></a>
     <a href="recursos.html"><i class="fas fa-toolbox"></i> <span>Recursos</span></a>
-    <a href="herramientas/razonamiento-matematico/manuales/index.html"><i class="fas fa-question-circle"></i> <span>Ayuda</span></a>
+    <a href="../../manuales/index.html"><i class="fas fa-question-circle"></i> <span>Ayuda</span></a>
   </nav>
 
   <main>
@@ -219,7 +219,6 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Tuve que añadir esto aquí para evitar la duplicación de código
         async function loadDashboardData() {
             const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
             if (sessionError || !session) {
