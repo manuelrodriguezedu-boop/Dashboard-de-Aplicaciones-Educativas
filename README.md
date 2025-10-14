@@ -1,2 +1,11 @@
-# Dashboard de Aplicaciones Educativas
-Esta rúbrica ha sido diseñada como una herramienta de autoevaluación para ayudarte a descubrir tus puntos fuertes y a identificar las áreas en las que puedes seguir creciendo. No es un examen, sino un mapa para guiar tu aprendizaje. Te animamos a usar esta guía para trazar tu propio camino y convertirte en un ciudadano digital competente.
+**Dashboard de Aplicaciones Educativas**
+🚀 Herramientas digitales diseñadas para docentes y estudiantes, creadas con el objetivo de facilitar la enseñanza y el aprendizaje en entornos digitales.
+
+📌 Incluye:
+
+📊 Competencia Digital: Autoevaluación para medir habilidades en ciudadanía digital, comunicación, creación de contenidos y pensamiento computacional.
+📋 Rúbrica de Evaluación Inicial: Cuestionario rápido para diagnosticar el nivel inicial del alumnado y adaptar la enseñanza.
+🎮 Descubre tu Nivel Digital: Guía gamificada y visual para que los más jóvenes exploren su competencia digital de forma divertida.
+🧠 Plan de Razonamiento Matemático: Desafíos y acertijos para fortalecer la lógica, resolución de problemas y pensamiento crítico.
+👨‍🏫 Creado por Manuel Rodríguez Peñalver, Profesor de Tecnología y Coordinador TDE en el IES Sierra de los Filabres (Serón, Almería).
+💡 Ideal para docentes que buscan recursos prácticos, accesibles y listos para usar en clase.
