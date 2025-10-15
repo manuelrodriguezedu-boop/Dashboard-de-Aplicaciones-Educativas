@@ -213,15 +213,16 @@
 
         // 3. Redirigir según el resultado de la comprobación
         if (profesor) {
-            // Si 'profesor' no es null, significa que se encontró una entrada en la tabla
+            // Si 'profesor' no es null, es un profesor
             alert('¡Inicio de sesión de PROFESOR correcto! Redirigiendo a tu panel.');
             window.location.href = '../principal/profesor_dashboard.html';
         } else {
-            // Si 'profesor' es null, es un alumno normal
-            alert('¡Inicio de sesión de ALUMNO correcto! Redirigiendo al panel principal...');
+            // Si 'profesor' es null, es un alumno
+            alert('¡Inicio de sesión correcto! Redirigiendo al panel principal...');
             window.location.href = '../principal/dashboard.html';
         }
     });
+   
   </script>
 
 </body>
