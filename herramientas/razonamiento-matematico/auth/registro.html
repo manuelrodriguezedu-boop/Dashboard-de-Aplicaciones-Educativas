@@ -186,9 +186,18 @@
       submitButton.disabled = true;
       submitButton.textContent = 'Procesando...';
 
+      // --- RECOGIDA DE DATOS DEL FORMULARIO ---
+      const name = document.getElementById('name').value;
+      const lastname = document.getElementById('lastname').value;
+      const course = document.getElementById('course').value;
+      const group = document.getElementById('group').value;
+      const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirm-password').value;
+      // CAMBIO 1: Recoger el valor del nuevo campo de código de invitación
+      const inviteCode = document.getElementById('invite-code').value.trim();
       
+      // Validaciones
       if (password !== confirmPassword) {
           errorMessage.textContent = 'Las contraseñas no coinciden.';
           errorMessage.style.display = 'block';
@@ -196,16 +205,20 @@
           submitButton.textContent = 'Registrar mi cuenta';
           return;
       }
-
+      
+      // CAMBIO 2: Enviar los datos, incluyendo el código de invitación, a Supabase
       const { data, error } = await supabaseClient.auth.signUp({
-        email: document.getElementById('email').value,
+        email: email,
         password: password,
         options: {
           data: {
-            nombre: document.getElementById('name').value,
-            apellidos: document.getElementById('lastname').value,
-            curso: document.getElementById('course').value,
-            grupo: document.getElementById('group').value,
+            // Datos para la tabla 'alumnos'
+            nombre: name,
+            apellidos: lastname,
+            curso: course,
+            grupo: group,
+            // Dato extra para la lógica de roles en el trigger
+            codigo_invitacion: inviteCode || null // Envía el código, o 'null' si está vacío
           }
         }
       });
