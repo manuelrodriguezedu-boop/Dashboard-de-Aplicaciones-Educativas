@@ -7,25 +7,102 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root { --primary: #2c3e50; --secondary: #3498db; --light: #ecf0f1; --dark: #1a252f; --success: #2ecc71; }
-    body { font-family: 'Segoe UI', sans-serif; background-color: var(--light); color: var(--primary); margin: 0; }
-    header { background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-    .logo { font-size: 1.6rem; font-weight: bold; }
-    .user-info span { font-weight: 500; }
-    .back-btn { color: white; text-decoration: none; padding: 0.4rem 0.8rem; border: 1px solid white; border-radius: 5px; }
-    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
-    .reto-header { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 2rem; }
-    .reto-header h1 { color: var(--secondary); margin-bottom: 0.5rem; }
-    .fase { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
-    .fase-header { background: var(--primary); color: white; padding: 1rem 1.5rem; border-radius: 12px 12px 0 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .fase-content { padding: 1.5rem; border-top: 1px solid var(--light); display: none; }
+    /* --- Paleta de Colores Corporativos --- */
+    :root {
+      --primary: #007934;
+      --secondary: #36933F;
+      --light: #C9C9C9;
+      --dark: #2E2725;
+      --card-bg: #ffffff;
+      --text-main: #2E2725;
+      --text-light: #555559;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --border-color: #e0e0e0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    body { 
+        background-color: var(--light); 
+        color: var(--text-main); 
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    
+    header { 
+        background: var(--primary); color: white; padding: 0.8rem 1.5rem; display: flex; 
+        justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
+        flex-wrap: wrap;
+    }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .back-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .back-btn:hover { background: #1d5c2a; }
+
+    main { 
+        max-width: 900px; margin: 2rem auto; padding: 0 1.5rem;
+        flex-grow: 1; width: 100%;
+    }
+    
+    .reto-header { 
+        background: var(--card-bg); padding: 2rem; border-radius: 12px; 
+        box-shadow: 0 4px 12px var(--shadow); margin-bottom: 2rem; 
+    }
+    .reto-header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+    .reto-header p { color: var(--text-light); }
+    
+    .fase { 
+        background: var(--card-bg); border-radius: 12px; 
+        box-shadow: 0 4px 12px var(--shadow); margin-bottom: 1.5rem; 
+    }
+    .fase-header { 
+        background: var(--dark); color: white; padding: 1rem 1.5rem; 
+        border-radius: 12px 12px 0 0; cursor: pointer; display: flex; 
+        justify-content: space-between; align-items: center; 
+    }
+    .fase-header h2 { font-size: 1.2rem; }
+    .fase-content { padding: 1.5rem; border-top: 1px solid var(--border-color); display: none; }
     .fase-content.active { display: block; }
+    
     .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
-    textarea, select { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; font-family: 'Segoe UI', sans-serif; }
-    .actions { text-align: right; margin-top: 2rem; }
-    .btn { background: var(--secondary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.3s; margin-left: 1rem; }
-    .btn-success { background: var(--success); }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+    textarea, select { 
+        width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; 
+        font-size: 1rem; font-family: 'Segoe UI', sans-serif; 
+    }
+    textarea:focus, select:focus {
+        outline: none;
+        border-color: var(--secondary);
+    }
+
+    .actions { text-align: right; margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; flex-wrap: wrap; }
+    .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    #save-progress-btn { background: var(--secondary); color: white; }
+    #complete-btn { background: var(--primary); color: white; }
+    .btn:hover { opacity: 0.9; }
+    
+    /* --- ESTILO CORREGIDO PARA EL BOTÓN DE DESCARGA --- */
+    .btn-pdf {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .btn-pdf:hover {
+        background-color: #005a26; /* Un verde más oscuro */
+    }
+    
+    footer { text-align: center; padding: 1.8rem 1rem; background: var(--dark); color: rgba(255, 255, 255, 0.7); margin-top: 2rem; font-size: 0.85rem; }
+    footer p { margin: 0.2rem 0; }
   </style>
 </head>
 <body>
@@ -34,7 +111,7 @@
     <div class="logo"><i class="fas fa-brain"></i> RazonaApp</div>
     <div class="user-info">
       <span id="user-name">Cargando...</span>
-      <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Volver al Panel</a>
+      <a href="../principal/dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Volver al Panel</a>
     </div>
   </header>
 
@@ -42,6 +119,10 @@
     <div class="reto-header">
       <h1 id="reto-titulo">Cargando Reto...</h1>
       <p id="reto-descripcion">...</p>
+      <!-- HTML CORREGIDO PARA EL BOTÓN DE DESCARGA -->
+      <a href="#" id="pdf-download-link" class="btn-pdf" style="display: none;">
+        <i class="fas fa-file-pdf"></i> Descargar PDF Adjunto
+      </a>
     </div>
 
     <!-- Fase 1: Comprender -->
@@ -57,17 +138,7 @@
     <div class="fase">
       <div class="fase-header"><h2>2. Diseñar un Plan</h2><i class="fas fa-chevron-down"></i></div>
       <div class="fase-content">
-        <div class="form-group">
-          <label for="f2-estrategia">¿Qué estrategia/heurística usarás?</label>
-          <select id="f2-estrategia">
-            <option value="">Selecciona una...</option>
-            <option value="analogia">Buscar analogías</option>
-            <option value="simplificar">Simplificar el problema</option>
-            <option value="dividir">Dividir y vencer</option>
-            <option value="experimentar">Experimentar (ensayo y error)</option>
-            <option value="atras">Trabajar hacia atrás</option>
-          </select>
-        </div>
+        <div class="form-group"><label for="f2-estrategia">¿Qué estrategia/heurística usarás?</label><select id="f2-estrategia"><option value="">Selecciona una...</option><option value="analogia">Buscar analogías</option><option value="simplificar">Simplificar el problema</option><option value="dividir">Dividir y vencer</option><option value="experimentar">Experimentar (ensayo y error)</option><option value="atras">Trabajar hacia atrás</option></select></div>
         <div class="form-group"><label for="f2-plan">Describe tu plan paso a paso</label><textarea id="f2-plan" rows="4"></textarea></div>
       </div>
     </div>
@@ -86,19 +157,25 @@
     
     <div class="actions">
       <button class="btn" id="save-progress-btn"><i class="fas fa-save"></i> Guardar Progreso</button>
-      <button class="btn btn-success" id="complete-btn"><i class="fas fa-check-circle"></i> Marcar como Completado</button>
+      <button class="btn" id="complete-btn"><i class="fas fa-check-circle"></i> Marcar como Completado</button>
     </div>
   </main>
+  
+  <footer>
+    <p>Manuel Rodríguez Peñalver</p>
+    <p>Profesor de Tecnología, Coordinador TDE y Escuelas 4.0</p>
+    <p>IES Sierra de los Filabres</p>
+  </footer>
 
   <script>
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Referencias al DOM
     const userNameDisplay = document.getElementById('user-name');
     const retoTitulo = document.getElementById('reto-titulo');
     const retoDescripcion = document.getElementById('reto-descripcion');
+    const pdfDownloadLink = document.getElementById('pdf-download-link');
     const saveButton = document.getElementById('save-progress-btn');
     const completeButton = document.getElementById('complete-btn');
 
@@ -106,39 +183,45 @@
     let currentRetoId = null;
 
     async function loadPage() {
-        // Proteger ruta y obtener usuario
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) {
-            window.location.href = 'login.html';
+            window.location.href = '../auth/login.html';
             return;
         }
         currentUserId = session.user.id;
-        userNameDisplay.textContent = session.user.email; // Temporal, se puede mejorar
+        userNameDisplay.textContent = session.user.email;
 
-        // Obtener el ID del reto desde la URL (ej: reto.html?id=1)
         const params = new URLSearchParams(window.location.search);
         currentRetoId = params.get('id');
         if (!currentRetoId) {
             alert("No se ha especificado un reto.");
-            window.location.href = 'dashboard.html';
+            window.location.href = '../principal/dashboard.html';
             return;
         }
 
-        // Cargar datos del reto y de la resolución del alumno
-        const [retoData, resolucionData] = await Promise.all([
-            supabaseClient.from('retos').select('*').eq('id', currentRetoId).single(),
+        const [retoRes, resolucionRes] = await Promise.all([
+            supabaseClient.from('retos').select('*, pdf_path').eq('id', currentRetoId).single(),
             supabaseClient.from('resoluciones').select('*').eq('id_alumno', currentUserId).eq('id_reto', currentRetoId).single()
         ]);
 
-        // Rellenar la cabecera del reto
-        if (retoData.data) {
-            retoTitulo.textContent = retoData.data.titulo;
-            retoDescripcion.textContent = retoData.data.descripcion;
+        if (retoRes.data) {
+            retoTitulo.textContent = retoRes.data.titulo;
+            retoDescripcion.textContent = retoRes.data.descripcion;
+
+            const pdfPath = retoRes.data.pdf_path;
+            if (pdfPath) {
+                const { data: urlData } = supabaseClient.storage.from('retos-pdf').getPublicUrl(pdfPath);
+                if (urlData.publicUrl) {
+                    pdfDownloadLink.href = urlData.publicUrl;
+                    pdfDownloadLink.target = '_blank';
+                    // LÍNEA CORREGIDA
+                    pdfDownloadLink.style.display = 'inline-flex';
+                }
+            }
         }
 
-        // Rellenar el formulario con los datos guardados, si existen
-        if (resolucionData.data) {
-            const resolucion = resolucionData.data;
+        if (resolucionRes.data) {
+            const resolucion = resolucionRes.data;
             if (resolucion.fase1_comprension) {
                 document.getElementById('f1-datos').value = resolucion.fase1_comprension.datos || '';
                 document.getElementById('f1-objetivo').value = resolucion.fase1_comprension.objetivo || '';
@@ -156,21 +239,14 @@
         const resolutionPayload = {
             id_alumno: currentUserId,
             id_reto: currentRetoId,
-            fase1_comprension: {
-                datos: document.getElementById('f1-datos').value,
-                objetivo: document.getElementById('f1-objetivo').value,
-            },
-            fase2_plan: {
-                estrategia: document.getElementById('f2-estrategia').value,
-                plan: document.getElementById('f2-plan').value,
-            },
+            fase1_comprension: { datos: document.getElementById('f1-datos').value, objetivo: document.getElementById('f1-objetivo').value },
+            fase2_plan: { estrategia: document.getElementById('f2-estrategia').value, plan: document.getElementById('f2-plan').value },
             fase3_ejecucion: document.getElementById('f3-ejecucion').value,
             fase4_reflexion: document.getElementById('f4-reflexion').value,
             estado: estado,
             fecha_actualizacion: new Date().toISOString()
         };
         
-        // upsert = si ya existe una fila para este alumno/reto, la actualiza. Si no, la crea.
         const { error } = await supabaseClient.from('resoluciones').upsert(resolutionPayload);
 
         if (error) {
@@ -178,14 +254,13 @@
         } else {
             if (estado === 'completado') {
                 alert("¡Reto completado y enviado!");
-                window.location.href = 'dashboard.html';
+                window.location.href = '../principal/dashboard.html';
             } else {
                 alert("Progreso guardado con éxito.");
             }
         }
     }
 
-    // Lógica para los acordeones
     document.querySelectorAll('.fase-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
@@ -195,30 +270,11 @@
         });
     });
     
-    // Listeners de los botones
     saveButton.addEventListener('click', () => saveOrUpdateResolution('en_progreso'));
     completeButton.addEventListener('click', () => saveOrUpdateResolution('completado'));
     
-    // Cargar la página
     document.addEventListener('DOMContentLoaded', loadPage);
   </script>
 
 </body>
-</html>```
-
----
-
-`<script>`.
-```javascript
-    function updateRetoUI(reto) {
-        if (reto) {
-            retoTitulo.textContent = reto.titulo;
-            retoDescripcion.textContent = reto.descripcion;
-            // LA LÍNEA MÁS IMPORTANTE: Construye el enlace con el ID del reto
-            retoEnlace.href = `reto.html?id=${reto.id}`;
-        } else {
-            retoTitulo.textContent = "No hay reto esta semana";
-            retoDescripcion.textContent = "Vuelve más tarde para ver el próximo desafío.";
-            retoEnlace.style.display = 'none'; // Oculta el botón si no hay reto
-        }
-    }
+</html>
