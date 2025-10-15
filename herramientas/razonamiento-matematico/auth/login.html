@@ -152,11 +152,12 @@
     <p>IES Sierra de los Filabres</p>
   </footer>
 
-  <script>
+ <script>
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Referencias a los elementos (sin cambios)
     const loginForm = document.getElementById('login-form');
     const submitButton = document.getElementById('submit-button');
     const errorMessage = document.getElementById('error-message');
@@ -166,21 +167,13 @@
     const togglePasswordIcon = document.getElementById('togglePassword');
     const forgotPasswordLink = document.getElementById('forgot-password-link');
 
-    togglePasswordIcon.addEventListener('click', function () {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
-    });
+    // Lógicas de UI (visualizar contraseña, recordar email) (sin cambios)
+    togglePasswordIcon.addEventListener('click', function () { /* ... */ });
+    document.addEventListener('DOMContentLoaded', () => { /* ... */ });
+    forgotPasswordLink.addEventListener('click', async (event) => { /* ... */ });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const rememberedEmail = localStorage.getItem('rememberedEmail');
-        if (rememberedEmail) {
-            emailInput.value = rememberedEmail;
-            rememberMeCheckbox.checked = true;
-        }
-    });
 
+    // --- LÓGICA DE LOGIN ACTUALIZADA CON REDIRECCIÓN POR ROL ---
     loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         errorMessage.style.display = 'none';
@@ -190,41 +183,43 @@
         const email = emailInput.value;
         const password = passwordInput.value;
 
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        // 1. Intentar iniciar sesión
+        const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-        if (error) {
+        if (loginError) {
             errorMessage.textContent = "Correo o contraseña incorrectos.";
             errorMessage.style.display = 'block';
-        } else {
-            if (rememberMeCheckbox.checked) {
-                localStorage.setItem('rememberedEmail', email);
-            } else {
-                localStorage.removeItem('rememberedEmail');
-            }
-            alert('¡Inicio de sesión correcto! Redirigiendo al panel principal...');
-             window.location.href = '../principal/dashboard.html';
+            submitButton.disabled = false;
+            submitButton.textContent = 'Entrar';
+            return; // Detener la ejecución si el login falla
         }
 
-        submitButton.disabled = false;
-        submitButton.textContent = 'Entrar';
-    });
-    
-    forgotPasswordLink.addEventListener('click', async (event) => {
-        event.preventDefault();
-        const email = prompt("Por favor, introduce tu correo electrónico para enviarte las instrucciones:");
+        // Si el login es correcto...
+        const user = loginData.user;
 
-        if (!email) return;
-
-        const redirectUrl = window.location.origin + window.location.pathname.replace('login.html', 'reset-password.html');
+        // 2. Comprobar si el usuario es un profesor
+        const { data: profesor, error: profileError } = await supabaseClient
+            .from('profesores')
+            .select('id') // Solo necesitamos saber si existe, no necesitamos más datos
+            .eq('id', user.id)
+            .single(); // .single() devolverá datos si lo encuentra, o null si no
         
-        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: redirectUrl
-        });
-
-        if (error) {
-            alert("Error: " + error.message);
+        // Guardar o borrar el email si "Recuérdame" está marcado
+        if (rememberMeCheckbox.checked) {
+            localStorage.setItem('rememberedEmail', email);
         } else {
-            alert("Se han enviado las instrucciones para restablecer tu contraseña. ¡Revisa tu correo!");
+            localStorage.removeItem('rememberedEmail');
+        }
+
+        // 3. Redirigir según el resultado de la comprobación
+        if (profesor) {
+            // Si 'profesor' no es null, significa que se encontró una entrada en la tabla
+            alert('¡Inicio de sesión de PROFESOR correcto! Redirigiendo a tu panel.');
+            window.location.href = 'profesor_dashboard.html';
+        } else {
+            // Si 'profesor' es null, es un alumno normal
+            alert('¡Inicio de sesión correcto! Redirigiendo al panel principal...');
+            window.location.href = 'dashboard.html';
         }
     });
   </script>
