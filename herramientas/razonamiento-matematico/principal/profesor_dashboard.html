@@ -6,41 +6,140 @@
   <title>Panel del Profesor - RazonaApp</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>/* ... (Puedes usar un CSS similar al de diario.html) ... */</style>
+  <style>
+    /* --- Paleta de Colores Corporativos --- */
+    :root {
+      --primary: #007934;
+      --secondary: #36933F;
+      --light: #C9C9C9;
+      --dark: #2E2725;
+      --card-bg: #ffffff;
+      --text-main: #2E2725;
+      --text-light: #555559;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --border-color: #e0e0e0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
+
+    /* --- Cabecera y Navegación del Módulo Profesor --- */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+    .logo span { font-size: 1.2rem; font-weight: normal; opacity: 0.8; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .logout-btn { background: var(--secondary); color: white; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; transition: background 0.3s; cursor: pointer; border: none; }
+    .logout-btn:hover { background: #1d5c2a; }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: var(--dark);
+      padding: 0.8rem 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    nav a { color: white; text-decoration: none; padding: 0.5rem 1.5rem; border-radius: 4px; transition: background 0.3s; }
+    nav a.active, nav a:hover { background: var(--secondary); }
+    
+    /* --- Contenido Principal --- */
+    main { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    .page-header h1 { font-size: 2rem; color: var(--primary); }
+
+    /* --- Estilos para la Tabla de Entregas --- */
+    .table-container {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow);
+        overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+    th { background-color: #f8f9fa; font-weight: 600; color: var(--text-main); }
+    tr:last-child td { border-bottom: none; }
+    
+    .btn-evaluar {
+        background: var(--secondary);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background-color 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .btn-evaluar:hover {
+        background: var(--primary);
+    }
+  </style>
 </head>
 <body>
+
   <header>
-    <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp - Módulo Profesorado</span></div>
-    <div class="user-info"><span id="user-name">Cargando...</span><button id="logout-button">Salir</button></div>
+    <div class="logo"><i class="fas fa-brain"></i>RazonaApp <span>- Módulo Profesorado</span></div>
+    <div class="user-info">
+      <span id="user-name">Cargando...</span>
+      <button id="logout-button" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Salir</button>
+    </div>
   </header>
+  
+  <nav>
+    <a href="profesor_dashboard.html" class="active"><i class="fas fa-inbox"></i> Entregas Pendientes</a>
+    <a href="#"><i class="fas fa-users"></i> Mis Grupos</a>
+    <a href="#"><i class="fas fa-plus-circle"></i> Crear Reto</a>
+  </nav>
+
   <main>
-    <h1>Entregas Pendientes de Evaluación</h1>
+    <div class="page-header">
+      <h1>Entregas Pendientes de Evaluación</h1>
+    </div>
     <div class="table-container">
       <table>
         <thead><tr><th>Alumno/a</th><th>Reto</th><th>Fecha de Entrega</th><th>Acciones</th></tr></thead>
-        <tbody id="entregas-tbody"><tr><td colspan="4">Cargando entregas...</td></tr></tbody>
+        <tbody id="entregas-tbody"><tr><td colspan="4" style="text-align: center; padding: 2rem;">Cargando entregas...</td></tr></tbody>
       </table>
     </div>
   </main>
+  
   <script>
-    const SUPABASE_URL = '...'; // Pega tu URL
-    const SUPABASE_ANON_KEY = '...'; // Pega tu Clave Anon
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function loadProfesorDashboard() {
-        // 1. Comprobar sesión y rol de profesor
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.href = 'login.html'; return; }
+    const userNameDisplay = document.getElementById('user-name');
+    const logoutButton = document.getElementById('logout-button');
+    const entregasTbody = document.getElementById('entregas-tbody');
 
-        const { data: profesor, error: profileError } = await supabaseClient.from('profesores').select('id, nombre').eq('id', session.user.id).single();
+    async function loadProfesorDashboard() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) { 
+            window.location.href = '../auth/login.html'; // Corregir ruta
+            return; 
+        }
+
+        const { data: profesor, error: profileError } = await supabaseClient.from('profesores').select('id, nombre, apellidos').eq('id', session.user.id).single();
         if (profileError || !profesor) {
             alert("Acceso denegado. Esta área es solo para profesores.");
             window.location.href = 'dashboard.html';
             return;
         }
-        document.getElementById('user-name').textContent = profesor.nombre;
+        userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
 
-        // 2. Obtener las resoluciones pendientes de los alumnos asignados
         const { data: resoluciones, error } = await supabaseClient
             .from('resoluciones')
             .select(`
@@ -49,10 +148,11 @@
                 alumnos ( nombre, apellidos ),
                 retos ( titulo )
             `)
-            .eq('estado', 'completado'); // Solo las que los alumnos han marcado como completadas
+            .eq('estado', 'completado');
 
         if (error) {
             console.error("Error al cargar entregas:", error);
+            entregasTbody.innerHTML = '<tr><td colspan="4" style="color:red; text-align:center;">Error al cargar las entregas.</td></tr>';
             return;
         }
         
@@ -60,26 +160,29 @@
     }
     
     function renderEntregas(entregas) {
-        const tbody = document.getElementById('entregas-tbody');
-        tbody.innerHTML = '';
+        entregasTbody.innerHTML = '';
         if (entregas.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4">No hay entregas pendientes.</td></tr>`;
+            entregasTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No hay entregas pendientes de evaluar. ¡Buen trabajo!</td></tr>`;
             return;
         }
         entregas.forEach(entrega => {
             const row = `
                 <tr>
-                    <td>${entrega.alumnos.nombre} ${entrega.alumnos.apellidos}</td>
+                    <td>${entrega.alumnos.nombre} ${entrega.alumnos.apellidos || ''}</td>
                     <td>${entrega.retos.titulo}</td>
-                    <td>${new Date(entrega.fecha_actualizacion).toLocaleDateString()}</td>
-                    <td><a href="evaluar_reto.html?id=${entrega.id}">Evaluar</a></td>
+                    <td>${new Date(entrega.fecha_actualizacion).toLocaleDateString('es-ES')}</td>
+                    <td><a href="evaluar_reto.html?id=${entrega.id}" class="btn-evaluar"><i class="fas fa-edit"></i> Evaluar</a></td>
                 </tr>`;
-            tbody.innerHTML += row;
+            entregasTbody.innerHTML += row;
         });
     }
     
+    logoutButton.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = '../auth/login.html'; // Corregir ruta
+    });
+
     document.addEventListener('DOMContentLoaded', loadProfesorDashboard);
-    // Añadir lógica del botón de logout...
   </script>
 </body>
 </html>
