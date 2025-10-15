@@ -21,7 +21,15 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--light); color: var(--text-main); line-height: 1.6; }
+    
+    body { 
+        background-color: var(--light); 
+        color: var(--text-main); 
+        line-height: 1.6;
+        display: flex; 
+        flex-direction: column; 
+        min-height: 100vh;
+    }
 
     /* --- Cabecera y Navegación del Módulo Profesor --- */
     header {
@@ -34,6 +42,7 @@
       position: sticky;
       top: 0;
       z-index: 1000;
+      flex-wrap: wrap; /* Añadido para responsividad */
     }
     .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
     .logo span { font-size: 1.2rem; font-weight: normal; opacity: 0.8; }
@@ -52,20 +61,16 @@
     nav a.active, nav a:hover { background: var(--secondary); }
     
     /* --- Contenido Principal --- */
-    main { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
-
-    .page-header {
-        margin-bottom: 2rem;
+    main { 
+        max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem;
+        flex-grow: 1; /* Permite que el footer se quede abajo */
+        width: 100%;
     }
+    .page-header { margin-bottom: 2rem; }
     .page-header h1 { font-size: 2rem; color: var(--primary); }
 
     /* --- Estilos para la Tabla de Entregas --- */
-    .table-container {
-        background: var(--card-bg);
-        border-radius: 12px;
-        box-shadow: 0 4px 12px var(--shadow);
-        overflow-x: auto;
-    }
+    .table-container { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
     th { background-color: #f8f9fa; font-weight: 600; color: var(--text-main); }
@@ -86,6 +91,36 @@
     .btn-evaluar:hover {
         background: var(--primary);
     }
+    
+    /* --- Footer --- */
+    footer {
+      text-align: center;
+      padding: 1.8rem 1rem;
+      background: var(--dark);
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 2rem;
+      font-size: 0.85rem;
+    }
+    footer p {
+      margin: 0.2rem 0;
+    }
+    
+    /* --- Media Queries para Responsividad --- */
+    @media (max-width: 600px) {
+        header {
+            flex-direction: column;
+            gap: 0.8rem;
+            padding: 1rem;
+        }
+        nav {
+            flex-wrap: wrap;
+            padding: 0.5rem;
+        }
+        nav a {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+        }
+    }
   </style>
 </head>
 <body>
@@ -100,7 +135,7 @@
   
   <nav>
     <a href="profesor_dashboard.html" class="active"><i class="fas fa-inbox"></i> Entregas Pendientes</a>
-    <a href="#"><i class="fas fa-users"></i> Mis Grupos</a>
+    <a href="mis_grupos.html"><i class="fas fa-users"></i> Mis Grupos</a>
     <a href="#"><i class="fas fa-plus-circle"></i> Crear Reto</a>
   </nav>
 
@@ -116,6 +151,14 @@
     </div>
   </main>
   
+  <!-- FOOTER AÑADIDO -->
+  <footer>
+    <p>Manuel Rodríguez Peñalver</p>
+    <p>Profesor de Tecnología, Coordinador TDE y Escuelas 4.0</p>
+    <p>IES Sierra de los Filabres</p>
+    <p><a href="https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/manuales/index.html" style="color: var(--secondary); text-decoration: none;">Manual de Usuario</a></p>
+  </footer>
+  
   <script>
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
@@ -128,7 +171,7 @@
     async function loadProfesorDashboard() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) { 
-            window.location.href = '../auth/login.html'; // Corregir ruta
+            window.location.href = '../auth/login.html';
             return; 
         }
 
@@ -179,7 +222,7 @@
     
     logoutButton.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
-        window.location.href = '../auth/login.html'; // Corregir ruta
+        window.location.href = '../auth/login.html';
     });
 
     document.addEventListener('DOMContentLoaded', loadProfesorDashboard);
