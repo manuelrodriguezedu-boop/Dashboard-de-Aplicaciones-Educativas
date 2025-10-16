@@ -75,8 +75,11 @@
   </footer>
 
   <script>
+    // =================================================================================
+    // 1. CONFIGURACIÓN Y REFERENCIAS
+    // =================================================================================
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKRrCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJI-Z-9-p-k-h-p-z-h-x-y-i-w-i-c-m-9-s-Z-S-I-n-J-l-Z-i-I6-I-n-V-z-b-X-p-5-d-2-J-i-e-W-l-o-c-G-h-x-Y-X-R-l-d-X-h-y-I-i-w-i-c-m-9-s-Z-S-I-6-I-m-F-u-b-2-4-i-L-C-J-p-Y-X-Q-i-O-j-E-3-NTk-3-ODY-2-M-j-M-s-I-m-V-4-cCI-6-M-j-A-3-NTM-2-M-j-Y-y-M-3-0.Y3-c-K-R-r-C-B-Q-7-2-9-i-k-G-F-8-P-2-y-O-k-2-G-S-6-Q-E-d-7-N-u-d-5-n-u-8-L-D-o-9-8';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Referencias a los elementos del DOM
@@ -87,29 +90,58 @@
     const formMessage = document.getElementById('form-message');
     const pdfFileInput = document.getElementById('pdf-file');
 
-    // Función principal que se ejecuta al cargar la página
-    async function loadPage() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
+
+    // =================================================================================
+    // 2. FUNCIÓN PRINCIPAL DE CARGA Y VERIFICACIÓN
+    // =================================================================================
+    async function initializePage() {
+        // --- Paso A: Verificar si hay un usuario con sesión iniciada ---
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
         if (!session) { 
+            // Si no hay sesión, no se puede continuar. Redirigir al login.
             window.location.href = '../auth/login.html';
             return; 
         }
 
+        // --- Paso B: Verificar si el usuario con sesión iniciada tiene el rol de "profesor" ---
+        // Se hace una consulta a la tabla 'profesores' buscando una fila que coincida con el ID del usuario.
+        // Gracias a la política RLS que creamos, esta consulta SOLO tendrá éxito si el usuario es un profesor
+        // y está consultando su propia fila. Para un alumno, la consulta no devolverá nada.
         const { data: profesor, error: profileError } = await supabaseClient
             .from('profesores')
-            .select('id, nombre, apellidos')
+            .select('nombre, apellidos')
             .eq('id', session.user.id)
-            .single();
+            .single(); // .single() es clave: espera un único resultado o ninguno.
         
-        if (profileError || !profesor) {
+        // --- Paso C: Tomar una decisión basada en el resultado ---
+        if (profileError && profileError.code !== 'PGRST116') {
+            // PGRST116 es el código de "No se encontró la fila", lo cual es normal para un alumno.
+            // Si el error es cualquier otra cosa, es un problema real de base de datos.
+            console.error("Error inesperado al verificar el perfil del profesor:", profileError);
+            alert("Ocurrió un error al verificar tus permisos. Serás redirigido.");
+            window.location.href = '../auth/login.html';
+            return;
+        }
+
+        if (!profesor) {
+            // Si 'profesor' es null, significa que la consulta no encontró una coincidencia.
+            // Por lo tanto, el usuario no es un profesor.
             alert("Acceso denegado. Esta área es solo para profesores.");
+            // La redirección correcta es al panel del ALUMNO, ya que es un usuario válido pero sin permisos.
             window.location.href = 'dashboard.html';
             return;
         }
         
+        // --- Paso D: Si todo es correcto, configurar la página ---
+        // Si llegamos aquí, significa que el usuario es un profesor verificado.
         userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
     }
     
+
+    // =================================================================================
+    // 3. LISTENERS DE EVENTOS (INTERACCIONES DEL USUARIO)
+    // =================================================================================
+
     // Listener para el botón de "Salir"
     logoutButton.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
@@ -136,9 +168,7 @@
                     .from('retos-pdf')
                     .upload(filePath, file);
 
-                if (uploadError) {
-                    throw new Error('Error al subir el PDF: ' + uploadError.message);
-                }
+                if (uploadError) throw new Error('Error al subir el PDF: ' + uploadError.message);
                 pdfPath = uploadData.path;
             }
 
@@ -176,9 +206,14 @@
         }
     });
 
-    // Ejecutar la función de carga inicial
-    document.addEventListener('DOMContentLoaded', loadPage);
+    // =================================================================================
+    // 4. PUNTO DE ENTRADA
+    // =================================================================================
+    // Ejecuta la función principal de inicialización cuando el documento está listo.
+    document.addEventListener('DOMContentLoaded', initializePage);
   </script>
+</body>
+</html>
   
 </body>
 </html>
