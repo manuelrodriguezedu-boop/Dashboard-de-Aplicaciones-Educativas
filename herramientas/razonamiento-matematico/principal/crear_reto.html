@@ -96,8 +96,8 @@
 
             // --- 1. SUBIR EL ARCHIVO (SI EXISTE) ---
             if (file) {
-                // Crear un nombre de archivo único para evitar colisiones
-                const filePath = `public/${Date.now()}-${file.name}`;
+                
+                const filePath = `${Date.now()}-${file.name}`;
                 
                 const { data: uploadData, error: uploadError } = await supabaseClient
                     .storage
