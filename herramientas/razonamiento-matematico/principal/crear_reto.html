@@ -112,7 +112,8 @@
             // --- 1. SUBIR EL ARCHIVO (SI EXISTE) ---
             if (file) {
                 
-                const filePath = `${Date.now()}-${file.name}`;
+                const cleanFileName = file.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-._]/g, '');
+                const filePath = `${Date.now()}-${cleanFileName}`;
                 
                 const { data: uploadData, error: uploadError } = await supabaseClient
                     .storage
