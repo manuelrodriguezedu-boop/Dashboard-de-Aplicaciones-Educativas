@@ -73,12 +73,17 @@
     <p><a href="https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/manuales/index.html" style="color: var(--secondary); text-decoration: none;">Manual de Usuario</a></p>
   </footer>
 
-  <script>
+  <!-- En el <head> de tu HTML -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Tu script (al final del <body>) -->
+<script>
+    // 🔴 CORREGIDO: sin espacios en las credenciales
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKRrCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Referencias a los elementos del DOM
+    // Referencias al DOM
     const userNameDisplay = document.getElementById('user-name');
     const logoutButton = document.getElementById('logout-button');
     const crearRetoForm = document.getElementById('crear-reto-form');
@@ -86,12 +91,13 @@
     const formMessage = document.getElementById('form-message');
     const pdfFileInput = document.getElementById('pdf-file');
 
-    // Función principal que se ejecuta al cargar la página
+    let isSubmitting = false;
+
     async function loadPage() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { 
+        if (!session) {
             window.location.href = '../auth/login.html';
-            return; 
+            return;
         }
 
         const { data: profesor, error: profileError } = await supabaseClient
@@ -102,57 +108,73 @@
         
         if (profileError || !profesor) {
             alert("Acceso denegado. Esta área es solo para profesores.");
-            window.location.href = 'dashboard.html';
+            window.location.href = '../auth/login.html'; // 🔴 Corregido
             return;
         }
         
         userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
     }
     
-    // Listener para el botón de "Salir"
     logoutButton.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
         window.location.href = '../auth/login.html';
     });
     
-    // Listener para el formulario de CREAR RETO
     crearRetoForm.addEventListener('submit', async (event) => {
+        if (isSubmitting) return;
         event.preventDefault();
+        isSubmitting = true;
+        
         submitButton.disabled = true;
         submitButton.textContent = 'Guardando...';
         formMessage.style.display = 'none';
 
         try {
+            // 🔴 Validación de campos obligatorios
+            const titulo = document.getElementById('titulo').value.trim();
+            const descripcion = document.getElementById('descripcion').value.trim();
+            if (!titulo || !descripcion) {
+                throw new Error('El título y la descripción son obligatorios.');
+            }
+
             const file = pdfFileInput.files[0];
             let pdfPath = null;
 
             if (file) {
-                const cleanFileName = file.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-._]/g, '');
-                const filePath = `${Date.now()}-${cleanFileName}`;
+                // 🔴 Nombre de archivo más seguro
+                const cleanFileName = encodeURIComponent(file.name.replace(/\s+/g, '-'));
+                const filePath = `retos/${Date.now()}-${cleanFileName}`;
                 
                 const { data: uploadData, error: uploadError } = await supabaseClient
                     .storage
                     .from('retos-pdf')
-                    .upload(filePath, file);
+                    .upload(filePath, file, { upsert: false });
 
                 if (uploadError) {
-                    throw new Error('Error al subir el PDF: ' + uploadError.message);
+                    // 🔴 Mensaje de error amigable
+                    if (uploadError.message.includes('The resource already exists')) {
+                        throw new Error('Ya existe un archivo con ese nombre. Intenta con otro.');
+                    }
+                    throw new Error('Error al subir el archivo. Verifica tu conexión.');
                 }
                 pdfPath = uploadData.path;
             }
 
             const esRetoActual = document.getElementById('es-reto-actual').checked;
             if (esRetoActual) {
-                const { error: updateError } = await supabaseClient.from('retos').update({ es_reto_actual: false }).eq('es_reto_actual', true);
+                const { error: updateError } = await supabaseClient
+                    .from('retos')
+                    .update({ es_reto_actual: false })
+                    .eq('es_reto_actual', true);
                 if (updateError) throw updateError;
             }
 
             const { error: insertError } = await supabaseClient
                 .from('retos')
                 .insert([{
-                    titulo: document.getElementById('titulo').value,
-                    descripcion: document.getElementById('descripcion').value,
-                    enlace: document.getElementById('enlace').value || null,
+                    titulo,
+                    descripcion,
+                    enlace: document.getElementById('enlace').value.trim() || null,
                     es_reto_actual: esRetoActual,
                     pdf_path: pdfPath
                 }]);
@@ -166,17 +188,17 @@
 
         } catch (error) {
             console.error("Error al crear el reto:", error);
-            formMessage.textContent = 'Error: ' + error.message;
+            formMessage.textContent = 'Error: ' + (error.message || 'Algo salió mal.');
             formMessage.className = 'message-error';
             formMessage.style.display = 'block';
         } finally {
+            isSubmitting = false;
             submitButton.disabled = false;
             submitButton.textContent = 'Crear Reto';
         }
     });
 
-    // Ejecutar la función de carga inicial
     document.addEventListener('DOMContentLoaded', loadPage);
-  </script>
+</script>
 </body>
 </html>
