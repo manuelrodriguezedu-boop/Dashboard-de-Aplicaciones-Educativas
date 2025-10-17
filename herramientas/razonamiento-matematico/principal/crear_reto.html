@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -26,7 +27,7 @@
     .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
     .form-group input[type="text"], .form-group textarea { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
     .form-group input[type="file"] { padding: 0.5rem; }
-    .checkbox-group { display: flex; align-items: center; gap: 0.5rem; }
+    .checkbox-group { display: flex; align-items: flex-start; gap: 0.5rem; }
     .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border-radius: 6px; text-decoration: none; font-size: 1rem; font-weight: bold; transition: background-color 0.3s; border: none; cursor: pointer; }
     .btn:disabled { background: #95a5a6; cursor: not-allowed; }
     #form-message { margin-top: 1rem; font-weight: bold; padding: 0.8rem; border-radius: 6px; display: none; }
@@ -59,26 +60,28 @@
         <div class="form-group"><label for="descripcion">Descripción / Enunciado</label><textarea id="descripcion" required></textarea></div>
         <div class="form-group"><label for="pdf-file">Adjuntar PDF (Opcional)</label><input type="file" id="pdf-file" accept=".pdf"></div>
         <div class="form-group"><label for="enlace">Enlace Externo (Opcional)</label><input type="text" id="enlace"></div>
-        <div class="form-group checkbox-group"><input type="checkbox" id="es-reto-actual"><div><label for="es-reto-actual"><strong>Marcar como Reto de la Semana</strong></label><p>Si marcas esta casilla, el reto que actualmente sea el de la semana se desactivará automáticamente.</p></div></div>
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="es-reto-actual">
+          <div>
+            <label for="es-reto-actual"><strong>Marcar como Reto de la Semana</strong></label>
+            <p>Si marcas esta casilla, el reto que actualmente sea el de la semana se desactivará automáticamente.</p>
+          </div>
+        </div>
         <button type="submit" id="submit-button" class="btn">Crear Reto</button>
         <div id="form-message"></div>
       </form>
     </div>
   </main>
   
-   <footer>
+  <footer>
     <p>Manuel Rodríguez Peñalver</p>
     <p>Profesor de Tecnología, Coordinador TDE y Escuelas 4.0</p>
     <p>IES Sierra de los Filabres</p>
     <p><a href="https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/manuales/index.html" style="color: var(--secondary); text-decoration: none;">Manual de Usuario</a></p>
   </footer>
 
-  <!-- En el <head> de tu HTML -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- Tu script (al final del <body>) -->
-<script>
-    // 🔴 CORREGIDO: sin espacios en las credenciales
+  <script>
+    // Credenciales de Supabase (sin espacios)
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKRrCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -108,7 +111,7 @@
         
         if (profileError || !profesor) {
             alert("Acceso denegado. Esta área es solo para profesores.");
-            window.location.href = '../auth/login.html'; // 🔴 Corregido
+            window.location.href = '../auth/login.html';
             return;
         }
         
@@ -130,7 +133,6 @@
         formMessage.style.display = 'none';
 
         try {
-            // 🔴 Validación de campos obligatorios
             const titulo = document.getElementById('titulo').value.trim();
             const descripcion = document.getElementById('descripcion').value.trim();
             if (!titulo || !descripcion) {
@@ -141,7 +143,6 @@
             let pdfPath = null;
 
             if (file) {
-                // 🔴 Nombre de archivo más seguro
                 const cleanFileName = encodeURIComponent(file.name.replace(/\s+/g, '-'));
                 const filePath = `retos/${Date.now()}-${cleanFileName}`;
                 
@@ -151,7 +152,6 @@
                     .upload(filePath, file, { upsert: false });
 
                 if (uploadError) {
-                    // 🔴 Mensaje de error amigable
                     if (uploadError.message.includes('The resource already exists')) {
                         throw new Error('Ya existe un archivo con ese nombre. Intenta con otro.');
                     }
@@ -199,6 +199,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', loadPage);
-</script>
+  </script>
 </body>
 </html>
+```
