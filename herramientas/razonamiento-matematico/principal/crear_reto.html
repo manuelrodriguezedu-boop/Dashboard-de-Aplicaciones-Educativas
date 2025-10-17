@@ -157,7 +157,7 @@
 
             if (file) {
                 const cleanFileName = encodeURIComponent(file.name.replace(/\s+/g, '-'));
-                const filePath = `retos/${Date.now()}-${cleanFileName}`;
+                const filePath = `${Date.now()}-${cleanFileName}`;
                 
                 const { data: uploadData, error: uploadError } = await supabaseClient
                     .storage
