@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -103,10 +102,11 @@
             return;
         }
 
+        // 🔴 CORREGIDO: el campo en Supabase es 'user_id', no 'id'
         const { data: profesor, error: profileError } = await supabaseClient
             .from('profesores')
             .select('id, nombre, apellidos')
-            .eq('id', session.user.id)
+            .eq('user_id', session.user.id)  // 👈 Aquí estaba el error principal
             .single();
         
         if (profileError || !profesor) {
@@ -202,4 +202,3 @@
   </script>
 </body>
 </html>
-```
