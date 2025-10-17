@@ -95,28 +95,41 @@
 
     let isSubmitting = false;
 
-    async function loadPage() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-        window.location.href = '../auth/login.html';
-        return;
-    }
+   async function loadPage() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = '../auth/login.html';
+            return;
+        }
 
-    const {  data: profesor, error: profileError } = await supabaseClient
-        .from('profesores')
-        .select('id, nombre, apellidos')
-        .eq('id', session.user.id)
-        .single();
-    
-    if (profileError || !profesor) {
-        console.error("Error o profesor no encontrado:", profileError);
-        alert("Acceso denegado. Esta área es solo para profesores.");
-        window.location.href = '../auth/login.html';
-        return;
+        // --- LÍNEA DE DEPURACIÓN 1: MOSTRAR EL ID QUE ESTAMOS USANDO ---
+        console.log("Verificando permisos para el User ID:", session.user.id);
+
+        const { data: profesor, error } = await supabaseClient
+            .from('profesores')
+            .select('id, nombre, apellidos')
+            .eq('id', session.user.id)
+            .single();
+        
+        // --- LÍNEA DE DEPURACIÓN 2: MOSTRAR LA RESPUESTA DE SUPABASE ---
+        console.log("Respuesta de la tabla 'profesores':", profesor);
+        console.log("Error de la consulta (si existe):", error);
+        
+        if (error && error.code !== 'PGRST116') {
+            console.error("Error inesperado de Supabase:", error);
+            alert("Ocurrió un error al verificar tus permisos. Serás redirigido.");
+            window.location.href = '../auth/login.html';
+            return;
+        }
+
+        if (!profesor) {
+            alert("Acceso denegado. Esta área es solo para profesores.");
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        
+        userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
     }
-    
-    userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
-}
     
     logoutButton.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
