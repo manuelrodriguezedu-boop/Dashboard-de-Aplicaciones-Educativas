@@ -96,27 +96,27 @@
     let isSubmitting = false;
 
     async function loadPage() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) {
-            window.location.href = '../auth/login.html';
-            return;
-        }
-
-        // 🔴 CORREGIDO: el campo en Supabase es 'user_id', no 'id'
-        const { data: profesor, error: profileError } = await supabaseClient
-            .from('profesores')
-            .select('id, nombre, apellidos')
-            .eq('user_id', session.user.id)  // 👈 Aquí estaba el error principal
-            .single();
-        
-        if (profileError || !profesor) {
-            alert("Acceso denegado. Esta área es solo para profesores.");
-            window.location.href = '../auth/login.html';
-            return;
-        }
-        
-        userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
+    const {  { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        window.location.href = '../auth/login.html';
+        return;
     }
+
+    const {  data: profesor, error: profileError } = await supabaseClient
+        .from('profesores')
+        .select('id, nombre, apellidos')
+        .eq('id', session.user.id)
+        .single();
+    
+    if (profileError || !profesor) {
+        console.error("Error o profesor no encontrado:", profileError);
+        alert("Acceso denegado. Esta área es solo para profesores.");
+        window.location.href = '../auth/login.html';
+        return;
+    }
+    
+    userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
+}
     
     logoutButton.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
