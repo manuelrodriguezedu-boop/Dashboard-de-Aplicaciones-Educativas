@@ -72,134 +72,109 @@
     <p>IES Sierra de los Filabres</p>
     <p><a href="https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/manuales/index.html" style="color: var(--secondary); text-decoration: none;">Manual de Usuario</a></p>
   </footer>
-  
+
   <script>
-    // =================================================================================
-    // 1. CONFIGURACIÓN Y REFERENCIAS
-    // =================================================================================
-    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKRrCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Referencias a los elementos del DOM
+    // ... (Referencias al DOM, sin cambios) ...
     const userNameDisplay = document.getElementById('user-name');
-    const logoutButton = document.getElementById('logout-button');
-    const crearRetoForm = document.getElementById('crear-reto-form');
-    const submitButton = document.getElementById('submit-button');
-    const formMessage = document.getElementById('form-message');
-    const pdfFileInput = document.getElementById('pdf-file');
+    const retoTitulo = document.getElementById('reto-titulo');
+    const retoDescripcion = document.getElementById('reto-descripcion');
+    const pdfDownloadLink = document.getElementById('pdf-download-link');
+    const saveButton = document.getElementById('save-progress-btn');
+    const completeButton = document.getElementById('complete-btn');
 
-    // =================================================================================
-    // 2. FUNCIÓN PRINCIPAL DE CARGA Y VERIFICACIÓN
-    // =================================================================================
-    async function initializePage() {
-        // --- Paso A: Verificar si hay un usuario con sesión iniciada ---
+    let currentUserId = null;
+    let currentRetoId = null;
+
+    async function loadPage() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { 
+        if (!session) {
             window.location.href = '../auth/login.html';
-            return; 
+            return;
+        }
+        currentUserId = session.user.id;
+        userNameDisplay.textContent = session.user.email;
+
+        const params = new URLSearchParams(window.location.search);
+        currentRetoId = params.get('id');
+        if (!currentRetoId) {
+            alert("No se ha especificado un reto.");
+            window.location.href = '../principal/dashboard.html';
+            return;
         }
 
-        // --- Paso B: Verificar si el usuario con sesión iniciada tiene el rol de "profesor" ---
-        const { data: profesor, error } = await supabaseClient
-            .from('profesores')
-            .select('nombre, apellidos')
-            .eq('id', session.user.id)
+        // --- SECCIÓN CORREGIDA ---
+        const { data: retoData, error: retoError } = await supabaseClient
+            .from('retos')
+            .select('*, pdf_path')
+            .eq('id', currentRetoId)
             .single();
-        
-        // --- Paso C: Tomar una decisión basada en el resultado ---
-        if (error && error.code !== 'PGRST116') {
-            // Caso 1: Ha ocurrido un error REAL de base de datos (distinto a "no se encontró la fila").
-            console.error("Error inesperado de Supabase al verificar el rol del profesor:", error);
-            alert("Ocurrió un error al verificar tus permisos. Serás redirigido.");
-            window.location.href = '../auth/login.html';
+
+        if (retoError) {
+            console.error("Error cargando el reto:", retoError);
             return;
         }
 
-        if (!profesor) {
-            // Caso 2: La consulta funcionó, pero NO devolvió ningún perfil (el usuario NO es un profesor).
-            alert("Acceso denegado. Esta área es solo para profesores.");
-            window.location.href = 'dashboard.html'; // Lo enviamos al panel de alumno
-            return;
+        if (retoData) {
+            retoTitulo.textContent = retoData.titulo;
+            retoDescripcion.textContent = retoData.descripcion;
+
+            const pdfPath = retoData.pdf_path;
+            console.log("Ruta del PDF encontrada en la base de datos:", pdfPath); // Mensaje de depuración
+
+            if (pdfPath) {
+                // SINTAXIS CORRECTA PARA OBTENER LA URL PÚBLICA
+                const { data: urlData } = supabaseClient
+                    .storage
+                    .from('retos-pdf') // El nombre de nuestro bucket
+                    .getPublicUrl(pdfPath);
+                
+                console.log("URL pública generada por Supabase:", urlData.publicUrl); // Mensaje de depuración
+
+                if (urlData && urlData.publicUrl) {
+                    pdfDownloadLink.href = urlData.publicUrl;
+                    pdfDownloadLink.target = '_blank';
+                    pdfDownloadLink.style.display = 'inline-flex'; // Corregido para coincidir con el CSS
+                    console.log("Botón de descarga configurado y visible."); // Mensaje de depuración
+                } else {
+                    console.error("No se pudo obtener la URL pública para el PDF.");
+                }
+            }
         }
         
-        // --- Paso D: Si todo es correcto, configurar la página ---
-        // Si llegamos aquí, el usuario es un profesor verificado.
-        userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
+        // Cargar datos de la resolución (sin cambios en esta parte)
+        const { data: resolucionData, error: resolucionError } = await supabaseClient
+            .from('resoluciones')
+            .select('*')
+            .eq('id_alumno', currentUserId)
+            .eq('id_reto', currentRetoId)
+            .single();
+
+        if (resolucionData) {
+            // ... (el código para rellenar el formulario no cambia) ...
+        }
     }
 
-    // =================================================================================
-    // 3. LISTENERS DE EVENTOS (INTERACCIONES DEL USUARIO)
-    // =================================================================================
+    async function saveOrUpdateResolution(estado = 'en_progreso') {
+        // ... (esta función no necesita cambios) ...
+    }
 
-    // Listener para el botón de "Salir"
-    logoutButton.addEventListener('click', async () => {
-        await supabaseClient.auth.signOut();
-        window.location.href = '../auth/login.html';
+    // ... (el resto del script no necesita cambios) ...
+    document.querySelectorAll('.fase-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
+            header.querySelector('i').classList.toggle('fa-chevron-down');
+            header.querySelector('i').classList.toggle('fa-chevron-up');
+        });
     });
-    
-    // Listener para el formulario de CREAR RETO
-    crearRetoForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        submitButton.disabled = true;
-        submitButton.textContent = 'Guardando...';
-        formMessage.style.display = 'none';
-
-        try {
-            const file = pdfFileInput.files[0];
-            let pdfPath = null;
-
-            if (file) {
-                const cleanFileName = file.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-._]/g, '');
-                const filePath = `${Date.now()}-${cleanFileName}`;
-                
-                const { data: uploadData, error: uploadError } = await supabaseClient
-                    .storage
-                    .from('retos-pdf')
-                    .upload(filePath, file);
-
-                if (uploadError) throw new Error('Error al subir el PDF: ' + uploadError.message);
-                pdfPath = uploadData.path;
-            }
-
-            const esRetoActual = document.getElementById('es-reto-actual').checked;
-            if (esRetoActual) {
-                const { error: updateError } = await supabaseClient.from('retos').update({ es_reto_actual: false }).eq('es_reto_actual', true);
-                if (updateError) throw updateError;
-            }
-
-            const { error: insertError } = await supabaseClient
-                .from('retos')
-                .insert([{
-                    titulo: document.getElementById('titulo').value,
-                    descripcion: document.getElementById('descripcion').value,
-                    enlace: document.getElementById('enlace').value || null,
-                    es_reto_actual: esRetoActual,
-                    pdf_path: pdfPath
-                }]);
-
-            if (insertError) throw insertError;
-            
-            formMessage.textContent = '¡Reto creado con éxito!';
-            formMessage.className = 'message-success';
-            formMessage.style.display = 'block';
-            crearRetoForm.reset();
-
-        } catch (error) {
-            console.error("Error al crear el reto:", error);
-            formMessage.textContent = 'Error: ' + error.message;
-            formMessage.className = 'message-error';
-            formMessage.style.display = 'block';
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Crear Reto';
-        }
-    });
-
-    // =================================================================================
-    // 4. PUNTO DE ENTRADA
-    // =================================================================================
-    document.addEventListener('DOMContentLoaded', initializePage);
+    saveButton.addEventListener('click', () => saveOrUpdateResolution('en_progreso'));
+    completeButton.addEventListener('click', () => saveOrUpdateResolution('completado'));
+    document.addEventListener('DOMContentLoaded', loadPage);
   </script>
+  
 </body>
 </html>
