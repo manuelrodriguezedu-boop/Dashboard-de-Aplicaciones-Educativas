@@ -96,7 +96,7 @@
     let isSubmitting = false;
 
     async function loadPage() {
-    const {  { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
         window.location.href = '../auth/login.html';
         return;
