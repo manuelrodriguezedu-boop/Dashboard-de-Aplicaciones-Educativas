@@ -175,6 +175,26 @@
   this.classList.toggle('fa-eye-slash');
 });
 
+    // CAMBIO: Nueva lógica para el enlace de "Olvidaste tu contraseña"
+    forgotPasswordLink.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const email = prompt("Por favor, introduce tu correo electrónico para enviarte las instrucciones:");
+
+        if (!email) {
+            return; // El usuario canceló
+        }
+
+        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.href.replace('login.html', 'reset-password.html') // Asegura que la redirección sea correcta
+        });
+
+        if (error) {
+            alert("Error: " + error.message);
+        } else {
+            alert("Se han enviado las instrucciones para restablecer tu contraseña. ¡Revisa tu correo!");
+        }
+    });
+
 
     // --- LÓGICA DE LOGIN ACTUALIZADA CON REDIRECCIÓN POR ROL ---
     loginForm.addEventListener('submit', async (event) => {
