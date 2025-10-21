@@ -206,6 +206,20 @@
     const submitButton = document.getElementById('submit-button');
     const errorMessage = document.getElementById('error-message');
 
+     // Lógica para visualizar las contraseñas
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+      icon.addEventListener('click', function() {
+          const targetId = this.getAttribute('data-target');
+          const targetInput = document.getElementById(targetId);
+          
+          const type = targetInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          targetInput.setAttribute('type', type);
+          
+          this.classList.toggle('fa-eye');
+          this.classList.toggle('fa-eye-slash');
+      });
+    });
+
     registerForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       errorMessage.style.display = 'none';
@@ -249,19 +263,6 @@
         }
       });
 
-     // Lógica para visualizar las contraseñas
-    document.querySelectorAll('.toggle-password').forEach(icon => {
-      icon.addEventListener('click', function() {
-          const targetId = this.getAttribute('data-target');
-          const targetInput = document.getElementById(targetId);
-          
-          const type = targetInput.getAttribute('type') === 'password' ? 'text' : 'password';
-          targetInput.setAttribute('type', type);
-          
-          this.classList.toggle('fa-eye');
-          this.classList.toggle('fa-eye-slash');
-      });
-    });
 
       if (error) {
         errorMessage.textContent = error.message;
