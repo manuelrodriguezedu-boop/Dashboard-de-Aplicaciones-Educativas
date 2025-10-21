@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitar Código de Profesor - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ... (Usamos el mismo CSS que en login.html para mantener la coherencia) ... */
+    :root { --primary: #007934; --secondary: #36933F; --light: #C9C9C9; --dark: #2E2725; --card-bg: #ffffff; --text-main: #2E2725; --text-light: #555559; --error: #e74c3c; --shadow: rgba(0, 0, 0, 0.08); }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); padding: 2rem 1rem; }
+    .auth-container { background: var(--card-bg); padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); width: 100%; max-width: 480px; text-align: center; }
+    .logo { font-size: 2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 0.7rem; margin-bottom: 0.5rem; color: var(--primary); }
+    .auth-container h2 { margin-bottom: 1.5rem; color: var(--text-light); font-weight: 400; }
+    .form-group { margin-bottom: 1.2rem; text-align: left; }
+    .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.8rem; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 1rem; }
+    .submit-btn { width: 100%; padding: 0.9rem; margin-top: 0.5rem; border: none; border-radius: 6px; background: var(--secondary); color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+    .toggle-link { margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-light); }
+    .toggle-link a { color: var(--secondary); text-decoration: none; font-weight: bold; }
+    #form-message { margin-top: 1rem; font-weight: bold; padding: 0.8rem; border-radius: 6px; display: none; }
+    .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="logo"><i class="fas fa-chalkboard-teacher"></i><span>Solicitud de Profesor</span></div>
+    <h2>Pide tu código de invitación</h2>
+    <p style="text-align: left; color: var(--text-light); margin-bottom: 1.5rem;">Rellena este formulario para solicitar acceso como profesor. Revisaremos tu solicitud y te enviaremos un código de invitación a tu correo si es aprobada. Este proceso suele tardar 24/48 h. ¡Gracias por tu comprensión!</p>
+
+    <form id="solicitud-form">
+      <div class="form-group"><label for="nombre-completo">Nombre Completo</label><input type="text" id="nombre-completo" required></div>
+      <div class="form-group"><label for="email">Correo Electrónico de Contacto</label><input type="email" id="email" required></div>
+      <div class="form-group"><label for="centro">Centro Educativo</label><input type="text" id="centro" required></div>
+      <div class="form-group"><label for="mensaje">Mensaje</label><textarea id="mensaje" required rows="3" placeholder="Explica brevemente por qué solicitas el acceso..."></textarea></div>
+      <button type="submit" class="submit-btn" id="submit-button">Enviar Solicitud</button>
+      <div id="form-message"></div>
+    </form>
+    
+    <p class="toggle-link">
+      ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a>
+    </p>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKRrCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const solicitudForm = document.getElementById('solicitud-form');
+    const submitButton = document.getElementById('submit-button');
+    const formMessage = document.getElementById('form-message');
+
+    solicitudForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      submitButton.textContent = 'Enviando...';
+      formMessage.style.display = 'none';
+
+      try {
+        const { error } = await supabaseClient
+          .from('solicitudes_profesor')
+          .insert([{ 
+            nombre_completo: document.getElementById('nombre-completo').value,
+            email: document.getElementById('email').value,
+            centro_educativo: document.getElementById('centro').value || null,
+            mensaje: document.getElementById('mensaje').value || null
+          }]);
+        
+        if (error) {
+          // Si el email ya existe, también es un "éxito" para el usuario
+          if (error.code === '23505') { // Código de error para violación de constraint UNIQUE
+             formMessage.textContent = 'Gracias. Ya hemos recibido una solicitud de este correo y la estamos revisando.';
+             formMessage.className = 'message-success';
+          } else {
+            throw error;
+          }
+        } else {
+            formMessage.textContent = '¡Solicitud enviada con éxito! Recibirás una respuesta en tu correo en los próximos días.';
+            formMessage.className = 'message-success';
+        }
+        
+        solicitudForm.reset();
+
+      } catch (error) {
+        formMessage.textContent = 'Error al enviar la solicitud: ' + error.message;
+        formMessage.className = 'message-error';
+      } finally {
+        formMessage.style.display = 'block';
+        submitButton.disabled = false;
+        submitButton.textContent = 'Enviar Solicitud';
+      }
+    });
+  </script>
+
+</body>
+</html>```
+
+---
+
+### **Paso 3: Añade el Enlace en tu Página de Registro**
+
+El último paso es hacer que esta nueva página sea accesible.
+
+1.  Abre tu archivo `registro.html`.
+2.  Busca el pie de página o un lugar adecuado y añade un enlace a tu nueva página. Por ejemplo, debajo del enlace para iniciar sesión:
+
+    ```html
+    <!-- DENTRO DE registro.html -->
+    <p class="toggle-link">
+      ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a>
+    </p>
+    <!-- LÍNEA NUEVA AÑADIDA -->
+    <p class="toggle-link" style="margin-top: 0.5rem;">
+      ¿Eres profesor? <a href="solicitar_codigo.html">Solicita aquí tu código de invitación</a>
+    </p>
+    ```
+
+### **Tu Flujo de Trabajo como Administrador**
+
+1.  De vez en cuando, **revisarás la tabla `solicitudes_profesor`** en el Table Editor de Supabase.
+2.  Verás las solicitudes con estado "pendiente".
+3.  Si apruebas una, irás a la tabla `invitacion_codigos`, **crearás un nuevo código de un solo uso**, y se lo enviarás por email al profesor.
+4.  Opcionalmente, puedes cambiar el `estado` en la tabla `solicitudes_profesor` a "aprobado".
+
+¡Y listo! Has creado un sistema de solicitud de roles de profesor semi-automatizado y profesional.
