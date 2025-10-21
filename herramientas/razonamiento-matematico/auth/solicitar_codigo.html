@@ -98,33 +98,4 @@
   </script>
 
 </body>
-</html>```
-
----
-
-### **Paso 3: Añade el Enlace en tu Página de Registro**
-
-El último paso es hacer que esta nueva página sea accesible.
-
-1.  Abre tu archivo `registro.html`.
-2.  Busca el pie de página o un lugar adecuado y añade un enlace a tu nueva página. Por ejemplo, debajo del enlace para iniciar sesión:
-
-    ```html
-    <!-- DENTRO DE registro.html -->
-    <p class="toggle-link">
-      ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a>
-    </p>
-    <!-- LÍNEA NUEVA AÑADIDA -->
-    <p class="toggle-link" style="margin-top: 0.5rem;">
-      ¿Eres profesor? <a href="solicitar_codigo.html">Solicita aquí tu código de invitación</a>
-    </p>
-    ```
-
-### **Tu Flujo de Trabajo como Administrador**
-
-1.  De vez en cuando, **revisarás la tabla `solicitudes_profesor`** en el Table Editor de Supabase.
-2.  Verás las solicitudes con estado "pendiente".
-3.  Si apruebas una, irás a la tabla `invitacion_codigos`, **crearás un nuevo código de un solo uso**, y se lo enviarás por email al profesor.
-4.  Opcionalmente, puedes cambiar el `estado` en la tabla `solicitudes_profesor` a "aprobado".
-
-¡Y listo! Has creado un sistema de solicitud de roles de profesor semi-automatizado y profesional.
+</html>
