@@ -44,7 +44,7 @@
       <span id="user-name">Guía de Ayuda</span>
 
 <button type="button" class="logout-btn" onclick="volverAlPanel()">
-  <i class="fas fa-arrow-left"></i> Volver al Panel
+  <i class="fas fa-arrow-left"></i> Volver
 </button>
    </div>
   </header>
@@ -88,19 +88,28 @@
     <p>&copy; 2025 Manuel Rodríguez Peñalver. Todos los derechos reservados.</p>
   </footer>
   
+  <!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function volverAlPanel() {
-  // Verifica si el usuario está "logueado" (ejemplo usando localStorage)
-  const usuarioLogueado = localStorage.getItem('usuarioLogueado');
+  // ⚠️ Reemplaza estas dos líneas con tus propias claves de Supabase
+  const supabaseUrl = 'https://usmzywbbyihphqateuxr.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
 
-  if (usuarioLogueado === 'true') {
-    // Si está logueado, va al dashboard
-    window.location.href = '../principal/dashboard.html';
-  } else {
-    // Si NO está logueado, va a la página de login
-    window.location.href = '../auth/login.html';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+</script>
+<script>
+  async function volverAlPanel() {
+    // Pide la sesión actual a Supabase
+    const { data } = await supabase.auth.getSession();
+    
+    if (data.session) {
+      // Usuario autenticado → dashboard
+      window.location.href = '../principal/dashboard.html';
+    } else {
+      // Usuario no autenticado → login
+      window.location.href = '../auth/login.html';
+    }
   }
-}
 </script>
 </body>
 </html>
