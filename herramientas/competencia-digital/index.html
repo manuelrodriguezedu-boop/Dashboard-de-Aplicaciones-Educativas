@@ -250,9 +250,16 @@
         <input type="text" id="nombre" name="nombre" required>
       </div>
       <div class="form-group">
-        <label for="curso">Curso *</label>
-        <input type="text" id="curso" name="curso" placeholder="Ej. 1º ESO, 2º Bachillerato, etc." required>
-      </div>
+  <label for="curso">Curso *</label>
+  <select id="curso" name="curso" required>
+    <option value="">— Selecciona un curso —</option>
+    <option value="1º ESO">1º ESO</option>
+    <option value="2º ESO">2º ESO</option>
+    <option value="3º ESO">3º ESO</option>
+    <option value="4º ESO">4º ESO</option>
+    <option value="PROFESOR">PROFESOR</option>
+  </select>
+</div>
     </div>
     <div class="form-row">
       <div class="form-group">
