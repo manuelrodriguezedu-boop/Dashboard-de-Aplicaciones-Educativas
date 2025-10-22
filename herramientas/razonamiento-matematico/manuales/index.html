@@ -42,7 +42,9 @@
     <div class="logo"><i class="fas fa-brain"></i><span>RazonaApp</span></div>
     <div class="user-info">
       <span id="user-name">Guía de Ayuda</span>
-      <a href="../principal/dashboard.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Volver al Panel</a>
+<a href="../principal/dashboard.html" class="logout-btn" onclick="if (window.history.length > 1) { history.back(); return false; }">
+  <i class="fas fa-arrow-left"></i> Volver
+</a>
     </div>
   </header>
   
