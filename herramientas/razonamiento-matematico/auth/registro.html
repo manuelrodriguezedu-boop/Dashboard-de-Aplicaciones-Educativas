@@ -247,23 +247,23 @@
           return;
       }
       
-      // CAMBIO 2: Enviar los datos, incluyendo el código de invitación, a Supabase
-      const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            // Datos para la tabla 'alumnos'
-            nombre: name,
-            apellidos: lastname,
-            curso: course,
-            grupo: group,
-            // Dato extra para la lógica de roles en el trigger
-            codigo_invitacion: inviteCode || null // Envía el código, o 'null' si está vacío
-          }
-        }
-      });
-
+     const { data, error } = await supabaseClient.auth.signUp({
+  email: email,
+  password: password,
+  options: {
+    // La nueva opción que le dice a Supabase a dónde redirigir
+    emailRedirectTo: 'https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/auth/login.html',
+    
+    data: {
+      // ... (tus datos de nombre, apellidos, etc. se quedan como estaban)
+      nombre: name,
+      apellidos: lastname,
+      curso: course,
+      grupo: group,
+      codigo_invitacion: inviteCode || null
+    }
+  }
+});
 
       if (error) {
         errorMessage.textContent = error.message;
