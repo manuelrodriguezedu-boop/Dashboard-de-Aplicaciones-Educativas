@@ -173,8 +173,19 @@
             header.querySelector('i').classList.toggle('fa-chevron-up');
         });
     });
-    saveButton.addEventListener('click', () => saveOrUpdateResolution('en_progreso'));
-    completeButton.addEventListener('click', () => saveOrUpdateResolution('completado'));
+saveButton.addEventListener('click', async () => {
+    saveButton.disabled = true;
+    saveButton.textContent = 'Guardando...';
+    await saveOrUpdateResolution('en_progreso');
+    saveButton.disabled = false;
+    saveButton.innerHTML = '<i class="fas fa-save"></i> Guardar Progreso';
+});
+
+completeButton.addEventListener('click', async () => {
+    completeButton.disabled = true;
+    completeButton.textContent = 'Enviando...';
+    await saveOrUpdateResolution('completado');
+});
     document.addEventListener('DOMContentLoaded', loadPage);
   </script>
 
