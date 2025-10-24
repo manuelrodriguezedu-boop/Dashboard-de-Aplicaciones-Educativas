@@ -183,12 +183,12 @@
     }
 
     // Función "Motor de Logros" para asignar insignias
-async function checkAndAwardBadges(userId) {
+    async function checkAndAwardBadges(userId) {
     console.log("Comprobando si se han ganado insignias...");
 
-    // --- Lógica para la insignia "Primer Reto" ---
+    // --- PASO 1: OBTENER LOS DATOS NECESARIOS ---
     
-    // 1. Contar cuántos retos ha completado el usuario
+    // Contar cuántos retos ha completado el usuario en total
     const { count, error: countError } = await supabaseClient
         .from('resoluciones')
         .select('*', { count: 'exact', head: true })
@@ -201,56 +201,56 @@ async function checkAndAwardBadges(userId) {
     }
     console.log(`El usuario ha completado un total de ${count} reto(s).`);
 
-    // 2. Si el total es exactamente 1, es candidato a la insignia
-    if (count === 1) {
-        try {
-            // 3. OBTENER EL UUID DE LA INSIGNIA DESDE EL CATÁLOGO
-            const { data: insigniaData, error: insigniaError } = await supabaseClient
-                .from('catalogo_de_insignias')
-                .select('id_insignia')
-                .eq('nombre_insignia', 'Primer Reto') // Buscamos por el nombre
-                .single();
+    // Obtener la lista de insignias que el usuario YA tiene, para no dárselas dos veces
+    const { data: insigniasActuales, error: currentBadgesError } = await supabaseClient
+        .from('insignias_obtenidas')
+        .select('id_insignia')
+        .eq('id_alumno', userId);
+    
+    if (currentBadgesError) {
+        console.error("Error al obtener las insignias actuales del usuario:", currentBadgesError);
+        return;
+    }
+    // Creamos un Set para una búsqueda más rápida y eficiente
+    const setInsigniasActuales = new Set(insigniasActuales.map(b => b.id_insignia));
+    
 
-            if (insigniaError || !insigniaData) {
-                throw new Error("No se pudo encontrar la insignia 'Primer Reto' en el catálogo.");
-            }
-            
-            const idInsigniaUuid = insigniaData.id_insignia;
-            console.log("UUID de la insignia 'Primer Reto' es:", idInsigniaUuid);
+    // --- PASO 2: DEFINIR LAS REGLAS PARA CADA INSIGNIA ---
+    
+    // Objeto que define cada insignia, su ID en la BD, y la condición para ganarla
+    const reglasInsignias = {
+        'Primer Reto':          { id: 'primer-reto-uuid',          condicion: count === 1 },
+        'Resolutor Novato':     { id: 'resolutor-novato-uuid',     condicion: count >= 5 },
+        'Resolutor Competente': { id: 'resolutor-competente-uuid', condicion: count >= 15 },
+        'Maestro Resolutor':    { id: 'maestro-resolutor-uuid',    condicion: count >= 30 }
+        //_Aquí podrías añadir más reglas, como 'Maestro de la Analogía'_
+    };
 
-            // 4. Comprobar si el alumno ya tiene esta insignia (usando el UUID)
-            const { data: existingBadge, error: checkError } = await supabaseClient
+    // --- PASO 3: RECORRER LAS REGLAS Y ASIGNAR INSIGNIAS ---
+
+    for (const nombreInsignia in reglasInsignias) {
+        const regla = reglasInsignias[nombreInsignia];
+        
+        // Comprobar si se cumple la condición Y si el usuario NO tiene ya esa insignia
+        if (regla.condicion && !setInsigniasActuales.has(regla.id)) {
+            console.log(`Condición cumplida para "${nombreInsignia}". Asignando insignia...`);
+
+            const { error: insertError } = await supabaseClient
                 .from('insignias_obtenidas')
-                .select('id_insignia')
-                .eq('id_alumno', userId)
-                .eq('id_insignia', idInsigniaUuid)
-                .maybeSingle();
+                .insert({ 
+                    id_alumno: userId, 
+                    id_insignia: regla.id 
+                });
 
-            if (checkError) throw checkError;
-
-            // 5. Si no la tiene (!existingBadge), se la asignamos (usando el UUID)
-            if (!existingBadge) {
-                console.log("El usuario no tiene la insignia. Asignándola ahora...");
-                const { error: insertError } = await supabaseClient
-                    .from('insignias_obtenidas')
-                    .insert({ 
-                        id_alumno: userId, 
-                        id_insignia: idInsigniaUuid 
-                    });
-
-                if (insertError) throw insertError;
-
-                console.log("¡Insignia 'Primer Reto' ganada!");
-                alert("¡Enhorabuena! Has ganado la insignia: Primer Reto");
+            if (insertError) {
+                console.error(`Error al asignar la insignia '${nombreInsignia}':`, insertError);
             } else {
-                console.log("El usuario ya tiene esta insignia.");
+                console.log(`¡Insignia '${nombreInsignia}' ganada!`);
+                // Mostramos una alerta al usuario para que sepa que ha ganado algo
+                alert(`¡Enhorabuena! Has ganado la insignia: ${nombreInsignia}`);
             }
-        } catch (error) {
-            console.error("Error en el motor de logros:", error.message);
         }
     }
-    
-    // Aquí puedes añadir la lógica para otras insignias (ej. if count === 5, etc.)
 }
 
     // =================================================================================
