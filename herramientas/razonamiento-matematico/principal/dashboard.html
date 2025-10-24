@@ -191,6 +191,8 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    
+    // Referencias al DOM
     const userNameDisplay = document.getElementById('user-name');
     const welcomeTextDisplay = document.getElementById('welcome-text');
     const logoutButton = document.getElementById('logout-button');
@@ -201,119 +203,131 @@
     const progresoContador = document.querySelector('#progreso-widget .progreso-contador');
     const progresoBarra = document.querySelector('#progreso-widget .progress-bar-fill');
     const rachaContador = document.querySelector('#progreso-widget .racha-contador');
+    const retosResueltosContador = document.getElementById('retos-resueltos-contador');
 
-    async function loadDashboardData() { /* ... (sin cambios) ... */ }
-    async function fetchAlumnoProfile(userId) { /* ... (sin cambios) ... */ }
-    async function fetchRetoActual() { /* ... (sin cambios) ... */ }
-    async function fetchUltimaReflexion(userId) { /* ... (sin cambios) ... */ }
-    async function fetchActividadSemanal(userId) { /* ... (sin cambios) ... */ }
-    function updateProfileUI(alumno) { /* ... (sin cambios) ... */ }
-    function updateRetoUI(reto) { /* ... (sin cambios) ... */ }
-    function updateDiarioUI(diario) { /* ... (sin cambios) ... */ }
-    function updateProgresoUI(count) { /* ... (sin cambios) ... */ }
+    // --- FUNCIÓN PRINCIPAL DE CARGA ---
+    async function loadDashboardData() {
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError || !session) {
+            window.location.href = '../auth/login.html';
+            return;
+        }
+        const user = session.user;
+
+// Lanzamos todas las consultas a la base de datos en paralelo
+        const [alumnoData, retoData, diarioData, actividadData, retosResueltosCount] = await Promise.all([
+            fetchAlumnoProfile(user.id),
+            fetchRetoActual(),
+            fetchUltimaReflexion(user.id),
+            fetchActividadSemanal(user.id),
+            fetchRetosResueltosCount(user.id)
+        ]);
+
+      
+// Actualizamos la interfaz con los resultados
+        updateProfileUI(alumnoData);
+        updateRetoUI(retoData);
+        updateDiarioUI(diarioData, retosResueltosCount);
+        updateProgresoUI(actividadData);
+    }
+
+        // --- FUNCIONES PARA OBTENER DATOS DE SUPABASE ---
+
+    async function fetchAlumnoProfile(userId) {
+        const { data, error } = await supabaseClient.from('alumnos').select('nombre, apellidos').eq('id_alumno', userId).single();
+        if (error) console.error('Error al cargar perfil:', error);
+        return data;
+    }
+
+    async function fetchRetoActual() {
+        const { data, error } = await supabaseClient.from('retos').select('id, titulo, descripcion, enlace').eq('es_reto_actual', true).limit(1).single();
+        if (error) console.error('Error al cargar reto:', error);
+        return data;
+    }
+
+    async function fetchUltimaReflexion(userId) {
+        const { data, error } = await supabaseClient.from('diario').select('reflexion').eq('id_alumno', userId).order('fecha_creacion', { ascending: false }).limit(1).single();
+        if (error) console.error('Error al cargar diario:', error);
+        return data;
+    }
+    
+    async function fetchActividadSemanal(userId) {
+        const sieteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { error, count } = await supabaseClient.from('actividad').select('*', { count: 'exact', head: true }).eq('id_alumno', userId).gte('fecha_completado', sieteDiasAtras);
+        if (error) console.error('Error al cargar actividad:', error);
+        return count;
+    }
+    
+    async function fetchRetosResueltosCount(userId) {
+        const { count, error } = await supabaseClient
+            .from('resoluciones')
+            .select('*', { count: 'exact', head: true })
+            .eq('id_alumno', userId)
+            .eq('estado', 'completado');
+        if (error) {
+            console.error('Error al contar retos resueltos:', error);
+            return 0;
+        }
+        return count;
+    }
+    
+    // --- FUNCIONES PARA ACTUALIZAR LA INTERFAZ ---
+
+    function updateProfileUI(alumno) {
+        if (alumno) {
+            userNameDisplay.textContent = `${alumno.nombre} ${alumno.apellidos}`;
+            welcomeTextDisplay.textContent = `¡Hola de nuevo, ${alumno.nombre}! Aquí tienes tu resumen semanal.`;
+        } else {
+            supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    userNameDisplay.textContent = session.user.email || 'Usuario';
+                }
+            });
+        }
+    }
+
+    function updateRetoUI(reto) {
+        if (reto) {
+            retoTitulo.textContent = reto.titulo;
+            retoDescripcion.textContent = reto.descripcion;
+            retoEnlace.href = `reto.html?id=${reto.id}`;
+        } else {
+            retoTitulo.textContent = "No hay reto esta semana";
+            retoDescripcion.textContent = "Vuelve más tarde para ver el próximo desafío.";
+            retoEnlace.style.display = 'none';
+        }
+    }
+
+    function updateDiarioUI(diario, count) {
+        if (diario) {
+            diarioReflexion.textContent = `"${diario.reflexion}"`;
+        } else {
+            diarioReflexion.textContent = "Aún no has escrito ninguna reflexión. ¡Anímate a empezar!";
+        }
+        retosResueltosContador.textContent = count || 0;
+    }
+
+    function updateProgresoUI(count) {
+        const objetivoSemanal = 20;
+        const numActividades = count || 0;
+        progresoContador.textContent = `${numActividades} / ${objetivoSemanal}`;
+        const porcentaje = Math.min((numActividades / objetivoSemanal) * 100, 100);
+        progresoBarra.style.width = `${porcentaje}%`;
+        rachaContador.textContent = `${numActividades} actividades esta semana`;
+    }
+    
+    // --- LISTENERS DE EVENTOS ---
 
     logoutButton.addEventListener('click', async () => {
         try {
             await supabaseClient.auth.signOut();
-            window.location.href = '../../../index.html';
+            window.location.href = '../auth/login.html';
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        async function loadDashboardData() {
-            const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-            if (sessionError || !session) {
-                window.location.href = 'login.html';
-                return;
-            }
-            const user = session.user;
-
-            const [alumnoData, retoData, diarioData, actividadData] = await Promise.all([
-                fetchAlumnoProfile(user.id),
-                fetchRetoActual(),
-                fetchUltimaReflexion(user.id),
-                fetchActividadSemanal(user.id)
-            ]);
-
-            updateProfileUI(alumnoData);
-            updateRetoUI(retoData);
-            updateDiarioUI(diarioData);
-            updateProgresoUI(actividadData);
-        }
-
-        async function fetchAlumnoProfile(userId) {
-            const { data, error } = await supabaseClient.from('alumnos').select('nombre, apellidos').eq('id_alumno', userId).single();
-            if (error) console.error('Error al cargar perfil:', error);
-            return data;
-        }
-
-        async function fetchRetoActual() {
-            const { data, error } = await supabaseClient.from('retos').select('id, titulo, descripcion, enlace').eq('es_reto_actual', true).limit(1).single();
-            if (error) console.error('Error al cargar reto:', error);
-            return data;
-        }
-
-        async function fetchUltimaReflexion(userId) {
-            const { data, error } = await supabaseClient.from('diario').select('reflexion').eq('id_alumno', userId).order('fecha_creacion', { ascending: false }).limit(1).single();
-            if (error) console.error('Error al cargar diario:', error);
-            return data;
-        }
-        
-        async function fetchActividadSemanal(userId) {
-            const sieteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-            const { data, error, count } = await supabaseClient.from('actividad').select('*', { count: 'exact', head: true }).eq('id_alumno', userId).gte('fecha_completado', sieteDiasAtras);
-            if (error) console.error('Error al cargar actividad:', error);
-            return count;
-        }
-
-        function updateProfileUI(alumno) {
-            if (alumno) {
-                userNameDisplay.textContent = `${alumno.nombre} ${alumno.apellidos}`;
-                welcomeTextDisplay.textContent = `¡Hola de nuevo, ${alumno.nombre}! Aquí tienes tu resumen semanal.`;
-            } else {
-                supabaseClient.auth.getSession().then(({ data: { session } }) => {
-                    if (session) {
-                        userNameDisplay.textContent = session.user.email || 'Usuario';
-                    }
-                });
-            }
-        }
-
-        function updateRetoUI(reto) {
-            if (reto) {
-                retoTitulo.textContent = reto.titulo;
-                retoDescripcion.textContent = reto.descripcion;
-                retoEnlace.href = `reto.html?id=${reto.id}`;
-            } else {
-                retoTitulo.textContent = "No hay reto esta semana";
-                retoDescripcion.textContent = "Vuelve más tarde para ver el próximo desafío.";
-                retoEnlace.style.display = 'none';
-            }
-        }
-
-        function updateDiarioUI(diario) {
-            if (diario) {
-                diarioReflexion.textContent = `"${diario.reflexion}"`;
-            } else {
-                diarioReflexion.textContent = "Aún no has escrito ninguna reflexión. ¡Anímate a empezar!";
-            }
-        }
-
-        function updateProgresoUI(count) {
-            const objetivoSemanal = 20;
-            const numActividades = count || 0;
-            
-            progresoContador.textContent = `${numActividades} / ${objetivoSemanal}`;
-            const porcentaje = Math.min((numActividades / objetivoSemanal) * 100, 100);
-            progresoBarra.style.width = `${porcentaje}%`;
-            
-            rachaContador.textContent = `${numActividades} actividades esta semana`;
-        }
-        
-        loadDashboardData();
-    });
+    document.addEventListener('DOMContentLoaded', loadDashboardData);
   </script>
 </body>
 </html>
