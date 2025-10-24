@@ -246,10 +246,19 @@
     }
 
     async function fetchUltimaReflexion(userId) {
-        const { data, error } = await supabaseClient.from('diario').select('reflexion').eq('id_alumno', userId).order('fecha_creacion', { ascending: false }).limit(1).single();
-        if (error) console.error('Error al cargar diario:', error);
-        return data;
+    const { data, error } = await supabaseClient
+        .from('resoluciones') 
+        .select('fase4_reflexion')
+        .eq('id_alumno', userId)
+        .not('fase4_reflexion', 'is', null) 
+        .order('fecha_actualizacion', { ascending: false }) 
+        .limit(1)
+        .single();
+        
+    if (error && error.code !== 'PGRST116') { console.error('Error al cargar la última reflexión:', error);
     }
+    return data;
+}
     
     async function fetchActividadSemanal(userId) {
         const sieteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -299,13 +308,14 @@
     }
 
     function updateDiarioUI(diario, count) {
-        if (diario) {
-            diarioReflexion.textContent = `"${diario.reflexion}"`;
-        } else {
-            diarioReflexion.textContent = "Aún no has escrito ninguna reflexión. ¡Anímate a empezar!";
-        }
-        retosResueltosContador.textContent = count || 0;
+        if (diario && diario.fase4_reflexion) {
+        diarioReflexion.textContent = `"${diario.fase4_reflexion}"`;
+    } else {
+        diarioReflexion.textContent = "Aún no has escrito ninguna reflexión. ¡Anímate a empezar!";
     }
+   
+    retosResueltosContador.textContent = count || 0;
+}
 
     function updateProgresoUI(count) {
         const objetivoSemanal = 20;
