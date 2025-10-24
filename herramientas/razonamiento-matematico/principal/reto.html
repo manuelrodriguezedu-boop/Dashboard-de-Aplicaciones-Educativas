@@ -75,12 +75,11 @@
     <p>IES Sierra de los Filabres</p>
   </footer>
 
-  <script>
+ <script>
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKRrCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ... (Referencias al DOM, sin cambios) ...
     const userNameDisplay = document.getElementById('user-name');
     const retoTitulo = document.getElementById('reto-titulo');
     const retoDescripcion = document.getElementById('reto-descripcion');
@@ -108,7 +107,6 @@
             return;
         }
 
-        // --- SECCIÓN CORREGIDA ---
         const { data: retoData, error: retoError } = await supabaseClient
             .from('retos')
             .select('*, pdf_path')
@@ -123,31 +121,17 @@
         if (retoData) {
             retoTitulo.textContent = retoData.titulo;
             retoDescripcion.textContent = retoData.descripcion;
-
             const pdfPath = retoData.pdf_path;
-            console.log("Ruta del PDF encontrada en la base de datos:", pdfPath); // Mensaje de depuración
-
             if (pdfPath) {
-                // SINTAXIS CORRECTA PARA OBTENER LA URL PÚBLICA
-                const { data: urlData } = supabaseClient
-                    .storage
-                    .from('retos-pdf') // El nombre de nuestro bucket
-                    .getPublicUrl(pdfPath);
-                
-                console.log("URL pública generada por Supabase:", urlData.publicUrl); // Mensaje de depuración
-
+                const { data: urlData } = supabaseClient.storage.from('retos-pdf').getPublicUrl(pdfPath);
                 if (urlData && urlData.publicUrl) {
                     pdfDownloadLink.href = urlData.publicUrl;
                     pdfDownloadLink.target = '_blank';
-                    pdfDownloadLink.style.display = 'inline-flex'; // Corregido para coincidir con el CSS
-                    console.log("Botón de descarga configurado y visible."); // Mensaje de depuración
-                } else {
-                    console.error("No se pudo obtener la URL pública para el PDF.");
+                    pdfDownloadLink.style.display = 'inline-flex';
                 }
             }
         }
         
-        // Cargar datos de la resolución (sin cambios en esta parte)
         const { data: resolucionData, error: resolucionError } = await supabaseClient
             .from('resoluciones')
             .select('*')
@@ -155,16 +139,56 @@
             .eq('id_reto', currentRetoId)
             .single();
 
+        // --- CÓDIGO RESTAURADO ---
         if (resolucionData) {
-            // ... (el código para rellenar el formulario no cambia) ...
+            const resolucion = resolucionData;
+            if (resolucion.fase1_comprension) {
+                document.getElementById('f1-datos').value = resolucion.fase1_comprension.datos || '';
+                document.getElementById('f1-objetivo').value = resolucion.fase1_comprension.objetivo || '';
+            }
+            if (resolucion.fase2_plan) {
+                document.getElementById('f2-estrategia').value = resolucion.fase2_plan.estrategia || '';
+                document.getElementById('f2-plan').value = resolucion.fase2_plan.plan || '';
+            }
+            document.getElementById('f3-ejecucion').value = resolucion.fase3_ejecucion || '';
+            document.getElementById('f4-reflexion').value = resolucion.fase4_reflexion || '';
         }
     }
 
+    // --- FUNCIÓN COMPLETADA ---
     async function saveOrUpdateResolution(estado = 'en_progreso') {
-        // ... (esta función no necesita cambios) ...
+        const resolutionPayload = {
+            id_alumno: currentUserId,
+            id_reto: currentRetoId,
+            fase1_comprension: {
+                datos: document.getElementById('f1-datos').value,
+                objetivo: document.getElementById('f1-objetivo').value,
+            },
+            fase2_plan: {
+                estrategia: document.getElementById('f2-estrategia').value,
+                plan: document.getElementById('f2-plan').value,
+            },
+            fase3_ejecucion: document.getElementById('f3-ejecucion').value,
+            fase4_reflexion: document.getElementById('f4-reflexion').value,
+            estado: estado,
+            fecha_actualizacion: new Date().toISOString()
+        };
+        
+        const { error } = await supabaseClient.from('resoluciones').upsert(resolutionPayload);
+
+        if (error) {
+            alert("Error al guardar: " + error.message);
+        } else {
+            if (estado === 'completado') {
+                alert("¡Reto completado y enviado!");
+                window.location.href = '../principal/dashboard.html';
+            } else {
+                alert("Progreso guardado con éxito.");
+            }
+        }
     }
 
-    // ... (el resto del script no necesita cambios) ...
+    // Lógica para los acordeones
     document.querySelectorAll('.fase-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
@@ -173,19 +197,23 @@
             header.querySelector('i').classList.toggle('fa-chevron-up');
         });
     });
-saveButton.addEventListener('click', async () => {
-    saveButton.disabled = true;
-    saveButton.textContent = 'Guardando...';
-    await saveOrUpdateResolution('en_progreso');
-    saveButton.disabled = false;
-    saveButton.innerHTML = '<i class="fas fa-save"></i> Guardar Progreso';
-});
+    
+    // --- LISTENERS CORREGIDOS Y UNIFICADOS ---
+    saveButton.addEventListener('click', async () => {
+        saveButton.disabled = true;
+        saveButton.innerHTML = 'Guardando...'; // innerHTML para que no se coma el icono
+        await saveOrUpdateResolution('en_progreso');
+        saveButton.disabled = false;
+        saveButton.innerHTML = '<i class="fas fa-save"></i> Guardar Progreso';
+    });
 
-completeButton.addEventListener('click', async () => {
-    completeButton.disabled = true;
-    completeButton.textContent = 'Enviando...';
-    await saveOrUpdateResolution('completado');
-});
+    completeButton.addEventListener('click', async () => {
+        completeButton.disabled = true;
+        completeButton.innerHTML = 'Enviando...';
+        await saveOrUpdateResolution('completado');
+        // No se reactiva porque la página redirige
+    });
+
     document.addEventListener('DOMContentLoaded', loadPage);
   </script>
 
