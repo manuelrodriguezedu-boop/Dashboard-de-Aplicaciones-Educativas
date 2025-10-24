@@ -214,30 +214,28 @@
 
     // --- FUNCIÓN PRINCIPAL DE CARGA ---
     async function loadDashboardData() {
-        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-        if (sessionError || !session) {
-            window.location.href = '../auth/login.html';
-            return;
-        }
-        const user = session.user;
-
-// Lanzamos todas las consultas a la base de datos en paralelo
-        const [alumnoData, retoData, diarioData, actividadData, retosResueltosCount] = await Promise.all([
-            fetchAlumnoProfile(user.id),
-            fetchRetoActual(),
-            fetchUltimaReflexion(user.id),
-            fetchActividadSemanal(user.id),
-            fetchRetosResueltosCount(user.id),
-            fetchMisInsignias(user.id)
-        ]);
-
-      
-// Actualizamos la interfaz con los resultados
-        updateProfileUI(alumnoData);
-        updateRetoUI(retoData);
-        updateDiarioUI(diarioData, retosResueltosCount, misInsignias);
-        updateProgresoUI(actividadData);
+    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError || !session) {
+        window.location.href = '../auth/login.html';
+        return;
     }
+    const user = session.user;
+
+    // CORRECCIÓN: Añadida la variable "misInsignias" para recibir el resultado
+    const [alumnoData, retoData, diarioData, actividadData, retosResueltosCount, misInsignias] = await Promise.all([
+        fetchAlumnoProfile(user.id),
+        fetchRetoActual(),
+        fetchUltimaReflexion(user.id),
+        fetchActividadSemanal(user.id),
+        fetchRetosResueltosCount(user.id),
+        fetchMisInsignias(user.id)
+    ]);
+
+    updateProfileUI(alumnoData);
+    updateRetoUI(retoData);
+    updateDiarioUI(diarioData, retosResueltosCount, misInsignias);
+    updateProgresoUI(actividadData);
+}
 
         // --- FUNCIONES PARA OBTENER DATOS DE SUPABASE ---
 
@@ -330,26 +328,29 @@
     }
 
     function updateDiarioUI(diario, count, insignias) {
-        if (diario && diario.fase4_reflexion) {
+    if (diario && diario.fase4_reflexion) {
         diarioReflexion.textContent = `"${diario.fase4_reflexion}"`;
     } else {
         diarioReflexion.textContent = "Aún no has escrito ninguna reflexión. ¡Anímate a empezar!";
     }
    
     retosResueltosContador.textContent = count || 0;
-}
+
+    // CORRECCIÓN: La lógica de las insignias ahora está DENTRO de la función
     if (insignias && insignias.length > 0) {
-            insignias.forEach(insignia => {
-                const iconoClass = insignia.icono_url || 'fa-medal'; 
-                const insigniaHTML = `
-                    <span class="badge gold">
-                        <i class="fas ${iconoClass}"></i> ${insignia.nombre_insignia}
-                    </span>
-                `;
-                badgesContainer.insertAdjacentHTML('afterbegin', insigniaHTML);
-            });
-        }
+        insignias.forEach(insignia => {
+            // Suponiendo que 'icono_url' es el nombre de la clase de FontAwesome (ej. 'fa-trophy')
+            const iconoClass = insignia.icono_url || 'fa-medal'; 
+            const insigniaHTML = `
+                <span class="badge gold">
+                    <i class="fas ${iconoClass}"></i> ${insignia.nombre_insignia}
+                </span>
+            `;
+            // Insertamos la nueva insignia ANTES del contador de retos resueltos
+            badgesContainer.insertAdjacentHTML('afterbegin', insigniaHTML);
+        });
     }
+}
 
     function updateProgresoUI(count) {
         const objetivoSemanal = 20;
