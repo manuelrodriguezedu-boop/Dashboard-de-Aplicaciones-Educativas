@@ -219,11 +219,10 @@
     
     // Objeto que define cada insignia, su ID en la BD, y la condición para ganarla
     const reglasInsignias = {
-        'Primer Reto':          { id: 'primer-reto-uuid',          condicion: count === 1 },
-        'Resolutor Novato':     { id: 'resolutor-novato-uuid',     condicion: count >= 5 },
-        'Resolutor Competente': { id: 'resolutor-competente-uuid', condicion: count >= 15 },
-        'Maestro Resolutor':    { id: 'maestro-resolutor-uuid',    condicion: count >= 30 }
-        //_Aquí podrías añadir más reglas, como 'Maestro de la Analogía'_
+        'Primer Reto':          { id: '1b55a991-2f5a-4a9f-9a32-bd53cd0c7108',     condicion: count === 1 },
+        'Resolutor Novato':     { id: '514c513e-0e2b-49e8-9806-e4875ae1181b',     condicion: count >= 5 },
+        'Resolutor Competente': { id: 'dbbef960-4c83-49a0-a239-44ce8c48ba45',     condicion: count >= 15 },
+        'Maestro Resolutor':    { id: 'a35f514b-5ace-416a-a222-55db67b234cc',     condicion: count >= 30 }
     };
 
     // --- PASO 3: RECORRER LAS REGLAS Y ASIGNAR INSIGNIAS ---
