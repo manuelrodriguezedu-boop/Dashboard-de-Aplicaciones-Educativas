@@ -79,7 +79,8 @@
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-   
+
+    // Referencias a los elementos del DOM
     const userNameDisplay = document.getElementById('user-name');
     const retoTitulo = document.getElementById('reto-titulo');
     const retoDescripcion = document.getElementById('reto-descripcion');
@@ -90,6 +91,11 @@
     let currentUserId = null;
     let currentRetoId = null;
 
+    // =================================================================================
+    // 2. FUNCIONES PRINCIPALES DE LA PÁGINA
+    // =================================================================================
+
+    // Función que se ejecuta al cargar la página para obtener todos los datos
     async function loadPage() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) {
@@ -107,13 +113,13 @@
             return;
         }
 
-        const { data: retoData, error: retoError } = await supabaseClient
-            .from('retos')
-            .select('*, pdf_path')
-            .eq('id', currentRetoId)
-            .single();
+        const [retoRes, resolucionRes] = await Promise.all([
+            supabaseClient.from('retos').select('*, pdf_path').eq('id', currentRetoId).single(),
+            supabaseClient.from('resoluciones').select('*').eq('id_alumno', currentUserId).eq('id_reto', currentRetoId).single()
+        ]);
 
-        if (retoError) {
+        const { data: retoData, error: retoError } = retoRes;
+        if (retoError && retoError.code !== 'PGRST116') { // Ignorar error si no encuentra reto
             console.error("Error cargando el reto:", retoError);
             return;
         }
@@ -132,14 +138,7 @@
             }
         }
         
-        const { data: resolucionData, error: resolucionError } = await supabaseClient
-            .from('resoluciones')
-            .select('*')
-            .eq('id_alumno', currentUserId)
-            .eq('id_reto', currentRetoId)
-            .single();
-
-        // --- CÓDIGO RESTAURADO ---
+        const { data: resolucionData, error: resolucionError } = resolucionRes;
         if (resolucionData) {
             const resolucion = resolucionData;
             if (resolucion.fase1_comprension) {
@@ -155,31 +154,26 @@
         }
     }
 
-    // --- FUNCIÓN COMPLETADA ---
+    // Función para guardar o actualizar la resolución en la base de datos
     async function saveOrUpdateResolution(estado = 'en_progreso') {
         const resolutionPayload = {
             id_alumno: currentUserId,
             id_reto: currentRetoId,
-            fase1_comprension: {
-                datos: document.getElementById('f1-datos').value,
-                objetivo: document.getElementById('f1-objetivo').value,
-            },
-            fase2_plan: {
-                estrategia: document.getElementById('f2-estrategia').value,
-                plan: document.getElementById('f2-plan').value,
-            },
+            fase1_comprension: { datos: document.getElementById('f1-datos').value, objetivo: document.getElementById('f1-objetivo').value },
+            fase2_plan: { estrategia: document.getElementById('f2-estrategia').value, plan: document.getElementById('f2-plan').value },
             fase3_ejecucion: document.getElementById('f3-ejecucion').value,
             fase4_reflexion: document.getElementById('f4-reflexion').value,
             estado: estado,
             fecha_actualizacion: new Date().toISOString()
         };
         
-        const { error } = await supabaseClient.from('resoluciones').upsert(resolutionPayload);
+        const { error } = await supabaseClient.from('resoluciones').upsert(resolutionPayload, { onConflict: 'id_alumno, id_reto' });
 
         if (error) {
             alert("Error al guardar: " + error.message);
         } else {
             if (estado === 'completado') {
+                await checkAndAwardBadges(currentUserId);
                 alert("¡Reto completado y enviado!");
                 window.location.href = '../principal/dashboard.html';
             } else {
@@ -188,7 +182,64 @@
         }
     }
 
-    // Lógica para los acordeones
+    // Función "Motor de Logros" para asignar insignias
+    async function checkAndAwardBadges(userId) {
+        console.log("Comprobando si se han ganado insignias...");
+        
+        // Asumimos que el ID de la insignia en la tabla 'catalogo_de_insignias' es de tipo TEXT
+        const idInsigniaPrimerReto = 'Primer Reto'; 
+
+        // 1. Contar cuántos retos ha completado el usuario en total
+        const { count, error: countError } = await supabaseClient
+            .from('resoluciones')
+            .select('*', { count: 'exact', head: true })
+            .eq('id_alumno', userId)
+            .eq('estado', 'completado');
+
+        if (countError) {
+            console.error("Error al contar retos completados:", countError);
+            return;
+        }
+
+        // 2. Si el total es exactamente 1, es candidato a la insignia
+        if (count === 1) {
+            // 3. Comprobar si ya tiene la insignia para no dársela dos veces
+            const { data: existingBadge, error: checkError } = await supabaseClient
+                .from('insignias_obtenidas')
+                .select('id_insignia')
+                .eq('id_alumno', userId)
+                .eq('id_insignia', idInsigniaPrimerReto)
+                .maybeSingle();
+
+            if (checkError) {
+                console.error("Error al comprobar insignia existente:", checkError);
+                return;
+            }
+
+            // 4. Si no la tiene (!existingBadge), se la asignamos
+            if (!existingBadge) {
+                const { error: insertError } = await supabaseClient
+                    .from('insignias_obtenidas')
+                    .insert({ 
+                        id_alumno: userId, 
+                        id_insignia: idInsigniaPrimerReto 
+                    });
+
+                if (insertError) {
+                    console.error(`Error al asignar la insignia '${idInsigniaPrimerReto}':`, insertError);
+                } else {
+                    console.log(`¡Insignia '${idInsigniaPrimerReto}' ganada!`);
+                    alert("¡Enhorabuena! Has ganado la insignia: " + idInsigniaPrimerReto);
+                }
+            }
+        }
+    }
+
+    // =================================================================================
+    // 3. LISTENERS DE EVENTOS
+    // =================================================================================
+
+    // Lógica para los acordeones de las fases
     document.querySelectorAll('.fase-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
@@ -198,10 +249,10 @@
         });
     });
     
-    // --- LISTENERS CORREGIDOS Y UNIFICADOS ---
+    // Listeners para los botones de acción
     saveButton.addEventListener('click', async () => {
         saveButton.disabled = true;
-        saveButton.innerHTML = 'Guardando...'; // innerHTML para que no se coma el icono
+        saveButton.innerHTML = 'Guardando...';
         await saveOrUpdateResolution('en_progreso');
         saveButton.disabled = false;
         saveButton.innerHTML = '<i class="fas fa-save"></i> Guardar Progreso';
@@ -211,9 +262,9 @@
         completeButton.disabled = true;
         completeButton.innerHTML = 'Enviando...';
         await saveOrUpdateResolution('completado');
-        // No se reactiva porque la página redirige
     });
-
+    
+    // Punto de entrada al cargar la página
     document.addEventListener('DOMContentLoaded', loadPage);
   </script>
 
