@@ -183,57 +183,75 @@
     }
 
     // Función "Motor de Logros" para asignar insignias
-    async function checkAndAwardBadges(userId) {
-        console.log("Comprobando si se han ganado insignias...");
-        
-        // Asumimos que el ID de la insignia en la tabla 'catalogo_de_insignias' es de tipo TEXT
-        const idInsigniaPrimerReto = 'Primer Reto'; 
+async function checkAndAwardBadges(userId) {
+    console.log("Comprobando si se han ganado insignias...");
 
-        // 1. Contar cuántos retos ha completado el usuario en total
-        const { count, error: countError } = await supabaseClient
-            .from('resoluciones')
-            .select('*', { count: 'exact', head: true })
-            .eq('id_alumno', userId)
-            .eq('estado', 'completado');
+    // --- Lógica para la insignia "Primer Reto" ---
+    
+    // 1. Contar cuántos retos ha completado el usuario
+    const { count, error: countError } = await supabaseClient
+        .from('resoluciones')
+        .select('*', { count: 'exact', head: true })
+        .eq('id_alumno', userId)
+        .eq('estado', 'completado');
 
-        if (countError) {
-            console.error("Error al contar retos completados:", countError);
-            return;
-        }
+    if (countError) {
+        console.error("Error al contar retos completados:", countError);
+        return;
+    }
+    console.log(`El usuario ha completado un total de ${count} reto(s).`);
 
-        // 2. Si el total es exactamente 1, es candidato a la insignia
-        if (count === 1) {
-            // 3. Comprobar si ya tiene la insignia para no dársela dos veces
+    // 2. Si el total es exactamente 1, es candidato a la insignia
+    if (count === 1) {
+        try {
+            // 3. OBTENER EL UUID DE LA INSIGNIA DESDE EL CATÁLOGO
+            const { data: insigniaData, error: insigniaError } = await supabaseClient
+                .from('catalogo_de_insignias')
+                .select('id_insignia')
+                .eq('nombre_insignia', 'Primer Reto') // Buscamos por el nombre
+                .single();
+
+            if (insigniaError || !insigniaData) {
+                throw new Error("No se pudo encontrar la insignia 'Primer Reto' en el catálogo.");
+            }
+            
+            const idInsigniaUuid = insigniaData.id_insignia;
+            console.log("UUID de la insignia 'Primer Reto' es:", idInsigniaUuid);
+
+            // 4. Comprobar si el alumno ya tiene esta insignia (usando el UUID)
             const { data: existingBadge, error: checkError } = await supabaseClient
                 .from('insignias_obtenidas')
                 .select('id_insignia')
                 .eq('id_alumno', userId)
-                .eq('id_insignia', idInsigniaPrimerReto)
+                .eq('id_insignia', idInsigniaUuid)
                 .maybeSingle();
 
-            if (checkError) {
-                console.error("Error al comprobar insignia existente:", checkError);
-                return;
-            }
+            if (checkError) throw checkError;
 
-            // 4. Si no la tiene (!existingBadge), se la asignamos
+            // 5. Si no la tiene (!existingBadge), se la asignamos (usando el UUID)
             if (!existingBadge) {
+                console.log("El usuario no tiene la insignia. Asignándola ahora...");
                 const { error: insertError } = await supabaseClient
                     .from('insignias_obtenidas')
                     .insert({ 
                         id_alumno: userId, 
-                        id_insignia: idInsigniaPrimerReto 
+                        id_insignia: idInsigniaUuid 
                     });
 
-                if (insertError) {
-                    console.error(`Error al asignar la insignia '${idInsigniaPrimerReto}':`, insertError);
-                } else {
-                    console.log(`¡Insignia '${idInsigniaPrimerReto}' ganada!`);
-                    alert("¡Enhorabuena! Has ganado la insignia: " + idInsigniaPrimerReto);
-                }
+                if (insertError) throw insertError;
+
+                console.log("¡Insignia 'Primer Reto' ganada!");
+                alert("¡Enhorabuena! Has ganado la insignia: Primer Reto");
+            } else {
+                console.log("El usuario ya tiene esta insignia.");
             }
+        } catch (error) {
+            console.error("Error en el motor de logros:", error.message);
         }
     }
+    
+    // Aquí puedes añadir la lógica para otras insignias (ej. if count === 5, etc.)
+}
 
     // =================================================================================
     // 3. LISTENERS DE EVENTOS
