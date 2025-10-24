@@ -333,10 +333,9 @@
     } else {
         diarioReflexion.textContent = "Aún no has escrito ninguna reflexión. ¡Anímate a empezar!";
     }
-   
+
     retosResueltosContador.textContent = count || 0;
 
-    // CORRECCIÓN: La lógica de las insignias ahora está DENTRO de la función
     if (insignias && insignias.length > 0) {
         insignias.forEach(insignia => {
             // Suponiendo que 'icono_url' es el nombre de la clase de FontAwesome (ej. 'fa-trophy')
@@ -346,7 +345,6 @@
                     <i class="fas ${iconoClass}"></i> ${insignia.nombre_insignia}
                 </span>
             `;
-            // Insertamos la nueva insignia ANTES del contador de retos resueltos
             badgesContainer.insertAdjacentHTML('afterbegin', insigniaHTML);
         });
     }
