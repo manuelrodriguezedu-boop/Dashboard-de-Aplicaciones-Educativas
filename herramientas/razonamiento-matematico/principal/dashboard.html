@@ -381,13 +381,16 @@
         }
     }
 
-    function updateProgresoUI(count) {
+function updateProgresoUI(count) {
     const objetivoSemanal = 20;
     const numActividades = count || 0;
     
     // Referencias a los elementos específicos del widget de progreso
-    const widgetProgreso = document.getElementById('progreso-widget');
-    const parrafoProgreso = widgetProgreso.querySelector('p');
+    // No necesitamos un id extra, podemos buscar el párrafo dentro del widget
+    const parrafoProgreso = document.querySelector('#progreso-widget p');
+    const progresoContador = document.querySelector('#progreso-widget .progreso-contador');
+    const progresoBarra = document.querySelector('#progreso-widget .progress-bar-fill');
+    const rachaContador = document.querySelector('#progreso-widget .racha-contador');
     
     // Calcular el porcentaje, con un tope en 100%
     const porcentaje = Math.min((numActividades / objetivoSemanal) * 100, 100);
@@ -406,7 +409,7 @@
         progresoContador.style.color = 'var(--primary)';
     } else {
         // Si el objetivo aún no se ha cumplido...
-        parrafoProgreso.textContent = "Has completado la mayoría de tus objetivos de práctica. ¡Sigue así!";
+        parrafoProgreso.textContent = "Sigue practicando para alcanzar tu objetivo semanal. ¡Ya casi lo tienes!";
         progresoBarra.style.backgroundColor = 'var(--success)'; // Mantener el color verde normal
         progresoContador.style.fontWeight = 'normal';
         progresoContador.style.color = 'var(--text-main)';
