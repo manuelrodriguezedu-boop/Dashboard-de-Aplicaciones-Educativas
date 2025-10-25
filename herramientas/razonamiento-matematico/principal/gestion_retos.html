@@ -146,45 +146,30 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Referencias al DOM
     const userNameDisplay = document.getElementById('user-name');
     const logoutButton = document.getElementById('logout-button');
-    const retosTbody = document.getElementById('retos-tbody');
+    const retosGrid = document.getElementById('retos-grid');
 
     async function loadPage() {
-        // 1. Obtener la sesión
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) {
-            window.location.href = '../auth/login.html';
-            return;
-        }
+        if (!session) { window.location.href = '../auth/login.html'; return; }
 
-        // 2. Intentar obtener el perfil del profesor (unifica la comprobación y la carga de datos)
-        const { data: profesor, error: profileError } = await supabaseClient
-            .from('profesores')
-            .select('nombre, apellidos')
-            .eq('id', session.user.id)
-            .single();
-
-        // 3. Comprobar permisos
-        if (!profesor || (profileError && profileError.code !== 'PGRST116')) {
+        const { data: profesor } = await supabaseClient.from('profesores').select('nombre, apellidos').eq('id', session.user.id).single();
+        if (!profesor) {
             alert("Acceso denegado. Esta área es solo para profesores.");
-            window.location.href = 'dashboard.html'; // Redirige al panel de alumno
+            window.location.href = 'dashboard.html';
             return;
         }
-        
-        // 4. Si es profesor, actualizar la cabecera
         userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
         
-        // 5. Ahora que sabemos que es profesor, cargar los retos
-        const { data: todosLosRetos, error: retosError } = await supabaseClient
+        const { data: todosLosRetos, error } = await supabaseClient
             .from('retos')
             .select('id, titulo, es_reto_actual')
             .order('fecha_creacion', { ascending: false });
 
-        if (retosError) {
-            console.error("Error al cargar los retos:", retosError);
-            retosTbody.innerHTML = '<tr><td colspan="3" style="color:red; text-align:center;">Error al cargar los retos.</td></tr>';
+        if (error) {
+            console.error("Error al cargar los retos:", error);
+            retosGrid.innerHTML = '<p style="color:red; text-align:center;">Error al cargar los retos.</p>';
             return;
         }
         
@@ -192,22 +177,56 @@
     }
     
     function renderRetos(retos) {
-        retosTbody.innerHTML = '';
+        retosGrid.innerHTML = '';
         if (retos.length === 0) {
-            retosTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Aún no se ha creado ningún reto.</td></tr>';
+            retosGrid.innerHTML = '<p>No se ha creado ningún reto todavía.</p>';
             return;
         }
-        
+
         retos.forEach(reto => {
-            const estadoHTML = reto.es_reto_actual ? '<span class="status-active">Reto de la Semana</span>' : 'Inactivo';
-            const row = `
-                <tr>
-                    <td>${reto.titulo}</td>
-                    <td>${estadoHTML}</td>
-                    <td><a href="crear_reto.html?id=${reto.id}" class="btn-edit"><i class="fas fa-edit"></i> Editar</a></td>
-                </tr>`;
-            retosTbody.innerHTML += row;
+            const estadoHTML = reto.es_reto_actual
+                ? '<span class="status-badge status-active">Reto de la Semana</span>'
+                : '<span class="status-badge status-inactive">Inactivo</span>';
+            
+            const card = document.createElement('div');
+            card.className = 'reto-card';
+            card.innerHTML = `
+                <div class="reto-card-content">
+                    <h2>${reto.titulo}</h2>
+                    ${estadoHTML}
+                </div>
+                <div class="reto-card-actions">
+                    <a href="crear_reto.html?id=${reto.id}" class="btn-action btn-edit"><i class="fas fa-edit"></i> Editar</a>
+                    <button class="btn-action btn-delete" data-id="${reto.id}" data-titulo="${reto.titulo}"><i class="fas fa-trash"></i> Eliminar</button>
+                </div>`;
+            
+            retosGrid.appendChild(card);
         });
+        
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', handleDeleteReto);
+        });
+    }
+    
+    async function handleDeleteReto(event) {
+        const retoId = event.currentTarget.dataset.id;
+        const retoTitulo = event.currentTarget.dataset.titulo;
+
+        const confirmed = confirm(`¿Estás seguro de que quieres eliminar el reto "${retoTitulo}"? Esta acción no se puede deshacer y borrará todas las resoluciones asociadas.`);
+        
+        if (confirmed) {
+            const { error } = await supabaseClient
+                .from('retos')
+                .delete()
+                .eq('id', retoId);
+
+            if (error) {
+                alert('Error al eliminar el reto: ' + error.message);
+            } else {
+                alert('¡Reto eliminado con éxito!');
+                loadPage(); // Recargar la lista de retos
+            }
+        }
     }
 
     logoutButton.addEventListener('click', async () => {
