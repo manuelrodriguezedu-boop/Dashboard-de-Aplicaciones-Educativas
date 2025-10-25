@@ -53,39 +53,62 @@
   </main>
 
   <script>
-    const SUPABASE_URL = '...'; // Pega tu URL
-    const SUPABASE_ANON_KEY = '...'; // Pega tu Clave Anon
+    const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKRrCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Referencias al DOM
+    const userNameDisplay = document.getElementById('user-name');
+    const logoutButton = document.getElementById('logout-button');
+    const retosTbody = document.getElementById('retos-tbody');
 
     async function loadPage() {
+        // 1. Obtener la sesión
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session || !await isProfesor(session.user.id)) {
-            alert("Acceso denegado.");
-            window.location.href = 'dashboard.html';
+        if (!session) {
+            window.location.href = '../auth/login.html';
+            return;
+        }
+
+        // 2. Intentar obtener el perfil del profesor (unifica la comprobación y la carga de datos)
+        const { data: profesor, error: profileError } = await supabaseClient
+            .from('profesores')
+            .select('nombre, apellidos')
+            .eq('id', session.user.id)
+            .single();
+
+        // 3. Comprobar permisos
+        if (!profesor || (profileError && profileError.code !== 'PGRST116')) {
+            alert("Acceso denegado. Esta área es solo para profesores.");
+            window.location.href = 'dashboard.html'; // Redirige al panel de alumno
             return;
         }
         
-        const { data: todosLosRetos, error } = await supabaseClient
+        // 4. Si es profesor, actualizar la cabecera
+        userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
+        
+        // 5. Ahora que sabemos que es profesor, cargar los retos
+        const { data: todosLosRetos, error: retosError } = await supabaseClient
             .from('retos')
             .select('id, titulo, es_reto_actual')
             .order('fecha_creacion', { ascending: false });
 
-        if (error) {
-            console.error("Error al cargar los retos:", error);
+        if (retosError) {
+            console.error("Error al cargar los retos:", retosError);
+            retosTbody.innerHTML = '<tr><td colspan="3" style="color:red; text-align:center;">Error al cargar los retos.</td></tr>';
             return;
         }
         
         renderRetos(todosLosRetos);
     }
     
-    async function isProfesor(userId) {
-        const { data } = await supabaseClient.from('profesores').select('id').eq('id', userId).single();
-        return !!data;
-    }
-    
     function renderRetos(retos) {
-        const tbody = document.getElementById('retos-tbody');
-        tbody.innerHTML = '';
+        retosTbody.innerHTML = '';
+        if (retos.length === 0) {
+            retosTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Aún no se ha creado ningún reto.</td></tr>';
+            return;
+        }
+        
         retos.forEach(reto => {
             const estadoHTML = reto.es_reto_actual ? '<span class="status-active">Reto de la Semana</span>' : 'Inactivo';
             const row = `
@@ -94,12 +117,16 @@
                     <td>${estadoHTML}</td>
                     <td><a href="editar_reto.html?id=${reto.id}" class="btn-edit"><i class="fas fa-edit"></i> Editar</a></td>
                 </tr>`;
-            tbody.innerHTML += row;
+            retosTbody.innerHTML += row;
         });
     }
 
+    logoutButton.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = '../auth/login.html';
+    });
+    
     document.addEventListener('DOMContentLoaded', loadPage);
-    // Añadir lógica de logout...
   </script>
 </body>
 </html>
