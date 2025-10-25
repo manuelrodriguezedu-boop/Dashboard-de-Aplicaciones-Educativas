@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+    <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crear Nuevo Reto - RazonaApp</title>
+  <title>Gestionar Reto - RazonaApp</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -38,34 +38,33 @@
 </head>
 <body>
 
-  <header>
-    <div class="logo"><i class="fas fa-brain"></i>RazonaApp <span>- Módulo Profesorado</span></div>
+ <header>
+    <div class="logo">
+      <i class="fas fa-brain">
+      </i>RazonaApp <span>- Módulo Profesorado</span>
+    </div>
     <div class="user-info">
       <span id="user-name">Cargando...</span>
-      <button id="logout-button" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Salir</button>
+      <button id="logout-button" class="logout-btn">Salir</button>
     </div>
   </header>
+  
   <nav>
-    <a href="profesor_dashboard.html"><i class="fas fa-inbox"></i> Entregas Pendientes</a>
-    <a href="mis_grupos.html"><i class="fas fa-users"></i> Mis Grupos</a>
-    <a href="crear_reto.html" class="active"><i class="fas fa-plus-circle"></i> Crear Reto</a>
+    <a href="profesor_dashboard.html">Entregas</a>
+    <a href="mis_grupos.html">Grupos</a>
+    <a href="crear_reto.html" class="active">Crear/Editar Reto</a>
+    <a href="gestion_retos.html">Gestionar Retos</a>
   </nav>
 
   <main>
-    <div class="page-header"><h1>Crear Nuevo Reto</h1></div>
+    <div class="page-header"><h1 id="page-title">Crear Nuevo Reto</h1></div>
     <div class="form-container">
-      <form id="crear-reto-form">
+      <form id="reto-form">
         <div class="form-group"><label for="titulo">Título del Reto</label><input type="text" id="titulo" required></div>
         <div class="form-group"><label for="descripcion">Descripción / Enunciado</label><textarea id="descripcion" required></textarea></div>
-        <div class="form-group"><label for="pdf-file">Adjuntar PDF (Opcional)</label><input type="file" id="pdf-file" accept=".pdf"></div>
+        <div class="form-group"><label for="pdf-file">Adjuntar PDF (Opcional)</label><input type="file" id="pdf-file" accept=".pdf"><p id="current-pdf" style="display:none;"></p></div>
         <div class="form-group"><label for="enlace">Enlace Externo (Opcional)</label><input type="text" id="enlace"></div>
-        <div class="form-group checkbox-group">
-          <input type="checkbox" id="es-reto-actual">
-          <div>
-            <label for="es-reto-actual"><strong>Marcar como Reto de la Semana</strong></label>
-            <p>Si marcas esta casilla, el reto que actualmente sea el de la semana se desactivará automáticamente.</p>
-          </div>
-        </div>
+        <div class="form-group checkbox-group"><input type="checkbox" id="es-reto-actual"><div><label for="es-reto-actual"><strong>Marcar como Reto de la Semana</strong></label></div></div>
         <button type="submit" id="submit-button" class="btn">Crear Reto</button>
         <div id="form-message"></div>
       </form>
@@ -88,133 +87,143 @@
     // Referencias al DOM
     const userNameDisplay = document.getElementById('user-name');
     const logoutButton = document.getElementById('logout-button');
-    const crearRetoForm = document.getElementById('crear-reto-form');
+    const retoForm = document.getElementById('reto-form');
     const submitButton = document.getElementById('submit-button');
     const formMessage = document.getElementById('form-message');
+    const pageTitle = document.getElementById('page-title');
     const pdfFileInput = document.getElementById('pdf-file');
+    const currentPdfDisplay = document.getElementById('current-pdf');
+    
+    // Variables de estado
+    let editMode = false;
+    let retoId = null;
 
-    let isSubmitting = false;
-
-function normalizeFileName(filename) {
-    return filename
-        .normalize("NFD") // Separa los acentos de las letras
-        .replace(/[\u0300-\u036f]/g, "") // Elimina los diacríticos (acentos)
-        .replace(/\s+/g, '-') // Reemplaza espacios por guiones
-        .replace(/[^a-zA-Z0-9-._]/g, ""); // Elimina cualquier otro carácter no válido
-}
-
-   async function loadPage() {
+    // Función principal que se ejecuta al cargar
+    async function initializePage() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) {
             window.location.href = '../auth/login.html';
             return;
         }
 
-        // --- LÍNEA DE DEPURACIÓN 1: MOSTRAR EL ID QUE ESTAMOS USANDO ---
-        console.log("Verificando permisos para el User ID:", session.user.id);
-
-        const { data: profesor, error } = await supabaseClient
-            .from('profesores')
-            .select('id, nombre, apellidos')
-            .eq('id', session.user.id)
-            .single();
-        
-        // --- LÍNEA DE DEPURACIÓN 2: MOSTRAR LA RESPUESTA DE SUPABASE ---
-        console.log("Respuesta de la tabla 'profesores':", profesor);
-        console.log("Error de la consulta (si existe):", error);
-        
-        if (error && error.code !== 'PGRST116') {
-            console.error("Error inesperado de Supabase:", error);
-            alert("Ocurrió un error al verificar tus permisos. Serás redirigido.");
-            window.location.href = '../auth/login.html';
-            return;
-        }
-
+        const { data: profesor } = await supabaseClient.from('profesores').select('nombre, apellidos').eq('id', session.user.id).single();
         if (!profesor) {
             alert("Acceso denegado. Esta área es solo para profesores.");
             window.location.href = 'dashboard.html';
             return;
         }
-        
         userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
+
+        const params = new URLSearchParams(window.location.search);
+        retoId = params.get('id');
+
+        if (retoId) {
+            // --- MODO EDICIÓN ---
+            editMode = true;
+            pageTitle.textContent = 'Editar Reto';
+            submitButton.textContent = 'Guardar Cambios';
+            loadRetoData(retoId);
+        } else {
+            // --- MODO CREACIÓN ---
+            editMode = false;
+            pageTitle.textContent = 'Crear Nuevo Reto';
+            submitButton.textContent = 'Crear Reto';
+        }
     }
-    
-    logoutButton.addEventListener('click', async () => {
-        await supabaseClient.auth.signOut();
-        window.location.href = '../auth/login.html';
-    });
-    
-    crearRetoForm.addEventListener('submit', async (event) => {
-        if (isSubmitting) return;
-        event.preventDefault();
-        isSubmitting = true;
+
+    // Función para cargar los datos de un reto existente en el formulario
+    async function loadRetoData(id) {
+        const { data: reto, error } = await supabaseClient.from('retos').select('*').eq('id', id).single();
+        if (error || !reto) {
+            alert("Error: No se pudo encontrar el reto para editar.");
+            window.location.href = 'gestion_retos.html';
+            return;
+        }
         
+        document.getElementById('titulo').value = reto.titulo;
+        document.getElementById('descripcion').value = reto.descripcion;
+        document.getElementById('enlace').value = reto.enlace || '';
+        document.getElementById('es-reto-actual').checked = reto.es_reto_actual;
+
+        if (reto.pdf_path) {
+            const fileName = reto.pdf_path.split('-').slice(1).join('-');
+            currentPdfDisplay.innerHTML = `Archivo actual: <strong>${fileName}</strong>. Si subes uno nuevo, se reemplazará.`;
+            currentPdfDisplay.style.display = 'block';
+        }
+    }
+
+    // Listener para el envío del formulario (Crear o Editar)
+    retoForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
         submitButton.disabled = true;
         submitButton.textContent = 'Guardando...';
         formMessage.style.display = 'none';
 
         try {
-            const titulo = document.getElementById('titulo').value.trim();
-            const descripcion = document.getElementById('descripcion').value.trim();
-            if (!titulo || !descripcion) {
-                throw new Error('El título y la descripción son obligatorios.');
-            }
-
             const file = pdfFileInput.files[0];
             let pdfPath = null;
 
-              if (file) {
-                 const cleanFileName = normalizeFileName(file.name);
-                 const filePath = `${Date.now()}-${cleanFileName}`;
-    
-                 const { data: uploadData, error: uploadError } = await supabaseClient
-                     .storage
-                     .from('retos-pdf')
-                     .upload(filePath, file);
-
-              if (uploadError) throw new Error('Error al subir el PDF: ' + uploadError.message);
-                 pdfPath = uploadData.path;
-}
+            if (file) {
+                const cleanFileName = file.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-._]/g, '');
+                const filePath = `${Date.now()}-${cleanFileName}`;
+                
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('retos-pdf').upload(filePath, file);
+                if (uploadError) throw new Error('Error al subir el PDF: ' + uploadError.message);
+                pdfPath = uploadData.path;
+            }
 
             const esRetoActual = document.getElementById('es-reto-actual').checked;
             if (esRetoActual) {
-                const { error: updateError } = await supabaseClient
-                    .from('retos')
-                    .update({ es_reto_actual: false })
-                    .eq('es_reto_actual', true);
+                const { error: updateError } = await supabaseClient.from('retos').update({ es_reto_actual: false }).eq('es_reto_actual', true);
                 if (updateError) throw updateError;
             }
-
-            const { error: insertError } = await supabaseClient
-                .from('retos')
-                .insert([{
-                    titulo,
-                    descripcion,
-                    enlace: document.getElementById('enlace').value.trim() || null,
-                    es_reto_actual: esRetoActual,
-                    pdf_path: pdfPath
-                }]);
-
-            if (insertError) throw insertError;
             
-            formMessage.textContent = '¡Reto creado con éxito!';
-            formMessage.className = 'message-success';
-            formMessage.style.display = 'block';
-            crearRetoForm.reset();
+            const payload = {
+                titulo: document.getElementById('titulo').value.trim(),
+                descripcion: document.getElementById('descripcion').value.trim(),
+                enlace: document.getElementById('enlace').value.trim() || null,
+                es_reto_actual: esRetoActual,
+            };
 
+            // Solo añadimos pdf_path al payload si se ha subido un archivo nuevo
+            if (pdfPath) {
+                payload.pdf_path = pdfPath;
+            }
+
+            if (editMode) {
+                // --- ACCIÓN DE ACTUALIZAR ---
+                const { error } = await supabaseClient.from('retos').update(payload).eq('id', retoId);
+                if (error) throw error;
+                alert('¡Reto actualizado con éxito!');
+                window.location.href = 'gestion_retos.html';
+            } else {
+                // --- ACCIÓN DE INSERTAR ---
+                const { error } = await supabaseClient.from('retos').insert([payload]);
+                if (error) throw error;
+                formMessage.textContent = '¡Reto creado con éxito!';
+                formMessage.className = 'message-success';
+                formMessage.style.display = 'block';
+                retoForm.reset();
+            }
         } catch (error) {
-            console.error("Error al crear el reto:", error);
-            formMessage.textContent = 'Error: ' + (error.message || 'Algo salió mal.');
+            console.error("Error al gestionar el reto:", error);
+            formMessage.textContent = 'Error: ' + error.message;
             formMessage.className = 'message-error';
             formMessage.style.display = 'block';
         } finally {
-            isSubmitting = false;
             submitButton.disabled = false;
-            submitButton.textContent = 'Crear Reto';
+            submitButton.textContent = editMode ? 'Guardar Cambios' : 'Crear Reto';
         }
     });
 
-    document.addEventListener('DOMContentLoaded', loadPage);
+    // Listener para el botón de Salir
+    logoutButton.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = '../auth/login.html';
+    });
+
+    // Punto de entrada de la página
+    document.addEventListener('DOMContentLoaded', initializePage);
   </script>
 </body>
 </html>
