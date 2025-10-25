@@ -179,7 +179,18 @@
         <span class="badge"><i class="fas fa-check"></i> <strong id="retos-resueltos-contador">0</strong> Retos Resueltos</span>
     </div>
 </div>
-      <div class="widget" id="progreso-widget"><h3><i class="fas fa-chart-line"></i> Mi Progreso Semanal</h3><p>Has completado la mayoría de tus objetivos de práctica. ¡Sigue así!</p><div><span>Retos de Gimnasia Mental: <strong class="progreso-contador">0 / 20</strong></span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 0%;"></div></div><span class="streak-info">Racha actual: <strong class="racha-contador">0 días</strong> <i class="fas fa-fire streak-icon"></i></span></div></div>
+      <div class="widget" id="progreso-widget">
+        <h3><i class="fas fa-chart-line">
+        </i> Mi Progreso Semanal</h3>
+        <p>Has completado la mayoría de tus objetivos de práctica. ¡Sigue así!</p>
+        <div>
+          <span>Retos de Gimnasia Mental: <strong class="progreso-contador">0 / 20</strong></span>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+          <span class="streak-info">Racha actual: <strong class="racha-contador">0 días</strong> <i class="fas fa-fire streak-icon"></i></span>
+        </div>
+      </div>
     </div>
   </main>
   
@@ -371,13 +382,36 @@
     }
 
     function updateProgresoUI(count) {
-        const objetivoSemanal = 20;
-        const numActividades = count || 0;
-        progresoContador.textContent = `${numActividades} / ${objetivoSemanal}`;
-        const porcentaje = Math.min((numActividades / objetivoSemanal) * 100, 100);
-        progresoBarra.style.width = `${porcentaje}%`;
-        rachaContador.textContent = `${numActividades} actividades esta semana`;
+    const objetivoSemanal = 20;
+    const numActividades = count || 0;
+    
+    // Referencias a los elementos específicos del widget de progreso
+    const widgetProgreso = document.getElementById('progreso-widget');
+    const parrafoProgreso = widgetProgreso.querySelector('p');
+    
+    // Calcular el porcentaje, con un tope en 100%
+    const porcentaje = Math.min((numActividades / objetivoSemanal) * 100, 100);
+    
+    // Actualizar el contador y la barra visual
+    progresoContador.textContent = `${numActividades} / ${objetivoSemanal}`;
+    progresoBarra.style.width = `${porcentaje}%`;
+    rachaContador.textContent = `${numActividades} actividades esta semana`;
+
+    // --- LÓGICA CONDICIONAL AÑADIDA ---
+    if (numActividades >= objetivoSemanal) {
+        // Si el objetivo se ha cumplido o superado...
+        parrafoProgreso.textContent = "¡Enhorabuena! Has completado tu objetivo de práctica semanal.";
+        progresoBarra.style.backgroundColor = 'var(--gold)'; // Cambiar color a dorado para celebrar
+        progresoContador.style.fontWeight = 'bold';
+        progresoContador.style.color = 'var(--primary)';
+    } else {
+        // Si el objetivo aún no se ha cumplido...
+        parrafoProgreso.textContent = "Has completado la mayoría de tus objetivos de práctica. ¡Sigue así!";
+        progresoBarra.style.backgroundColor = 'var(--success)'; // Mantener el color verde normal
+        progresoContador.style.fontWeight = 'normal';
+        progresoContador.style.color = 'var(--text-main)';
     }
+}
     
     // --- LISTENERS DE EVENTOS ---
 
