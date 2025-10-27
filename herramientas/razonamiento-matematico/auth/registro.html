@@ -217,30 +217,48 @@
         });
 
         // --- LÓGICA FORMULARIO DE CENTRO ---
-        forms.centro.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = forms.centro.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Registrando...';
-            
-            const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
-                codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
-                nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
-                codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
-                nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
-                email_solicitante: document.getElementById('solicitante-email').value.trim()
-            });
+        // DENTRO DE TU SCRIPT DE registro.html
 
-            if (error) {
-                handleAuthResponse(error, forms.centro);
-            } else {
-                const nuevoCodigoProfesor = data;
-                formMessage.innerHTML = `¡Centro registrado con éxito!<br><strong>IMPORTANTE:</strong> El primer profesor debe registrarse con el siguiente código de invitación:<br><strong style="font-size: 1.2rem; color: var(--primary);">${nuevoCodigoProfesor}</strong>`;
-                formMessage.className = 'message-success';
-                formMessage.classList.remove('hidden');
-                forms.centro.classList.add('hidden');
-            }
+// --- LÓGICA FORMULARIO DE CENTRO (MEJORADA) ---
+forms.centro.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = forms.centro.querySelector('.submit-btn');
+    const formMessage = document.getElementById('form-message');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Registrando...';
+    formMessage.classList.add('hidden');
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
+            codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
+            nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
+            codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
+            nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
+            email_solicitante: document.getElementById('solicitante-email').value.trim()
         });
+
+        if (error) {
+
+            if (error.message.includes('duplicate key value violates unique constraint "centros_educativos_codigo_centro_key"')) {
+                throw new Error('Ya existe un centro registrado con ese "Código de Centro". Por favor, verifica tus datos.');
+            }
+            throw error;
+        }
+        
+        const nuevoCodigoProfesor = data;
+        formMessage.innerHTML = `¡Centro registrado con éxito!<br><strong>IMPORTANTE:</strong> El primer profesor debe registrarse con el siguiente código de invitación:<br><strong style="font-size: 1.2rem; color: var(--primary);">${nuevoCodigoProfesor}</strong>`;
+        formMessage.className = 'message-success';
+        forms.centro.classList.add('hidden');
+    } catch (error) {
+        formMessage.textContent = 'Error: ' + (error.message || 'El código de invitación es inválido o ya ha sido utilizado.');
+        formMessage.className = 'message-error';
+        submitBtn.disabled = false; 
+        submitBtn.textContent = 'Registrar Centro Educativo';
+
+    } finally {
+        formMessage.classList.remove('hidden');
+    }
+});
         
         // Función de ayuda para manejar las respuestas de los formularios
         function handleAuthResponse(error, form, successMessage) {
