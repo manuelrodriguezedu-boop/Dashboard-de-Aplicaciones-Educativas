@@ -7,7 +7,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* ... (El CSS no necesita cambios) ... */
     :root { --primary: #007934; --secondary: #36933F; --light: #C9C9C9; --dark: #2E2725; --card-bg: #ffffff; --text-main: #2E2725; --text-light: #555559; --error: #e74c3c; --shadow: rgba(0, 0, 0, 0.08); }
     body { background-color: var(--light); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); padding: 2rem 1rem; font-family: 'Segoe UI', sans-serif; }
     .auth-container { background: var(--card-bg); padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); width: 100%; max-width: 480px; text-align: center; }
@@ -22,6 +21,13 @@
     #form-message { margin-top: 1rem; font-weight: bold; padding: 0.8rem; border-radius: 6px; display: none; }
     .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+    footer p { margin-bottom: 0.3rem; line-height: 1.4; }
   </style>
 </head>
 <body>
