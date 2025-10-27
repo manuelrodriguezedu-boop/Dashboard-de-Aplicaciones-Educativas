@@ -196,15 +196,15 @@
         }
         userNameDisplay.textContent = `${profesor.nombre} ${profesor.apellidos}`;
 
-        const { data: resoluciones, error } = await supabaseClient
-            .from('resoluciones')
-            .select(`
-                id,
-                fecha_actualizacion,
-                alumnos ( nombre, apellidos ),
-                retos ( titulo )
-            `)
-            .eq('estado', 'completado');
+       const { data: resoluciones, error } = await supabaseClient
+    .from('resoluciones')
+    .select(`
+        id,
+        fecha_actualizacion,
+        alumnos ( nombre, apellidos, curso, grupo ),
+        retos ( titulo )
+    `)
+    .eq('estado', 'completado');
 
         if (error) {
             console.error("Error al cargar entregas:", error);
@@ -215,23 +215,26 @@
         renderEntregas(resoluciones);
     }
     
-    function renderEntregas(entregas) {
-        entregasTbody.innerHTML = '';
-        if (entregas.length === 0) {
-            entregasTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No hay entregas pendientes de evaluar. ¡Buen trabajo!</td></tr>`;
-            return;
-        }
-        entregas.forEach(entrega => {
-            const row = `
-                <tr>
-                    <td>${entrega.alumnos.nombre} ${entrega.alumnos.apellidos || ''}</td>
-                    <td>${entrega.retos.titulo}</td>
-                    <td>${new Date(entrega.fecha_actualizacion).toLocaleDateString('es-ES')}</td>
-                    <td><a href="evaluar_reto.html?id=${entrega.id}" class="btn-evaluar"><i class="fas fa-edit"></i> Evaluar</a></td>
-                </tr>`;
-            entregasTbody.innerHTML += row;
-        });
+function renderEntregas(entregas) {
+    const tbody = document.getElementById('entregas-tbody');
+    tbody.innerHTML = '';
+    if (entregas.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No hay entregas pendientes de evaluar. ¡Buen trabajo!</td></tr>`;
+        return;
     }
+    entregas.forEach(entrega => {
+        const row = `
+            <tr>
+                <td>${entrega.alumnos.nombre} ${entrega.alumnos.apellidos || ''}</td>
+                <td>${entrega.alumnos.curso || 'N/A'}</td>
+                <td>${entrega.alumnos.grupo || 'N/A'}</td>
+                <td>${entrega.retos.titulo}</td>
+                <td>${new Date(entrega.fecha_actualizacion).toLocaleDateString('es-ES')}</td>
+                <td><a href="evaluar_reto.html?id=${entrega.id}" class="btn-evaluar"><i class="fas fa-edit"></i> Evaluar</a></td>
+            </tr>`;
+        tbody.innerHTML += row;
+    });
+}
     
     logoutButton.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
