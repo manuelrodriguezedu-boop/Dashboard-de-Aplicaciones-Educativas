@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registrar Centro Educativo - RazonaApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ... (Usamos el mismo CSS que en login.html para mantener la coherencia) ... */
+    :root { --primary: #007934; --secondary: #36933F; --light: #C9C9C9; --dark: #2E2725; --card-bg: #ffffff; --text-main: #2E2725; --text-light: #555559; --error: #e74c3c; --shadow: rgba(0, 0, 0, 0.08); }
+    body { background-color: var(--light); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); padding: 2rem 1rem; font-family: 'Segoe UI', sans-serif; }
+    .auth-container { background: var(--card-bg); padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); width: 100%; max-width: 480px; text-align: center; }
+    .logo { font-size: 2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 0.7rem; margin-bottom: 0.5rem; color: var(--primary); }
+    .auth-container h2 { margin-bottom: 1.5rem; color: var(--text-light); font-weight: 400; }
+    .form-group { margin-bottom: 1.2rem; text-align: left; }
+    .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+    .form-group input { width: 100%; padding: 0.8rem; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 1rem; }
+    .submit-btn { width: 100%; padding: 0.9rem; margin-top: 0.5rem; border: none; border-radius: 6px; background: var(--secondary); color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+    .toggle-link { margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-light); }
+    .toggle-link a { color: var(--secondary); text-decoration: none; font-weight: bold; }
+    #form-message { margin-top: 1rem; font-weight: bold; padding: 0.8rem; border-radius: 6px; display: none; }
+    .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="logo"><i class="fas fa-school"></i><span>Registro de Centros</span></div>
+    <h2>Dar de alta un nuevo Centro Educativo</h2>
+    <p style="text-align: left; color: var(--text-light); margin-bottom: 1.5rem;">Introduce el código de invitación y los datos de tu centro. El primer profesor que se registre con el código generado será el administrador del centro.</p>
+
+    <form id="centro-form">
+      <div class="form-group"><label for="invite-code">Código de Invitación para Centros</label><input type="text" id="invite-code" required></div>
+      <div class="form-group"><label for="nombre-centro">Nombre Oficial del Centro</label><input type="text" id="nombre-centro" required></div>
+      <div class="form-group"><label for="codigo-centro">Código de Centro (Opcional)</label><input type="text" id="codigo-centro" placeholder="Ej: 04001234"></div>
+      <button type="submit" class="submit-btn" id="submit-button">Registrar Centro</button>
+      <div id="form-message"></div>
+    </form>
+    
+    <p class="toggle-link">
+      <a href="login.html">Volver a Inicio de Sesión</a>
+    </p>
+  </div>
+
+  <script>
+    const SUPABASE_URL = '...'; // Pega tu URL
+    const SUPABASE_ANON_KEY = '...'; // Pega tu Clave Anon
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const centroForm = document.getElementById('centro-form');
+    const submitButton = document.getElementById('submit-button');
+    const formMessage = document.getElementById('form-message');
+
+    centroForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      submitButton.textContent = 'Registrando...';
+      formMessage.style.display = 'none';
+
+      const inviteCode = document.getElementById('invite-code').value.trim();
+      const nombreCentro = document.getElementById('nombre-centro').value.trim();
+      const codigoCentro = document.getElementById('codigo-centro').value.trim();
+
+      try {
+        // Llamamos a una Función de Base de Datos para manejar la lógica de forma segura
+        const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
+            codigo_invitacion: inviteCode,
+            nombre_del_centro: nombreCentro,
+            codigo_oficial: codigoCentro || null
+        });
+
+        if (error) throw error;
+        
+        // La función de BD nos devolverá el nuevo código de profesor
+        const nuevoCodigoProfesor = data;
+        formMessage.innerHTML = `¡Centro registrado con éxito!<br>
+                                 <strong>IMPORTANTE:</strong> El primer profesor debe registrarse con el siguiente código de invitación:<br>
+                                 <strong style="font-size: 1.2rem; color: var(--primary);">${nuevoCodigoProfesor}</strong>`;
+        formMessage.className = 'message-success';
+        centroForm.style.display = 'none'; // Ocultar el formulario
+
+      } catch (error) {
+        formMessage.textContent = 'Error: ' + (error.message || 'El código de invitación es inválido o ya ha sido utilizado.');
+        formMessage.className = 'message-error';
+      } finally {
+        formMessage.style.display = 'block';
+        // No reactivamos el botón para evitar re-envíos
+      }
+    });
+  </script>
+
+</body>
+</html>```
+
+---
