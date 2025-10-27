@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* ... (Usamos el mismo CSS que en login.html para mantener la coherencia) ... */
+    /* ... (El CSS no necesita cambios) ... */
     :root { --primary: #007934; --secondary: #36933F; --light: #C9C9C9; --dark: #2E2725; --card-bg: #ffffff; --text-main: #2E2725; --text-light: #555559; --error: #e74c3c; --shadow: rgba(0, 0, 0, 0.08); }
     body { background-color: var(--light); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); padding: 2rem 1rem; font-family: 'Segoe UI', sans-serif; }
     .auth-container { background: var(--card-bg); padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); width: 100%; max-width: 480px; text-align: center; }
@@ -29,19 +29,25 @@
   <div class="auth-container">
     <div class="logo"><i class="fas fa-school"></i><span>Registro de Centros</span></div>
     <h2>Dar de alta un nuevo Centro Educativo</h2>
-    <p style="text-align: left; color: var(--text-light); margin-bottom: 1.5rem;">Introduce el código de invitación y los datos de tu centro. El primer profesor que se registre con el código generado será el administrador del centro.</p>
+    <p style="text-align: left; color: var(--text-light); margin-bottom: 1.5rem;">Introduce el código de invitación y los datos solicitados. El primer profesor que se registre con el código generado será el administrador del centro.</p>
 
     <form id="centro-form">
       <div class="form-group"><label for="invite-code">Código de Invitación para Centros</label><input type="text" id="invite-code" required></div>
+      <hr style="border: 0; border-top: 1px solid #eee; margin: 1.5rem 0;">
+      
+      <!-- CAMPOS NUEVOS AÑADIDOS -->
+      <div class="form-group"><label for="solicitante-nombre">Tu Nombre Completo</label><input type="text" id="solicitante-nombre" required></div>
+      <div class="form-group"><label for="solicitante-email">Tu Correo Electrónico</label><input type="email" id="solicitante-email" required></div>
+      <hr style="border: 0; border-top: 1px solid #eee; margin: 1.5rem 0;">
+      
       <div class="form-group"><label for="nombre-centro">Nombre Oficial del Centro</label><input type="text" id="nombre-centro" required></div>
       <div class="form-group"><label for="codigo-centro">Código de Centro (Opcional)</label><input type="text" id="codigo-centro" placeholder="Ej: 04001234"></div>
+      
       <button type="submit" class="submit-btn" id="submit-button">Registrar Centro</button>
       <div id="form-message"></div>
     </form>
     
-    <p class="toggle-link">
-      <a href="login.html">Volver a Inicio de Sesión</a>
-    </p>
+    <p class="toggle-link"><a href="login.html">Volver a Inicio de Sesión</a></p>
   </div>
 
   <script>
@@ -59,39 +65,34 @@
       submitButton.textContent = 'Registrando...';
       formMessage.style.display = 'none';
 
-      const inviteCode = document.getElementById('invite-code').value.trim();
-      const nombreCentro = document.getElementById('nombre-centro').value.trim();
-      const codigoCentro = document.getElementById('codigo-centro').value.trim();
-
       try {
-        // Llamamos a una Función de Base de Datos para manejar la lógica de forma segura
+        // Llamamos a la Función de Base de Datos con los nuevos parámetros
         const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
-            codigo_invitacion: inviteCode,
-            nombre_del_centro: nombreCentro,
-            codigo_oficial: codigoCentro || null
+            codigo_invitacion: document.getElementById('invite-code').value.trim(),
+            nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
+            codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
+            // CAMPOS NUEVOS ENVIADOS
+            nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
+            email_solicitante: document.getElementById('solicitante-email').value.trim()
         });
 
         if (error) throw error;
         
-        // La función de BD nos devolverá el nuevo código de profesor
         const nuevoCodigoProfesor = data;
         formMessage.innerHTML = `¡Centro registrado con éxito!<br>
                                  <strong>IMPORTANTE:</strong> El primer profesor debe registrarse con el siguiente código de invitación:<br>
                                  <strong style="font-size: 1.2rem; color: var(--primary);">${nuevoCodigoProfesor}</strong>`;
         formMessage.className = 'message-success';
-        centroForm.style.display = 'none'; // Ocultar el formulario
+        centroForm.style.display = 'none';
 
       } catch (error) {
         formMessage.textContent = 'Error: ' + (error.message || 'El código de invitación es inválido o ya ha sido utilizado.');
         formMessage.className = 'message-error';
       } finally {
         formMessage.style.display = 'block';
-        // No reactivamos el botón para evitar re-envíos
       }
     });
   </script>
 
 </body>
-</html>```
-
----
+</html>
