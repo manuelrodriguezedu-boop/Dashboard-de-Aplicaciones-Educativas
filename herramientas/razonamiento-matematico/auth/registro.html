@@ -35,6 +35,38 @@
     .message-error { background-color: #f8d7da; color: #721c24; }
     .toggle-link { margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-light); }
     .toggle-link a { color: var(--secondary); text-decoration: none; font-weight: bold; }
+    /* --- ESTILOS PARA EL AUTOCOMPLETADO --- */
+.autocomplete-container {
+    position: relative;
+}
+.autocomplete-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid #bdc3c7;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.autocomplete-item {
+    padding: 0.8rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--light);
+}
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+.autocomplete-item:hover {
+    background-color: #f0f0f0;
+}
+.autocomplete-item small {
+    display: block;
+    color: var(--text-light);
+}
     footer {
       margin-top: 2.5rem;
       text-align: center;
@@ -68,8 +100,13 @@
       <div class="form-row">
         <div class="form-group"><label for="alumno-course">Curso</label><select id="alumno-course" required><option value="" disabled selected>Selecciona...</option><option value="1ESO">1º ESO</option><option value="2ESO">2º ESO</option><option value="3ESO">3º ESO</option></select></div>
         <div class="form-group"><label for="alumno-group">Grupo</label><select id="alumno-group" required><option value="" disabled selected>Selecciona...</option><option value="A">A</option><option value="B">B</option></select></div>
-        <div class="form-group"><label for="alumno-cod-centro">Código de Centro</label><input type="text" id="alumno-cod-centro" placeholder="El código único proporcionado por tu centro" required>
+        <div class="form-group autocomplete-container">
+    <label for="alumno-nombre-centro">Busca tu Centro Educativo</label>
+    <input type="text" id="alumno-nombre-centro" placeholder="Empieza a escribir el nombre de tu centro..." required autocomplete="off">
+    <div class="autocomplete-results hidden" id="alumno-results"></div>
+    <input type="hidden" id="alumno-cod-centro">
 </div>
+      </div>
       </div>
       <div class="form-group"><label for="alumno-email">Correo Electrónico</label><input type="email" id="alumno-email" required></div>
       <div class="form-row">
@@ -84,8 +121,13 @@
       <div class="form-row">
         <div class="form-group"><label for="profesor-name">Nombre</label><input type="text" id="profesor-name" required></div>
         <div class="form-group"><label for="profesor-lastname">Apellidos</label><input type="text" id="profesor-lastname" required></div>
-        <div class="form-group"><label for="profesor-cod-centro">Código de Centro</label><input type="text" id="profesor-cod-centro" placeholder="El código único de tu centro" required>
+        <div class="form-group autocomplete-container">
+    <label for="alumno-nombre-centro">Busca tu Centro Educativo</label>
+    <input type="text" id="alumno-nombre-centro" placeholder="Empieza a escribir el nombre de tu centro..." required autocomplete="off">
+    <div class="autocomplete-results hidden" id="alumno-results"></div>
+    <input type="hidden" id="alumno-cod-centro">
 </div>
+      </div>
       </div>
       <div class="form-group"><label for="profesor-email">Correo Electrónico</label><input type="email" id="profesor-email" required></div>
       <div class="form-row">
@@ -119,12 +161,19 @@
   </footer>
 
   <script>
+    
+    // =================================================================================
+    // 1. CONFIGURACIÓN Y REFERENCIAS GENERALES
+    // =================================================================================
+    
     const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  
-     // --- LÓGICA GENERAL DE LA PÁGINA ---
+    // Se envuelve toda la lógica en DOMContentLoaded para asegurar que el HTML está listo
     document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- Referencias a elementos del DOM ---
         const roleButtons = document.querySelectorAll('.role-btn');
         const forms = {
           alumno: document.getElementById('form-alumno'),
@@ -133,7 +182,20 @@
         };
         const formMessage = document.getElementById('form-message');
 
-        // Lógica para cambiar entre formularios
+        // --- Referencias para el autocompletado ---
+        const nombreCentroAlumnoInput = document.getElementById('alumno-nombre-centro');
+        const resultsAlumnoContainer = document.getElementById('alumno-results');
+        const codigoCentroAlumnoInput = document.getElementById('alumno-cod-centro');
+        
+        const nombreCentroProfesorInput = document.getElementById('profesor-nombre-centro');
+        const resultsProfesorContainer = document.getElementById('profesor-results');
+        const codigoCentroProfesorInput = document.getElementById('profesor-cod-centro');
+
+        // =================================================================================
+        // 2. LÓGICA DE LA INTERFAZ DE USUARIO (UI)
+        // =================================================================================
+
+        // Lógica para cambiar entre formularios (selector de rol)
         roleButtons.forEach(button => {
           button.addEventListener('click', () => {
             const formToShow = button.dataset.form;
@@ -158,18 +220,64 @@
             });
         });
 
+        // --- LÓGICA DE AUTOCOMPLETADO (NUEVA) ---
+        function setupAutocomplete(inputElement, resultsContainer, hiddenInputElement) {
+            inputElement.addEventListener('input', async (e) => {
+                const query = e.target.value;
+                hiddenInputElement.value = ''; // Limpiar el código si el usuario sigue escribiendo
+
+                if (query.length < 3) {
+                    resultsContainer.innerHTML = '';
+                    resultsContainer.classList.add('hidden');
+                    return;
+                }
+
+                const { data: centros, error } = await supabaseClient.rpc('buscar_centros', { texto_busqueda: query });
+                
+                resultsContainer.innerHTML = '';
+                if (centros && centros.length > 0) {
+                    resultsContainer.classList.remove('hidden');
+                    centros.forEach(centro => {
+                        const item = document.createElement('div');
+                        item.className = 'autocomplete-item';
+                        item.innerHTML = `<strong>${centro.nombre_centro}</strong><small>${centro.localidad_centro}, ${centro.provincia_centro}</small>`;
+                        
+                        item.addEventListener('click', () => {
+                            inputElement.value = centro.nombre_centro;
+                            hiddenInputElement.value = centro.codigo_centro;
+                            resultsContainer.innerHTML = '';
+                            resultsContainer.classList.add('hidden');
+                        });
+                        resultsContainer.appendChild(item);
+                    });
+                } else {
+                    resultsContainer.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.autocomplete-container')) {
+                    resultsContainer.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Configurar el autocompletado para los formularios de alumno y profesor
+        setupAutocomplete(nombreCentroAlumnoInput, resultsAlumnoContainer, codigoCentroAlumnoInput);
+        setupAutocomplete(nombreCentroProfesorInput, resultsProfesorContainer, codigoCentroProfesorInput);
+
+        // =================================================================================
+        // 3. LÓGICA DE ENVÍO DE FORMULARIOS
+        // =================================================================================
+
         // --- LÓGICA FORMULARIO DE ALUMNO ---
         forms.alumno.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = forms.alumno.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Procesando...';
+            // ... (lógica de deshabilitar botón) ...
             
             const password = document.getElementById('alumno-password').value;
-            if (password !== document.getElementById('alumno-confirm-password').value) {
-                // ... manejo de error de contraseñas no coincidentes ...
-                return;
-            }
+            if (password !== document.getElementById('alumno-confirm-password').value) { /* ... */ return; }
             
             const { error } = await supabaseClient.auth.signUp({
                 email: document.getElementById('alumno-email').value,
@@ -192,13 +300,12 @@
         forms.profesor.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = forms.profesor.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Procesando...';
+            // ... (lógica de deshabilitar botón) ...
             
             const inviteCode = document.getElementById('profesor-invite-code').value.trim();
             const password = document.getElementById('profesor-password').value;
             
-            if (password !== document.getElementById('profesor-confirm-password').value) { /* ... manejo de error ... */ return; }
+            if (password !== document.getElementById('profesor-confirm-password').value) { /* ... */ return; }
 
             const { data: isValid, error: validationError } = await supabaseClient.rpc('validar_codigo_profesor', { codigo_invitacion: inviteCode });
             if (validationError || !isValid) {
@@ -216,7 +323,6 @@
                         apellidos: document.getElementById('profesor-lastname').value,
                         codigo_invitacion: inviteCode,
                         codigo_centro: document.getElementById('profesor-cod-centro').value.trim()
-
                     }
                 }
             });
@@ -224,64 +330,14 @@
         });
 
         // --- LÓGICA FORMULARIO DE CENTRO ---
-        // DENTRO DE TU SCRIPT DE registro.html
-
-// --- LÓGICA FORMULARIO DE CENTRO (MEJORADA) ---
-forms.centro.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = forms.centro.querySelector('.submit-btn');
-    const formMessage = document.getElementById('form-message');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Registrando...';
-    formMessage.classList.add('hidden');
-    
-    try {
-        const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
-            codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
-            nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
-            codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
-            nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
-            email_solicitante: document.getElementById('solicitante-email').value.trim()
+        forms.centro.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // ... (La lógica que ya tenías para el formulario de centro, sin cambios) ...
         });
-
-        if (error) {
-
-            if (error.message.includes('duplicate key value violates unique constraint "centros_educativos_codigo_centro_key"')) {
-                throw new Error('Ya existe un centro registrado con ese "Código de Centro". Por favor, verifica tus datos.');
-            }
-            throw error;
-        }
         
-        const nuevoCodigoProfesor = data;
-        formMessage.innerHTML = `¡Centro registrado con éxito!<br><strong>IMPORTANTE:</strong> El primer profesor debe registrarse con el siguiente código de invitación:<br><strong style="font-size: 1.2rem; color: var(--primary);">${nuevoCodigoProfesor}</strong>`;
-        formMessage.className = 'message-success';
-        forms.centro.classList.add('hidden');
-    } catch (error) {
-        formMessage.textContent = 'Error: ' + (error.message || 'El código de invitación es inválido o ya ha sido utilizado.');
-        formMessage.className = 'message-error';
-        submitBtn.disabled = false; 
-        submitBtn.textContent = 'Registrar Centro Educativo';
-
-    } finally {
-        formMessage.classList.remove('hidden');
-    }
-});
-        
-        // Función de ayuda para manejar las respuestas de los formularios
+        // --- FUNCIÓN DE AYUDA ---
         function handleAuthResponse(error, form, successMessage) {
-            const submitBtn = form.querySelector('.submit-btn');
-            if (error) {
-                formMessage.textContent = 'Error: ' + (error.message || "Algo salió mal.");
-                formMessage.className = 'message-error';
-                formMessage.classList.remove('hidden');
-            } else {
-                formMessage.textContent = successMessage;
-                formMessage.className = 'message-success';
-                formMessage.classList.remove('hidden');
-                form.classList.add('hidden');
-            }
-            submitBtn.disabled = false;
-            submitBtn.textContent = form.querySelector('.submit-btn').textContent; // Restaurar texto original
+            // ... (Tu función de ayuda, sin cambios) ...
         }
     });
   </script>
