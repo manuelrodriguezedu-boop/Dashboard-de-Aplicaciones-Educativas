@@ -98,7 +98,6 @@
     <div class="form-group"><label for="alumno-lastname">Apellidos</label><input type="text" id="alumno-lastname" required></div>
   </div>
 
-  <!-- NUEVA FILA: Centro y Código de Centro -->
   <div class="form-row">
     <div class="form-group autocomplete-container">
       <label for="alumno-nombre-centro">Busca tu Centro Educativo</label>
@@ -108,11 +107,10 @@
     </div>
     <div class="form-group">
       <label for="alumno-cod-centro">Código de Centro</label>
-      <input type="text" id="alumno-cod-centro" placeholder="El código único proporcionado por tu centro" required>
+      <input type="text" id="alumno-cod-centro" placeholder="Se rellena automáticamente" readonly required>
     </div>
   </div>
 
-  <!-- FILA EXISTENTE: Curso y Grupo -->
   <div class="form-row">
     <div class="form-group"><label for="alumno-course">Curso</label>
       <select id="alumno-course" required>
@@ -155,7 +153,7 @@
     </div>
     <div class="form-group">
       <label for="profesor-cod-centro">Código de Centro</label>
-      <input type="text" id="profesor-cod-centro" placeholder="El código único de tu centro" required>
+      <input type="text" id="profesor-cod-centro" placeholder="Se rellena automáticamente" readonly required>
     </div>
   </div>
 
@@ -254,49 +252,55 @@
 
       // --- LÓGICA DE AUTOCOMPLETADO ---
       function setupAutocomplete(inputElement, resultsContainer, hiddenInputElement) {
-          inputElement.addEventListener('input', async (e) => {
-              const query = e.target.value.trim();
-              hiddenInputElement.value = ''; // Limpiar el código si el usuario sigue escribiendo
+    inputElement.addEventListener('input', async (e) => {
+        const query = e.target.value;
+        if (query.length < 3) {
+            resultsContainer.innerHTML = '';
+            resultsContainer.classList.add('hidden');
+            hiddenInputElement.value = ''; // Limpiar el código si la búsqueda es muy corta
+            return;
+        }
 
-              if (query.length < 3) {
-                  resultsContainer.innerHTML = '';
-                  resultsContainer.classList.add('hidden');
-                  return;
-              }
+        const { data: centros, error } = await supabaseClient.rpc('buscar_centros', {
+            texto_busqueda: query
+        });
+        
+        resultsContainer.innerHTML = '';
+        if (centros && centros.length > 0) {
+            resultsContainer.classList.remove('hidden');
+            centros.forEach(centro => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `<strong>${centro.nombre_centro}</strong><small>${centro.localidad_centro}, ${centro.provincia_centro}</small>`;
+                
+                // Evento al hacer clic en un resultado
+                item.addEventListener('click', () => {
+                    inputElement.value = centro.nombre_centro; // Rellenar el input visible con el nombre
+                    
+                    // --- ¡ESTA ES LA LÍNEA QUE HACE LA MAGIA! ---
+                    // Ahora rellena el campo de código que es visible y de solo lectura.
+                    hiddenInputElement.value = centro.codigo_centro; 
+                    
+                    resultsContainer.innerHTML = '';
+                    resultsContainer.classList.add('hidden');
+                });
+                resultsContainer.appendChild(item);
+            });
+        } else {
+            resultsContainer.classList.add('hidden');
+        }
+    });
 
-              const { data: centros, error } = await supabaseClient.rpc('buscar_centros', { texto_busqueda: query });
-              
-              resultsContainer.innerHTML = '';
-              if (centros && centros.length > 0) {
-                  resultsContainer.classList.remove('hidden');
-                  centros.forEach(centro => {
-                      const item = document.createElement('div');
-                      item.className = 'autocomplete-item';
-                      item.innerHTML = `<strong>${centro.nombre_centro}</strong><small>${centro.localidad_centro}, ${centro.provincia_centro}</small>`;
-                      
-                      item.addEventListener('click', () => {
-                          inputElement.value = centro.nombre_centro;
-                          hiddenInputElement.value = centro.codigo_centro;
-                          resultsContainer.innerHTML = '';
-                          resultsContainer.classList.add('hidden');
-                      });
-                      resultsContainer.appendChild(item);
-                  });
-              } else {
-                  resultsContainer.classList.add('hidden');
-              }
-          });
-
-          document.addEventListener('click', (e) => {
-              if (!e.target.closest('.autocomplete-container')) {
-                  resultsContainer.classList.add('hidden');
-              }
-          });
-      }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.autocomplete-container')) {
+            resultsContainer.classList.add('hidden');
+        }
+    });
+}
       
       // Configurar el autocompletado
-      setupAutocomplete(nombreCentroAlumnoInput, resultsAlumnoContainer, codigoCentroAlumnoHidden);
-      setupAutocomplete(nombreCentroProfesorInput, resultsProfesorContainer, codigoCentroProfesorHidden);
+     const codigoCentroAlumnoInputVisible = document.getElementById('alumno-cod-centro');
+     const codigoCentroProfesorInputVisible = document.getElementById('profesor-cod-centro');
 
       // --- FUNCIÓN DE AYUDA PARA MENSAJES ---
       function handleAuthResponse(error, form, successMessage) {
