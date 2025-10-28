@@ -181,6 +181,7 @@
                         apellidos: document.getElementById('alumno-lastname').value,
                         curso: document.getElementById('alumno-course').value,
                         grupo: document.getElementById('alumno-group').value,
+                        codigo_centro: document.getElementById('alumno-cod-centro').value.trim()
                     }
                 }
             });
@@ -213,7 +214,9 @@
                     data: {
                         nombre: document.getElementById('profesor-name').value,
                         apellidos: document.getElementById('profesor-lastname').value,
-                        codigo_invitacion: inviteCode
+                        codigo_invitacion: inviteCode,
+                        codigo_centro: document.getElementById('profesor-cod-centro').value.trim()
+
                     }
                 }
             });
