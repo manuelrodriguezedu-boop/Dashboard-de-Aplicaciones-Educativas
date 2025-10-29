@@ -430,9 +430,7 @@
             const submitBtn = forms.centro.querySelector('.submit-btn');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Registrando...';
-        
-        if (error) throw error;
-
+          
                 try {
         const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
             codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
