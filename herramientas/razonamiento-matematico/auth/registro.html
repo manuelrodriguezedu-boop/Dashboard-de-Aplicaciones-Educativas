@@ -173,6 +173,41 @@
       <hr style="border:0; border-top:1px solid #eee; margin:1.5rem 0;">
       <div class="form-group"><label for="nombre-centro">Nombre Oficial del Centro</label><input type="text" id="nombre-centro" required></div>
       <div class="form-group"><label for="codigo-centro">Código de Centro </label><input type="text" id="codigo-centro" required></div>
+
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="centro-tipo">Tipo de Centro</label>
+          <select id="centro-tipo" required>
+            <option value="" disabled selected>Selecciona...</option>
+            <option value="IES">IES</option>
+            <option value="CEIP">CEIP</option>
+            <option value="CRA">CRA</option>
+            <option value="CIFP">CIFP</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="centro-titularidad">Titularidad</label>
+          <select id="centro-titularidad" required>
+            <option value="" disabled selected>Selecciona...</option>
+            <option value="Pública">Pública</option>
+            <option value="Concertada">Concertada</option>
+            <option value="Privada">Privada</option>
+          </select>
+        </div>
+      </div>
+
+      
+        <div class="form-group">
+          <label for="centro-localidad">Localidad</label>
+          <input type="text" id="centro-localidad" required>
+        </div>
+        <div class="form-group">
+          <label for="centro-provincia">Provincia</label>
+          <input type="text" id="centro-provincia" required>
+        </div>
+      
       <button type="submit" class="submit-btn">Registrar Centro Educativo</button>
     </form>
 
@@ -395,15 +430,21 @@
             const submitBtn = forms.centro.querySelector('.submit-btn');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Registrando...';
-            
-            try {
-                const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
-                    codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
-                    nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
-                    codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
-                    nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
-                    email_solicitante: document.getElementById('solicitante-email').value.trim()
-                });
+        
+        if (error) throw error;
+
+                try {
+        const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
+            codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
+            nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
+            codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
+            nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
+            email_solicitante: document.getElementById('solicitante-email').value.trim(),
+            tipo_centro: document.getElementById('centro-tipo').value.trim(),           
+            titularidad_centro: document.getElementById('centro-titularidad').value.trim(), 
+            localidad_centro: document.getElementById('centro-localidad').value.trim(),     
+            provincia_centro: document.getElementById('centro-provincia').value.trim()      
+        });
                 
                 if (error) throw error;
 
@@ -418,6 +459,7 @@
             }
         });
     });
+    
   </script>
 </body>
 </html>
