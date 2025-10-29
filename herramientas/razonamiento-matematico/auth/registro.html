@@ -226,10 +226,10 @@
         const resultsProfesorContainer = document.getElementById('profesor-results');
         const codigoCentroProfesorVisible = document.getElementById('profesor-cod-centro');
 
-        // Referencias para autocompletado de REGISTRO DE CENTRO
-        const nombreCentroInput = document.getElementById('nombre-centro'); // Este es el del form-centro
-        const resultsCentroContainer = document.getElementById('centro-results'); // Nuevo contenedor para resultados
-        const codigoCentroInput = document.getElementById('codigo-centro'); // Este es el del form-centro
+        // Referencias para autocompletado de REGISTRO DE CENTRO (usando los IDs del HTML modificado)
+        const nombreCentroRegistroInput = document.getElementById('nombre-centro'); // El nuevo input en form-centro
+        const resultsCentroContainer = document.getElementById('centro-results'); // El nuevo contenedor de resultados
+        const codigoCentroRegistroInput = document.getElementById('codigo-centro'); // El nuevo input en form-centro
 
         // =================================================================================
         // 2. LÓGICA DE LA INTERFAZ DE USUARIO (UI)
@@ -302,12 +302,12 @@
             });
         }
         
-        // Activar el autocompletado para ambos formularios
+        // Activar el autocompletado para los formularios de ALUMNO y PROFESOR (con sus IDs correctos)
         setupAutocomplete(nombreCentroAlumnoInput, resultsAlumnoContainer, codigoCentroAlumnoVisible);
         setupAutocomplete(nombreCentroProfesorInput, resultsProfesorContainer, codigoCentroProfesorVisible);
 
-        // Activar el autocompletado para el formulario de REGISTRO DE CENTRO (nuevo)
-        setupAutocomplete(nombreCentroInput, resultsCentroContainer, codigoCentroInput);
+        // Activar el autocompletado para el formulario de REGISTRO DE CENTRO (con sus nuevos IDs)
+        setupAutocomplete(nombreCentroRegistroInput, resultsCentroContainer, codigoCentroRegistroInput);
         
         // --- FUNCIÓN DE AYUDA PARA MOSTRAR MENSAJES ---
         function showMessage(isSuccess, message, form) {
@@ -414,10 +414,21 @@
             submitBtn.textContent = 'Registrando...';
             
             try {
+                const nombreCentroValue = document.getElementById('nombre-centro').value.trim(); // Valor del input autocompletado
+                const codigoCentroValue = document.getElementById('codigo-centro').value.trim(); // Valor del input autocompletado
+
+                // Validar que ambos campos estén rellenados antes de enviar
+                if (!nombreCentroValue || !codigoCentroValue) {
+                     showMessage(false, "Por favor, selecciona un centro educativo válido del listado.", forms.centro);
+                     submitBtn.disabled = false;
+                     submitBtn.textContent = 'Registrar Centro Educativo';
+                     return;
+                }
+
                 const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
                     codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
-                    nombre_del_centro: document.getElementById('nombre-centro').value.trim(), // Ahora se toma el valor del input autocompletado
-                    codigo_oficial: document.getElementById('codigo-centro').value.trim() || null, // Ahora se toma el valor del input autocompletado
+                    nombre_del_centro: nombreCentroValue, // Usar el valor capturado
+                    codigo_oficial: codigoCentroValue,    // Usar el valor capturado
                     nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
                     email_solicitante: document.getElementById('solicitante-email').value.trim()
                 });
@@ -431,11 +442,13 @@
             } catch(error) {
                 showMessage(false, error.message, forms.centro);
             } finally {
-                formMessage.classList.remove('hidden');
+                // No se remueve el 'hidden' del mensaje aquí si el envío fue exitoso,
+                // porque el formulario se oculta y el mensaje se queda visible.
+                // Si se produce un error, showMessage ya lo maneja.
             }
         });
     });
 
-    <script>
+  </script>
 </body>
 </html>
