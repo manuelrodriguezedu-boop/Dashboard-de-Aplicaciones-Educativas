@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro - RazonaApp</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2  "></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css  ">
   <style>
     :root {
       --primary: #007934; --secondary: #36933F; --light: #C9C9C9; --dark: #2E2725;
@@ -171,28 +171,19 @@
       <div class="form-group"><label for="solicitante-nombre">Tu Nombre Completo</label><input type="text" id="solicitante-nombre" required></div>
       <div class="form-group"><label for="solicitante-email">Tu Correo Electrónico</label><input type="email" id="solicitante-email" required></div>
       <hr style="border:0; border-top:1px solid #eee; margin:1.5rem 0;">
-
-      <!-- Campo de Nombre de Centro con Autocompletado -->
-      <div class="form-group autocomplete-container">
-        <label for="nombre-centro">Nombre Oficial del Centro</label>
-        <input type="text" id="nombre-centro" placeholder="Empieza a escribir el nombre de tu centro..." required autocomplete="off">
-        <div class="autocomplete-results hidden" id="centro-results"></div> <!-- Contenedor para resultados -->
-      </div>
-
-      <!-- Campo de Código de Centro, ahora readonly -->
-      <div class="form-group">
-        <label for="codigo-centro">Código de Centro</label>
-        <input type="text" id="codigo-centro" placeholder="Se rellena automáticamente" readonly required>
-      </div>
-
+      <div class="form-group"><label for="nombre-centro">Nombre Oficial del Centro</label><input type="text" id="nombre-centro" required></div>
+      <div class="form-group"><label for="codigo-centro">Código de Centro </label><input type="text" id="codigo-centro" required></div>
       <button type="submit" class="submit-btn">Registrar Centro Educativo</button>
     </form>
+
+    <p class="toggle-link">¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a></p>
+  </div>
 
   <footer>
     <p>Manuel Rodríguez Peñalver</p>
     <p>Profesor de Tecnología, Coordinador TDE y Escuelas 4.0</p>
     <p>IES Sierra de los Filabres</p>
-    <p><a href="https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/manuales/index.html" style="color: var(--secondary); text-decoration: none;">Manual de Usuario</a></p>
+    <p><a href="https://manuelrodriguezedu-boop.github.io/Dashboard-de-Aplicaciones-Educativas/herramientas/razonamiento-matematico/manuales/index.html  " style="color: var(--secondary); text-decoration: none;">Manual de Usuario</a></p>
   </footer>
 
   <script>
@@ -200,7 +191,7 @@
   // 1. CONFIGURACIÓN Y REFERENCIAS GENERALES
   // =================================================================================
   
-  const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co';
+  const SUPABASE_URL = 'https://usmzywbbyihphqateuxr.supabase.co  ';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzbXp5d2JieWlocGhxYXRldXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY2MjMsImV4cCI6MjA3NTM2MjYyM30.Y3cKR3rCBQ729ikGF8P2yOk2GS6QEd7Nud5nu8LDo98';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -225,11 +216,6 @@
         const nombreCentroProfesorInput = document.getElementById('profesor-nombre-centro');
         const resultsProfesorContainer = document.getElementById('profesor-results');
         const codigoCentroProfesorVisible = document.getElementById('profesor-cod-centro');
-
-        // Referencias para autocompletado de REGISTRO DE CENTRO (usando los IDs del HTML modificado)
-        const nombreCentroRegistroInput = document.getElementById('nombre-centro'); // El nuevo input en form-centro
-        const resultsCentroContainer = document.getElementById('centro-results'); // El nuevo contenedor de resultados
-        const codigoCentroRegistroInput = document.getElementById('codigo-centro'); // El nuevo input en form-centro
 
         // =================================================================================
         // 2. LÓGICA DE LA INTERFAZ DE USUARIO (UI)
@@ -302,12 +288,9 @@
             });
         }
         
-        // Activar el autocompletado para los formularios de ALUMNO y PROFESOR (con sus IDs correctos)
+        // Activar el autocompletado para ambos formularios
         setupAutocomplete(nombreCentroAlumnoInput, resultsAlumnoContainer, codigoCentroAlumnoVisible);
         setupAutocomplete(nombreCentroProfesorInput, resultsProfesorContainer, codigoCentroProfesorVisible);
-
-        // Activar el autocompletado para el formulario de REGISTRO DE CENTRO (con sus nuevos IDs)
-        setupAutocomplete(nombreCentroRegistroInput, resultsCentroContainer, codigoCentroRegistroInput);
         
         // --- FUNCIÓN DE AYUDA PARA MOSTRAR MENSAJES ---
         function showMessage(isSuccess, message, form) {
@@ -414,21 +397,10 @@
             submitBtn.textContent = 'Registrando...';
             
             try {
-                const nombreCentroValue = document.getElementById('nombre-centro').value.trim(); // Valor del input autocompletado
-                const codigoCentroValue = document.getElementById('codigo-centro').value.trim(); // Valor del input autocompletado
-
-                // Validar que ambos campos estén rellenados antes de enviar
-                if (!nombreCentroValue || !codigoCentroValue) {
-                     showMessage(false, "Por favor, selecciona un centro educativo válido del listado.", forms.centro);
-                     submitBtn.disabled = false;
-                     submitBtn.textContent = 'Registrar Centro Educativo';
-                     return;
-                }
-
                 const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
                     codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
-                    nombre_del_centro: nombreCentroValue, // Usar el valor capturado
-                    codigo_oficial: codigoCentroValue,    // Usar el valor capturado
+                    nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
+                    codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
                     nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
                     email_solicitante: document.getElementById('solicitante-email').value.trim()
                 });
@@ -442,13 +414,10 @@
             } catch(error) {
                 showMessage(false, error.message, forms.centro);
             } finally {
-                // No se remueve el 'hidden' del mensaje aquí si el envío fue exitoso,
-                // porque el formulario se oculta y el mensaje se queda visible.
-                // Si se produce un error, showMessage ya lo maneja.
+                formMessage.classList.remove('hidden');
             }
         });
     });
-
   </script>
 </body>
 </html>
