@@ -164,7 +164,7 @@
   <button type="submit" class="submit-btn">Registrar Cuenta de Profesor</button>
 </form>
 
-       <!-- ===== FORMULARIO PARA CENTROS ===== -->
+    <!-- ===== FORMULARIO PARA CENTROS ===== -->
     <form id="form-centro" class="hidden">
       <div class="form-group"><label for="centro-invite-code">Código de Invitación para Centros</label><input type="text" id="centro-invite-code" required></div>
       <hr style="border:0; border-top:1px solid #eee; margin:1.5rem 0;">
@@ -183,41 +183,6 @@
       <div class="form-group">
         <label for="codigo-centro">Código de Centro</label>
         <input type="text" id="codigo-centro" placeholder="Se rellena automáticamente" readonly required>
-      </div>
-
-      <!-- Nuevos campos para la tabla directorio_centros -->
-      <div class="form-row">
-        <div class="form-group">
-          <label for="centro-tipo">Tipo de Centro</label>
-          <select id="centro-tipo" required>
-            <option value="" disabled selected>Selecciona...</option>
-            <option value="IES">IES</option>
-            <option value="CEIP">CEIP</option>
-            <option value="CRA">CRA</option>
-            <option value="CIFP">CIFP</option>
-            <option value="Otros">Otros</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="centro-titularidad">Titularidad</label>
-          <select id="centro-titularidad" required>
-            <option value="" disabled selected>Selecciona...</option>
-            <option value="Pública">Pública</option>
-            <option value="Concertada">Concertada</option>
-            <option value="Privada">Privada</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="centro-localidad">Localidad</label>
-          <input type="text" id="centro-localidad" required>
-        </div>
-        <div class="form-group">
-          <label for="centro-provincia">Provincia</label>
-          <input type="text" id="centro-provincia" required>
-        </div>
       </div>
 
       <button type="submit" class="submit-btn">Registrar Centro Educativo</button>
@@ -447,61 +412,33 @@
             const submitBtn = forms.centro.querySelector('.submit-btn');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Registrando...';
-
+            
             try {
-                const nombreCentroValue = document.getElementById('nombre-centro').value.trim();
-                const codigoCentroValue = document.getElementById('codigo-centro').value.trim();
-                const tipoCentroValue = document.getElementById('centro-tipo').value.trim();
-                const titularidadCentroValue = document.getElementById('centro-titularidad').value.trim();
-                const localidadCentroValue = document.getElementById('centro-localidad').value.trim();
-                const provinciaCentroValue = document.getElementById('centro-provincia').value.trim();
-                const inviteCode = document.getElementById('centro-invite-code').value.trim();
-                const solicitanteNombre = document.getElementById('solicitante-nombre').value.trim();
-                const solicitanteEmail = document.getElementById('solicitante-email').value.trim();
+                const nombreCentroValue = document.getElementById('nombre-centro').value.trim(); // Valor del input autocompletado
+                const codigoCentroValue = document.getElementById('codigo-centro').value.trim(); // Valor del input autocompletado
 
-                // Validar que todos los campos estén rellenados
-                if (!nombreCentroValue || !codigoCentroValue || !tipoCentroValue || !titularidadCentroValue || !localidadCentroValue || !provinciaCentroValue) {
-                    showMessage(false, "Por favor, completa todos los campos del formulario.", forms.centro);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Registrar Centro Educativo';
-                    return;
+                // Validar que ambos campos estén rellenados antes de enviar
+                if (!nombreCentroValue || !codigoCentroValue) {
+                     showMessage(false, "Por favor, selecciona un centro educativo válido del listado.", forms.centro);
+                     submitBtn.disabled = false;
+                     submitBtn.textContent = 'Registrar Centro Educativo';
+                     return;
                 }
 
-                // 1. Insertar el nuevo centro en la tabla "directorio_centros"
-                const { data: insertedCentro, error: insertError } = await supabaseClient
-                    .from('directorio_centros')
-                    .insert([
-                        {
-                            codigo: codigoCentroValue,
-                            tipo: tipoCentroValue,
-                            denominacion: nombreCentroValue,
-                            titularidad: titularidadCentroValue,
-                            localidad: localidadCentroValue,
-                            provincia: provinciaCentroValue
-                        }
-                    ])
-                    .select(); // Obtiene los datos insertados (incluyendo el ID generado)
-
-                if (insertError) throw insertError;
-
-                // 2. Registrar el nuevo centro en tu sistema (usando el RPC existente)
-                // El RPC 'registrar_nuevo_centro' debe estar diseñado para aceptar también estos datos.
-                // Si no lo está, tendrás que modificarlo en Supabase.
-                const { data: rpcData, error: rpcError } = await supabaseClient.rpc('registrar_nuevo_centro', {
-                    codigo_invitacion: inviteCode,
-                    nombre_del_centro: nombreCentroValue,
-                    codigo_oficial: codigoCentroValue,
-                    nombre_solicitante: solicitanteNombre,
-                    email_solicitante: solicitanteEmail
+                const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
+                    codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
+                    nombre_del_centro: nombreCentroValue, // Usar el valor capturado
+                    codigo_oficial: codigoCentroValue,    // Usar el valor capturado
+                    nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
+                    email_solicitante: document.getElementById('solicitante-email').value.trim()
                 });
+                
+                if (error) throw error;
 
-                if (rpcError) throw rpcError;
-
-                const nuevoCodigoProfesor = rpcData;
+                const nuevoCodigoProfesor = data;
                 formMessage.innerHTML = `¡Centro registrado con éxito!<br><strong>IMPORTANTE:</strong> El primer profesor debe registrarse con el siguiente código de invitación:<br><strong style="font-size: 1.2rem; color: var(--primary);">${nuevoCodigoProfesor}</strong>`;
                 formMessage.className = 'message-success';
                 forms.centro.classList.add('hidden');
-
             } catch(error) {
                 showMessage(false, error.message, forms.centro);
             } finally {
@@ -510,6 +447,7 @@
                 // Si se produce un error, showMessage ya lo maneja.
             }
         });
+    });
 
   </script>
 </body>
