@@ -171,13 +171,22 @@
       <div class="form-group"><label for="solicitante-nombre">Tu Nombre Completo</label><input type="text" id="solicitante-nombre" required></div>
       <div class="form-group"><label for="solicitante-email">Tu Correo Electrónico</label><input type="email" id="solicitante-email" required></div>
       <hr style="border:0; border-top:1px solid #eee; margin:1.5rem 0;">
-      <div class="form-group"><label for="nombre-centro">Nombre Oficial del Centro</label><input type="text" id="nombre-centro" required></div>
-      <div class="form-group"><label for="codigo-centro">Código de Centro </label><input type="text" id="codigo-centro" required></div>
+
+      <!-- Campo de Nombre de Centro con Autocompletado -->
+      <div class="form-group autocomplete-container">
+        <label for="nombre-centro">Nombre Oficial del Centro</label>
+        <input type="text" id="nombre-centro" placeholder="Empieza a escribir el nombre de tu centro..." required autocomplete="off">
+        <div class="autocomplete-results hidden" id="centro-results"></div> <!-- Contenedor para resultados -->
+      </div>
+
+      <!-- Campo de Código de Centro, ahora readonly -->
+      <div class="form-group">
+        <label for="codigo-centro">Código de Centro</label>
+        <input type="text" id="codigo-centro" placeholder="Se rellena automáticamente" readonly required>
+      </div>
+
       <button type="submit" class="submit-btn">Registrar Centro Educativo</button>
     </form>
-
-    <p class="toggle-link">¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a></p>
-  </div>
 
   <footer>
     <p>Manuel Rodríguez Peñalver</p>
@@ -216,6 +225,11 @@
         const nombreCentroProfesorInput = document.getElementById('profesor-nombre-centro');
         const resultsProfesorContainer = document.getElementById('profesor-results');
         const codigoCentroProfesorVisible = document.getElementById('profesor-cod-centro');
+
+        // Referencias para autocompletado de REGISTRO DE CENTRO
+        const nombreCentroInput = document.getElementById('nombre-centro'); // Este es el del form-centro
+        const resultsCentroContainer = document.getElementById('centro-results'); // Nuevo contenedor para resultados
+        const codigoCentroInput = document.getElementById('codigo-centro'); // Este es el del form-centro
 
         // =================================================================================
         // 2. LÓGICA DE LA INTERFAZ DE USUARIO (UI)
@@ -291,6 +305,9 @@
         // Activar el autocompletado para ambos formularios
         setupAutocomplete(nombreCentroAlumnoInput, resultsAlumnoContainer, codigoCentroAlumnoVisible);
         setupAutocomplete(nombreCentroProfesorInput, resultsProfesorContainer, codigoCentroProfesorVisible);
+
+        // Activar el autocompletado para el formulario de REGISTRO DE CENTRO (nuevo)
+        setupAutocomplete(nombreCentroInput, resultsCentroContainer, codigoCentroInput);
         
         // --- FUNCIÓN DE AYUDA PARA MOSTRAR MENSAJES ---
         function showMessage(isSuccess, message, form) {
@@ -399,8 +416,8 @@
             try {
                 const { data, error } = await supabaseClient.rpc('registrar_nuevo_centro', {
                     codigo_invitacion: document.getElementById('centro-invite-code').value.trim(),
-                    nombre_del_centro: document.getElementById('nombre-centro').value.trim(),
-                    codigo_oficial: document.getElementById('codigo-centro').value.trim() || null,
+                    nombre_del_centro: document.getElementById('nombre-centro').value.trim(), // Ahora se toma el valor del input autocompletado
+                    codigo_oficial: document.getElementById('codigo-centro').value.trim() || null, // Ahora se toma el valor del input autocompletado
                     nombre_solicitante: document.getElementById('solicitante-nombre').value.trim(),
                     email_solicitante: document.getElementById('solicitante-email').value.trim()
                 });
@@ -418,6 +435,5 @@
             }
         });
     });
-  </script>
 </body>
 </html>
