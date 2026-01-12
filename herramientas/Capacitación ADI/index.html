@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacitación Técnica: Aulas Digitales Interactivas (ADI)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Markdown Parser for AI responses -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar for the sidebar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-nav {
+            background-color: #2563EB; /* Blue-600 */
+            color: white;
+            border-left: 4px solid #1E40AF; /* Blue-800 */
+        }
+        
+        .inactive-nav:hover {
+            background-color: #F3F4F6;
+            color: #1F2937;
+        }
+
+        .tech-card {
+            transition: all 0.2s;
+        }
+        .tech-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* AI Loading Animation */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3b82f6;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Markdown Styles */
+        .prose h3 { font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
+        .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+        .prose p { margin-bottom: 0.5em; }
+        .prose strong { color: #1f2937; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col h-full hidden md:flex">
+        <div class="p-6 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-blue-800 leading-tight">Capacitación ADI</h1>
+            <p class="text-xs text-gray-500 mt-1">PCT #EcoDigEdu</p>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 space-y-1">
+            <button onclick="showSection('inicio')" id="nav-inicio" class="w-full text-left px-6 py-3 text-sm font-medium active-nav flex items-center gap-3">
+                <i data-lucide="home" class="w-4 h-4"></i> Inicio
+            </button>
+            <button onclick="showSection('catalogo')" id="nav-catalogo" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-600 inactive-nav flex items-center gap-3">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i> Catálogo ADI
+            </button>
+            
+            <div class="px-6 pt-4 pb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Módulos Técnicos</div>
+            
+            <button onclick="showSection('paneles')" id="nav-paneles" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-600 inactive-nav flex items-center gap-3">
+                <i data-lucide="monitor-play" class="w-4 h-4"></i> Paneles Interactivos
+            </button>
+            <button onclick="showSection('radio')" id="nav-radio" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-600 inactive-nav flex items-center gap-3">
+                <i data-lucide="mic-2" class="w-4 h-4"></i> Taller de Radio
+            </button>
+            <button onclick="showSection('audiovisual')" id="nav-audiovisual" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-600 inactive-nav flex items-center gap-3">
+                <i data-lucide="video" class="w-4 h-4"></i> Audiovisual
+            </button>
+            <button onclick="showSection('steam')" id="nav-steam" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-600 inactive-nav flex items-center gap-3">
+                <i data-lucide="bot" class="w-4 h-4"></i> Aula STEAM
+            </button>
+        </nav>
+
+        <!-- Updated Footer with Click Action -->
+        <div onclick="toggleSupportModal()" class="p-4 border-t border-gray-200 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors group">
+            <div class="flex items-center gap-2 text-xs text-gray-500 group-hover:text-blue-700">
+                <i data-lucide="life-buoy" class="w-4 h-4"></i>
+                <span class="font-medium">Contactar Soporte Técnico</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <div class="md:hidden absolute top-0 left-0 w-full bg-white border-b border-gray-200 z-50 px-4 py-3 flex justify-between items-center">
+        <span class="font-bold text-blue-800">Capacitación ADI</span>
+        <button onclick="toggleMobileMenu()" class="text-gray-600">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pt-16 md:pt-8 bg-gray-50 relative">
+        
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="hidden absolute top-14 left-0 w-full bg-white shadow-lg border-b border-gray-200 z-40 md:hidden flex flex-col">
+            <button onclick="showSection('inicio'); toggleMobileMenu()" class="px-6 py-4 border-b text-sm">Inicio</button>
+            <button onclick="showSection('catalogo'); toggleMobileMenu()" class="px-6 py-4 border-b text-sm">Catálogo</button>
+            <button onclick="showSection('paneles'); toggleMobileMenu()" class="px-6 py-4 border-b text-sm">Paneles</button>
+            <button onclick="showSection('radio'); toggleMobileMenu()" class="px-6 py-4 border-b text-sm">Radio</button>
+            <button onclick="showSection('audiovisual'); toggleMobileMenu()" class="px-6 py-4 border-b text-sm">Audiovisual</button>
+            <button onclick="showSection('steam'); toggleMobileMenu()" class="px-6 py-4 text-sm">STEAM</button>
+            <button onclick="toggleSupportModal(); toggleMobileMenu()" class="px-6 py-4 text-sm bg-gray-50 text-blue-700 font-semibold">Contactar Soporte</button>
+        </div>
+
+        <!-- SECCION 1: INICIO -->
+        <section id="inicio" class="fade-in max-w-5xl mx-auto space-y-8">
+            <div class="bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl p-8 text-white shadow-lg">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <span class="bg-blue-600 text-blue-100 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">Programa #EcoDigEdu</span>
+                        <h1 class="text-3xl md:text-4xl font-bold mt-2">Transformación Digital Educativa</h1>
+                        <p class="text-blue-100 mt-2 text-lg">Capacitación Técnica para Aulas Digitales Interactivas</p>
+                    </div>
+                    <!-- Logos Placeholder -->
+                    <div class="flex gap-3 bg-white/10 p-2 rounded-lg backdrop-blur-sm">
+                        <div class="text-xs text-right leading-tight">
+                            Financiado por<br>la Unión Europea<br><strong>NextGenerationEU</strong>
+                        </div>
+                        <div class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-xs">EU</div>
+                    </div>
+                </div>
+                <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
+                    <h3 class="font-semibold text-xl mb-2 flex items-center gap-2">
+                        <i data-lucide="box" class="w-5 h-5"></i>
+                        Más que equipamiento: Un Ecosistema
+                    </h3>
+                    <p class="leading-relaxed">
+                        Este portal está diseñado para guiarte en el uso de las Aulas Digitales Interactivas (ADI). 
+                        No veas este equipamiento solo como hardware; imagina el aula como una <strong>caja de herramientas digital</strong>. 
+                        Cada dispositivo y software es una llave que permite al alumnado construir su propio conocimiento, 
+                        desarrollando habilidades críticas como la expresión oral, el pensamiento computacional y la creatividad.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Objetivos del Programa</h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mt-0.5"></i>
+                            <span><strong>Reducir la brecha digital:</strong> Garantizar el acceso equitativo a la tecnología para todo el alumnado.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mt-0.5"></i>
+                            <span><strong>Desarrollo Competencial:</strong> Fomentar las competencias STEAM y la alfabetización mediática.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mt-0.5"></i>
+                            <span><strong>Empoderamiento Docente:</strong> Dotar al profesorado de confianza técnica y pedagógica.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 flex items-center justify-center flex-col text-center">
+                    <i data-lucide="book-open" class="w-12 h-12 text-blue-600 mb-4"></i>
+                    <h3 class="text-lg font-bold text-blue-900">¿Cómo usar esta guía?</h3>
+                    <p class="text-sm text-blue-800 mt-2">
+                        Navega por los módulos en el menú lateral. Cada sección incluye instrucciones paso a paso para el montaje, uso del software y solución de problemas frecuentes.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCION 2: CATALOGO -->
+        <section id="catalogo" class="hidden fade-in max-w-6xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <i data-lucide="layout-grid" class="w-6 h-6 text-blue-600"></i>
+                Catálogo de Aulas ADI
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- ADI Basica -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <div class="h-32 bg-gray-200 flex items-center justify-center">
+                        <i data-lucide="monitor" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2">ADI Básica</h3>
+                        <p class="text-sm text-gray-600">El estándar para la digitalización del aula común. Incluye panel interactivo y conectividad mejorada para el docente.</p>
+                    </div>
+                </div>
+                <!-- ADI Movil -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <div class="h-32 bg-gray-200 flex items-center justify-center">
+                        <i data-lucide="laptop" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2">ADI Móvil</h3>
+                        <p class="text-sm text-gray-600">Carros de carga con portátiles/tablets para desplazar la tecnología a cualquier espacio del centro educativo.</p>
+                    </div>
+                </div>
+                <!-- ADI Radio -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <div class="h-32 bg-orange-100 flex items-center justify-center">
+                        <i data-lucide="mic" class="w-12 h-12 text-orange-500"></i>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2 text-orange-900">ADI Taller de Radio</h3>
+                        <p class="text-sm text-gray-600">Espacio insonorizado y equipado para la creación de podcast y radio escolar. Fomenta la comunicación lingüística.</p>
+                    </div>
+                </div>
+                <!-- ADI AV -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <div class="h-32 bg-purple-100 flex items-center justify-center">
+                        <i data-lucide="video" class="w-12 h-12 text-purple-500"></i>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2 text-purple-900">ADI Audiovisual</h3>
+                        <p class="text-sm text-gray-600">Estudio de grabación con croma y edición de vídeo. Ideal para proyectos de periodismo escolar y creatividad.</p>
+                    </div>
+                </div>
+                <!-- ADI STEAM -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow md:col-span-2">
+                    <div class="h-32 bg-green-100 flex items-center justify-center">
+                        <i data-lucide="bot" class="w-12 h-12 text-green-600"></i>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2 text-green-900">ADI STEAM</h3>
+                        <p class="text-sm text-gray-600">Laboratorio de futuro: Robótica, Impresión 3D y Realidad Virtual. Espacio para el aprendizaje basado en proyectos (ABP) y pensamiento computacional.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCION 3: PANELES -->
+        <section id="paneles" class="hidden fade-in max-w-5xl mx-auto space-y-8">
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="monitor-play" class="w-8 h-8 text-blue-600"></i>
+                    Panel Digital Interactivo (Smart Board MX V5)
+                </h2>
+                <p class="text-gray-600 mt-2">El corazón del aula digital. Guía de uso rápido.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Hardware Start -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="font-bold text-lg mb-4 text-blue-800 border-b pb-2">1. Hardware y Sistema Operativo</h3>
+                    <ul class="space-y-4 text-sm text-gray-700">
+                        <li>
+                            <strong>Encendido:</strong> Botón físico frontal o mando a distancia. Esperar 15s para carga completa.
+                        </li>
+                        <li>
+                            <strong>OPS (Open Pluggable Specification):</strong>
+                            <p class="mt-1 text-gray-500 text-xs">El panel cuenta con dos "cerebros": Android (nativo) y Windows (a través del módulo OPS insertado atrás).</p>
+                        </li>
+                        <li class="bg-yellow-50 p-3 rounded border border-yellow-100">
+                            <strong>Inicio de Sesión NFC:</strong>
+                            <p class="mt-1">Acerque su tarjeta de docente al lector NFC en el marco inferior derecho. Esto cargará su perfil personal y sus archivos en la nube automáticamente.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Software Suite -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="font-bold text-lg mb-4 text-blue-800 border-b pb-2">2. Suite Lumio</h3>
+                    <p class="text-sm text-gray-600 mb-3">Software en la nube para crear lecciones interactivas.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-blue-100 p-2 rounded text-blue-600 font-bold text-xs">A</div>
+                            <div>
+                                <h4 class="font-semibold text-sm">Importar Recursos</h4>
+                                <p class="text-xs text-gray-500">Sube tus PDFs, PowerPoints o Google Slides existentes a Lumio.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="bg-blue-100 p-2 rounded text-blue-600 font-bold text-xs">B</div>
+                            <div>
+                                <h4 class="font-semibold text-sm">Gamificación</h4>
+                                <p class="text-xs text-gray-500">Añade actividades como "Monster Quiz" o "Shout It Out" para participación en tiempo real.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Box -->
+            <div class="bg-gray-100 p-5 rounded-lg border-l-4 border-gray-500">
+                <h4 class="font-bold text-gray-700 flex items-center gap-2 mb-2">
+                    <i data-lucide="wrench" class="w-4 h-4"></i> Mantenimiento y Problemas Frecuentes
+                </h4>
+                <ul class="text-sm text-gray-600 list-disc list-inside space-y-1">
+                    <li><strong>Limpieza:</strong> Usar paño de microfibra seco. No rociar líquidos directamente en la pantalla.</li>
+                    <li><strong>El táctil no responde en Windows:</strong> Verificar que el cable USB Touch esté conectado si se usa un ordenador externo (no aplica para OPS).</li>
+                    <li><strong>Sin sonido:</strong> Revisar la configuración de salida de audio en Windows (seleccionar "SMART IFP").</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECCION 4: RADIO -->
+        <section id="radio" class="hidden fade-in max-w-5xl mx-auto space-y-8">
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="mic-2" class="w-8 h-8 text-orange-600"></i>
+                    Módulo Taller de Radio y Sonido
+                </h2>
+                <p class="text-gray-600 mt-2">Creación de podcast y radio escolar. Desarrollo de la competencia lingüística.</p>
+            </div>
+
+            <!-- AI FEATURE: RADIO SCRIPT GENERATOR -->
+            <div class="bg-gradient-to-r from-orange-50 to-white rounded-xl p-6 border border-orange-200 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                    <i data-lucide="sparkles" class="w-24 h-24 text-orange-500"></i>
+                </div>
+                
+                <h3 class="font-bold text-orange-800 text-lg flex items-center gap-2 mb-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-orange-500"></i>
+                    Generador de Guiones con IA
+                </h3>
+                <p class="text-sm text-gray-600 mb-4 max-w-2xl">¿No sabes cómo empezar tu podcast? Describe el tema y deja que la IA redacte un esquema inicial con introducción, preguntas clave y cierre.</p>
+                
+                <div class="grid md:grid-cols-4 gap-4 mb-4">
+                    <div class="md:col-span-3">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tema del Podcast</label>
+                        <input type="text" id="radio-topic" placeholder="Ej: La contaminación en los océanos, Entrevista a Don Quijote..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-200 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tono</label>
+                        <select id="radio-tone" class="w-full p-2 border border-gray-300 rounded-lg text-sm outline-none bg-white">
+                            <option value="Informativo">Informativo</option>
+                            <option value="Divertido">Divertido</option>
+                            <option value="Misterioso">Misterioso</option>
+                            <option value="Debate">Debate</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="generateRadioScript()" id="btn-radio-gen" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+                    <span>✨ Generar Guion</span>
+                </button>
+
+                <!-- AI Result Area -->
+                <div id="radio-result-container" class="hidden mt-6 pt-4 border-t border-orange-100">
+                    <div id="radio-loading" class="hidden flex items-center gap-2 text-orange-600 text-sm font-medium">
+                        <div class="loader border-t-orange-600"></div>
+                        <span>Redactando guion creativo...</span>
+                    </div>
+                    <div id="radio-content" class="prose prose-sm max-w-none text-gray-700 bg-white p-4 rounded-lg border border-gray-100 shadow-inner">
+                        <!-- Content will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Steps -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-orange-700 mb-3">1. Hardware</h3>
+                    <ul class="text-sm space-y-3 text-gray-700">
+                        <li><strong>Mesa de Mezclas:</strong> Conectar micrófonos en entradas XLR (Canales 1-4). Ajustar 'Gain' (Ganancia) antes de subir el 'Fader' (Volumen).</li>
+                        <li><strong>Amplificador Auriculares:</strong> Permite que hasta 4 locutores escuchen el retorno simultáneamente.</li>
+                    </ul>
+                </div>
+                <div class="md:col-span-2 bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-orange-700 mb-3">2. Software: Mixxx (Emisión) y Audacity (Edición)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded">
+                            <h4 class="font-bold text-sm mb-2">Mixxx (Radio en vivo)</h4>
+                            <p class="text-xs text-gray-600">Software DJ para mezclar música y voz en tiempo real.</p>
+                            <ul class="text-xs text-gray-500 mt-2 list-disc list-inside">
+                                <li>Configurar "Audio Hardware" para usar la mesa USB.</li>
+                                <li>Usar "Auto DJ" para listas de reproducción automáticas.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <h4 class="font-bold text-sm mb-2">Audacity (Grabación)</h4>
+                            <p class="text-xs text-gray-600">Edición multipista para post-producción de podcasts.</p>
+                            <ul class="text-xs text-gray-500 mt-2 list-disc list-inside">
+                                <li>Botón Rojo: Grabar.</li>
+                                <li>Herramienta "Envolvente": Para bajar la música cuando habla el locutor (Ducking).</li>
+                                <li>Exportar como MP3 para subir a la web.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Troubleshooting -->
+            <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <h4 class="font-bold text-orange-800 text-sm mb-2">Solución de Problemas (FAQ)</h4>
+                <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
+                    <div>
+                        <span class="font-semibold block">Ruido de fondo (Hiss):</span>
+                        La ganancia está demasiado alta. Bajar ganancia y acercarse más al micrófono.
+                    </div>
+                    <div>
+                        <span class="font-semibold block">No se graba nada en PC:</span>
+                        Verificar que la mesa de mezclas esté seleccionada como "Dispositivo de Entrada" en la configuración de sonido de Windows.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCION 5: AUDIOVISUAL -->
+        <section id="audiovisual" class="hidden fade-in max-w-5xl mx-auto space-y-8">
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="video" class="w-8 h-8 text-purple-600"></i>
+                    Módulo Audiovisual
+                </h2>
+                <p class="text-gray-600 mt-2">Producción de vídeo, croma y streaming.</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-purple-50 p-4 border-b border-purple-100 flex justify-between items-center">
+                    <h3 class="font-bold text-purple-900">Kit de Grabación y Streaming</h3>
+                    <i data-lucide="camera" class="w-5 h-5 text-purple-400"></i>
+                </div>
+                <div class="p-6 grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold text-sm uppercase text-gray-500 mb-3">Hardware</h4>
+                        <ul class="space-y-3 text-sm text-gray-700">
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 text-purple-500"></i>
+                                <span><strong>Croma Verde:</strong> Iluminar uniformemente para evitar sombras. El sujeto debe estar separado al menos 1 metro de la tela.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 text-purple-500"></i>
+                                <span><strong>Iluminación:</strong> Esquema de 3 puntos (Principal, Relleno, Contraluz) para resultados profesionales.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm uppercase text-gray-500 mb-3">Software</h4>
+                        <div class="space-y-4">
+                            <div class="border-l-2 border-purple-300 pl-3">
+                                <strong class="block text-gray-800">OBS Studio</strong>
+                                <p class="text-xs text-gray-500">Para streaming y cámara virtual. Configurar filtro "Fondo Croma" en la fuente de vídeo para eliminar el verde.</p>
+                            </div>
+                            <div class="border-l-2 border-purple-300 pl-3">
+                                <strong class="block text-gray-800">Kdenlive</strong>
+                                <p class="text-xs text-gray-500">Editor de video no lineal. Uso de pistas (V1, V2) y renderizado final (MP4 H.264).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Troubleshooting -->
+             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-gray-500">
+                <h4 class="font-bold text-gray-700 text-sm mb-2">Consejos de Mantenimiento</h4>
+                <p class="text-sm text-gray-600">Guardar la tela verde enrollada, no doblada, para evitar arrugas difíciles de planchar que arruinan el efecto croma.</p>
+            </div>
+        </section>
+
+        <!-- SECCION 6: STEAM -->
+        <section id="steam" class="hidden fade-in max-w-5xl mx-auto space-y-8">
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="bot" class="w-8 h-8 text-green-600"></i>
+                    Módulo STEAM
+                </h2>
+                <p class="text-gray-600 mt-2">Ciencia, Tecnología, Ingeniería, Arte y Matemáticas.</p>
+            </div>
+
+            <!-- AI FEATURE: STEAM CHALLENGE GENERATOR -->
+            <div class="bg-gradient-to-r from-green-50 to-white rounded-xl p-6 border border-green-200 shadow-sm relative overflow-hidden mb-8">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                    <i data-lucide="brain-circuit" class="w-24 h-24 text-green-600"></i>
+                </div>
+                
+                <h3 class="font-bold text-green-900 text-lg flex items-center gap-2 mb-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-green-600"></i>
+                    Diseñador de Retos STEAM con IA
+                </h3>
+                <p class="text-sm text-gray-600 mb-4 max-w-2xl">Transversaliza el conocimiento. Introduce una asignatura curricular y deja que la IA diseñe un proyecto que combine Robótica e Impresión 3D.</p>
+                
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <div class="flex-grow">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Asignatura / Tema Curricular</label>
+                        <input type="text" id="steam-subject" placeholder="Ej: Sistema Solar, Historia de Roma, Fotosíntesis..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-200 outline-none">
+                    </div>
+                    <div class="w-full md:w-auto flex items-end">
+                        <button onclick="generateSteamProject()" id="btn-steam-gen" class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors">
+                            <span>✨ Diseñar Reto</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Result Area -->
+                <div id="steam-result-container" class="hidden mt-6 pt-4 border-t border-green-100">
+                    <div id="steam-loading" class="hidden flex items-center gap-2 text-green-700 text-sm font-medium">
+                        <div class="loader border-t-green-700"></div>
+                        <span>Diseñando experiencia de aprendizaje...</span>
+                    </div>
+                    <div id="steam-content" class="prose prose-sm max-w-none text-gray-700 bg-white p-4 rounded-lg border border-gray-100 shadow-inner">
+                        <!-- Content will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs for STEAM sub-modules -->
+            <div class="grid md:grid-cols-3 gap-6">
+                
+                <!-- 3D Printing Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 tech-card flex flex-col">
+                    <div class="bg-green-50 p-4 border-b border-green-100">
+                        <h3 class="font-bold text-green-800 flex items-center gap-2">
+                            <i data-lucide="printer" class="w-5 h-5"></i> Impresión 3D
+                        </h3>
+                    </div>
+                    <div class="p-5 flex-1 text-sm text-gray-700 space-y-3">
+                        <p><strong>Modelos:</strong> Creality Sermoon V1 / K1.</p>
+                        <div class="bg-gray-50 p-2 rounded text-xs">
+                            <strong>Flujo de trabajo:</strong>
+                            <ol class="list-decimal list-inside mt-1 space-y-1">
+                                <li>Diseño: <strong>Tinkercad</strong> (Nube).</li>
+                                <li>Laminado: <strong>Cura Ultimaker</strong>. Configurar temperatura (200°C para PLA) y relleno (Infill 20%).</li>
+                                <li>Exportar: Guardar G-code en USB.</li>
+                            </ol>
+                        </div>
+                        <p class="text-xs text-red-500 font-semibold mt-2">Mantenimiento: Nivelar la cama antes de cada impresión grande.</p>
+                    </div>
+                </div>
+
+                <!-- Robotics Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 tech-card flex flex-col">
+                    <div class="bg-green-50 p-4 border-b border-green-100">
+                        <h3 class="font-bold text-green-800 flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-5 h-5"></i> Robótica
+                        </h3>
+                    </div>
+                    <div class="p-5 flex-1 text-sm text-gray-700 space-y-3">
+                        <p><strong>Dispositivos:</strong> Placa Micro:bit y Robot Maqueen.</p>
+                        <div class="bg-gray-50 p-2 rounded text-xs">
+                            <strong>Programación:</strong>
+                            <ul class="list-disc list-inside mt-1 space-y-1">
+                                <li>Plataforma: <strong>MakeCode</strong> (Bloques).</li>
+                                <li>Conexión: Cable Micro-USB. Al conectar, aparece como unidad externa.</li>
+                                <li>Carga: Arrastrar el archivo .hex descargado a la unidad Micro:bit.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VR Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 tech-card flex flex-col">
+                    <div class="bg-green-50 p-4 border-b border-green-100">
+                        <h3 class="font-bold text-green-800 flex items-center gap-2">
+                            <i data-lucide="glasses" class="w-5 h-5"></i> Realidad Virtual
+                        </h3>
+                    </div>
+                    <div class="p-5 flex-1 text-sm text-gray-700 space-y-3">
+                        <p><strong>Dispositivo:</strong> Meta Quest 3.</p>
+                        <div class="bg-gray-50 p-2 rounded text-xs">
+                            <strong>Aplicaciones Didácticas:</strong>
+                            <ul class="list-disc list-inside mt-1 space-y-1">
+                                <li>Anatomía humana (3D inmersivo).</li>
+                                <li>Química (Construcción molecular).</li>
+                                <li>Geografía (Google Earth VR).</li>
+                            </ul>
+                        </div>
+                        <p class="text-xs text-blue-500 font-semibold mt-2">Seguridad: Configurar siempre el "Guardián" (Límite de seguridad) antes de jugar.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Support Modal -->
+    <div id="support-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center fade-in px-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-blue-600 p-4 flex justify-between items-center text-white">
+                <h3 class="font-bold flex items-center gap-2">
+                    <i data-lucide="life-buoy" class="w-5 h-5"></i> Soporte Técnico
+                </h3>
+                <button onclick="toggleSupportModal()" class="hover:bg-blue-700 p-1 rounded">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-600">
+                    Si las guías del portal no resuelven tu incidencia con el equipamiento ADI, contacta con el CAU (Centro de Atención al Usuario).
+                </p>
+                
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-blue-100 p-2 rounded-full text-blue-600">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500 block">Teléfono (Horario: 8:00 - 15:00)</span>
+                            <span class="font-bold text-gray-800">900 123 456</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-blue-100 p-2 rounded-full text-blue-600">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500 block">Correo Electrónico</span>
+                            <span class="font-bold text-gray-800">soporte.cau@educacion.gob.es</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-gray-400 text-center pt-2">
+                    *Por favor, ten a mano el número de serie del dispositivo afectado.
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 text-center border-t">
+                <button onclick="toggleSupportModal()" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Gemini API Configuration
+        const GEMINI_API_KEY = ""; // Injected by environment
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${GEMINI_API_KEY}`;
+
+        // Generic Function to Call Gemini
+        async function callGeminiAPI(systemInstruction, userPrompt) {
+            try {
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userPrompt }] }],
+                        systemInstruction: { parts: [{ text: systemInstruction }] }
+                    })
+                });
+
+                if (!response.ok) throw new Error('Error en la API');
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error(error);
+                return "Lo siento, hubo un error al conectar con la IA. Por favor, inténtalo de nuevo más tarde.";
+            }
+        }
+
+        // Feature 1: Radio Script Generator
+        async function generateRadioScript() {
+            const topic = document.getElementById('radio-topic').value;
+            const tone = document.getElementById('radio-tone').value;
+            const resultContainer = document.getElementById('radio-result-container');
+            const loader = document.getElementById('radio-loading');
+            const content = document.getElementById('radio-content');
+            
+            if (!topic) return alert("Por favor, introduce un tema.");
+
+            // UI Updates
+            resultContainer.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            content.innerHTML = ''; // Clear previous
+
+            const systemPrompt = "Eres un productor de radio escolar experto y creativo. Tu objetivo es ayudar a docentes y alumnos a estructurar podcasts educativos.";
+            const userPrompt = `Escribe un guion breve (esquema) para un podcast escolar sobre el tema: "${topic}". 
+            El tono debe ser: ${tone}. 
+            Incluye:
+            1. Título sugerido (pegadizo).
+            2. Introducción (con música de fondo sugerida).
+            3. Desarrollo (2 o 3 preguntas clave o segmentos).
+            4. Despedida.
+            Usa formato Markdown.`;
+
+            const text = await callGeminiAPI(systemPrompt, userPrompt);
+            
+            loader.classList.add('hidden');
+            loader.classList.remove('flex');
+            content.innerHTML = marked.parse(text);
+        }
+
+        // Feature 2: STEAM Project Generator
+        async function generateSteamProject() {
+            const subject = document.getElementById('steam-subject').value;
+            const resultContainer = document.getElementById('steam-result-container');
+            const loader = document.getElementById('steam-loading');
+            const content = document.getElementById('steam-content');
+
+            if (!subject) return alert("Por favor, introduce una asignatura.");
+
+            resultContainer.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            content.innerHTML = '';
+
+            const systemPrompt = "Eres un experto en tecnología educativa STEAM. Tu especialidad es integrar Impresión 3D (Tinkercad/Cura) y Robótica (Micro:bit/Maqueen) en el currículo escolar.";
+            const userPrompt = `Diseña una idea de proyecto STEAM para la asignatura: "${subject}".
+            El proyecto DEBE combinar el uso de Impresión 3D y la placa Micro:bit.
+            Estructura la respuesta así:
+            1. Título del Reto.
+            2. Misión (¿Qué problema resuelven los alumnos?).
+            3. Parte 3D: ¿Qué diseñan/imprimen?
+            4. Parte Robótica: ¿Qué programa la Micro:bit?
+            Usa formato Markdown.`;
+
+            const text = await callGeminiAPI(systemPrompt, userPrompt);
+
+            loader.classList.add('hidden');
+            loader.classList.remove('flex');
+            content.innerHTML = marked.parse(text);
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = ['inicio', 'catalogo', 'paneles', 'radio', 'audiovisual', 'steam'];
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            // Update Navigation Styles (Desktop)
+            const navButtons = document.querySelectorAll('aside nav button');
+            navButtons.forEach(btn => {
+                btn.classList.remove('active-nav', 'text-blue-800');
+                btn.classList.add('inactive-nav', 'text-gray-600');
+                btn.style.borderLeft = 'none'; 
+            });
+
+            const activeBtn = document.getElementById('nav-' + sectionId);
+            if (activeBtn) {
+                activeBtn.classList.remove('inactive-nav', 'text-gray-600');
+                activeBtn.classList.add('active-nav');
+                activeBtn.style.borderLeft = '4px solid #1E40AF';
+            }
+
+            // Scroll to top
+            document.querySelector('main').scrollTop = 0;
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleSupportModal() {
+            const modal = document.getElementById('support-modal');
+            modal.classList.toggle('hidden');
+            lucide.createIcons(); 
+        }
+
+        // Initialize default view
+        showSection('inicio');
+    </script>
+</body>
+</html>
