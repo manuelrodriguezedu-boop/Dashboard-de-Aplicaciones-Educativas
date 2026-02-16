@@ -1,124 +1,149 @@
 <!DOCTYPE html>
 <html lang="es">
-  <!-- Actualizado para forzar GitHub Pages - 2025 -->
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard de Aplicaciones Educativas</title>
+  <title>Dashboard de Aplicaciones Educativas | Manuel Rodríguez</title>
   <style>
+    :root {
+      --primary-color: #1a5fb4;
+      --secondary-color: #2c6fbb;
+      --accent-color: #134a8e;
+      --bg-color: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-main: #333;
+      --text-muted: #555;
+      --border-color: #e0e6ed;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f7fa;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
       margin: 0;
       padding: 20px;
-      color: #333;
+      color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
+      line-height: 1.6;
     }
+
     header {
       text-align: center;
       margin-bottom: 40px;
+      max-width: 800px;
     }
+
     h1 {
-      color: #1a5fb4;
-      font-size: 2.5em;
+      color: var(--primary-color);
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
       margin-bottom: 10px;
     }
+
     header p {
-      color: #555;
-      font-size: 1.1em;
-      max-width: 600px;
+      color: var(--text-muted);
+      font-size: 1.1rem;
     }
+
+    /* Sección del Autor */
     .creator-section {
       background: #e9eef5;
-      border-radius: 10px;
-      padding: 25px 30px;
-      margin: 0 auto 40px;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 40px;
       max-width: 700px;
       text-align: center;
       border: 1px solid #dce5f2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
+
     .creator-section h2 {
-      color: #2c6fbb;
+      color: var(--secondary-color);
       margin-top: 0;
-      margin-bottom: 15px;
     }
-    .creator-section p {
-      color: #444;
-      font-size: 16px;
-      line-height: 1.7;
-      margin-bottom: 0;
-    }
+
     .signature {
-        margin-top: 20px;
-        line-height: 1.5;
-        font-style: italic;
-        color: #555;
+      margin-top: 20px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
     }
+
+    /* Grid de Aplicaciones */
     .dashboard-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      width: 100%;
       max-width: 1200px;
     }
+
     .app-card {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       padding: 25px;
-      width: 100%;
-      max-width: 320px;
       display: flex;
       flex-direction: column;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .app-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      transform: translateY(-8px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     }
+
     .app-card h3 {
-      color: #2c6fbb;
+      color: var(--secondary-color);
       margin-top: 0;
-      border-bottom: 2px solid #e0e6ed;
-      padding-bottom: 10px;
-      /* --- CAMBIO REALIZADO: Título centrado --- */
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 12px;
       text-align: center;
+      font-size: 1.3rem;
     }
+
     .app-card p {
       flex-grow: 1;
       color: #444;
       font-size: 15px;
-      line-height: 1.6;
-      /* --- CAMBIO REALIZADO: Texto justificado --- */
       text-align: justify;
+      margin-top: 15px;
     }
+
+    /* Botones */
     .btn {
       display: block;
-      background: #1a5fb4;
+      background: var(--primary-color);
       color: white;
       text-align: center;
       padding: 12px 20px;
-      border-radius: 6px;
+      border-radius: 8px;
       text-decoration: none;
-      font-size: 16px;
-      font-weight: bold;
+      font-weight: 600;
       margin-top: 20px;
-      transition: background 0.3s;
+      transition: background 0.2s ease;
     }
+
     .btn:hover {
-      background: #134a8e;
+      background: var(--accent-color);
     }
-    .btn.disabled {
-      background-color: #a0b4ce;
-      cursor: not-allowed;
-    }
+
     footer {
-        text-align: center;
-        margin-top: 50px;
-        color: #888;
-        font-size: 14px;
+      text-align: center;
+      margin-top: 60px;
+      padding-bottom: 20px;
+      color: #888;
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 1200px;
+      padding-top: 20px;
+    }
+
+    /* Ajustes para móviles */
+    @media (max-width: 600px) {
+      body { padding: 15px; }
+      .creator-section { padding: 20px; }
+      .dashboard-container { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -126,80 +151,60 @@
 
   <header>
     <h1>Dashboard de Aplicaciones Educativas</h1>
-    <p>
-      Bienvenido/a. Desde aquí puedes acceder a un conjunto de herramientas
-      diseñadas para la enseñanza y el aprendizaje en el entorno digital.
-    </p>
+    <p>Acceso centralizado a recursos y herramientas digitales para la comunidad educativa del IES Sierra de los Filabres.</p>
   </header>
 
   <section class="creator-section">
-    <h2>Una nota del creador</h2>
+    <h2>Nota del Creador</h2>
     <p>
-      ¡Hola! Mi nombre es Manuel Rodríguez Peñalver. Como Profesor de Tecnología y Coordinador TDE, mi objetivo es crear herramientas prácticas y accesibles que nos ayuden, tanto a docentes como a estudiantes, a navegar y prosperar en el entorno digital. Espero que encuentres estos recursos de gran utilidad.
+      ¡Hola! Soy Manuel Rodríguez Peñalver. Como Profesor de Tecnología y Coordinador TDE, desarrollo estas herramientas para facilitar la labor docente y potenciar el aprendizaje digital. Espero que estos recursos os resulten útiles en vuestro día a día.
     </p>
     <div class="signature">
-        <strong>Manuel Rodríguez Peñalver</strong><br>
-        Profesor de Tecnología, Coordinador TDE y Escuelas 4.0<br>
-        IES Sierra de los Filabres
+      <strong>Manuel Rodríguez Peñalver</strong><br>
+      Profesor de Tecnología | Coordinador TDE y Escuelas 4.0<br>
+      IES Sierra de los Filabres
     </div>
   </section>
 
   <main class="dashboard-container">
-    <!-- Aplicación 1: Rúbrica Interactiva (ACTIVA) -->
+    <!-- Aplicación 1 -->
     <article class="app-card">
       <h3>Competencia Digital</h3>
-      <p>
-        Una herramienta completa de autoevaluación para medir y entender tus
-        habilidades digitales en cuatro áreas clave: ciudadanía, comunicación,
-        creación de contenidos y pensamiento computacional.
-      </p>
+      <p>Herramienta de autoevaluación para medir habilidades en ciudadanía digital, comunicación, creación de contenidos y pensamiento computacional.</p>
       <a href="herramientas/competencia-digital/index.html" class="btn">Acceder a la Rúbrica</a>
     </article>
 
-    <!-- Aplicación 2: Rúbrica de Evaluación Inicial (FUTURA) -->
+    <!-- Aplicación 2 -->
     <article class="app-card">
-      <h3>Rúbrica de Evaluación Inicial</h3>
-      <p>
-        Un cuestionario rápido para establecer una línea base de
-        conocimientos al comienzo de un curso. Ideal para
-        adaptar la enseñanza a las necesidades del grupo.
-      </p>
-      <a href="herramientas/evaluacion_inicial/index.html" class="btn">Rúbrica de Evaluación Inicial</a>
+      <h3>Evaluación Inicial</h3>
+      <p>Cuestionario diseñado para establecer el nivel de partida del alumnado al inicio del curso escolar, permitiendo una práctica docente personalizada.</p>
+      <a href="herramientas/evaluacion_inicial/index.html" class="btn">Abrir Evaluación</a>
     </article>
 
-    <!-- Aplicación 3: Descubre tu Nivel Digital (FUTURA) -->
+    <!-- Aplicación 3 -->
     <article class="app-card">
-      <h3>Descubre tu Nivel Digital</h3>
-      <p>
-        Una guía gamificada y visual para que los más jóvenes
-        puedan descubrir su nivel de competencia digital de una forma sencilla
-        y divertida, fomentando la curiosidad.
-      </p>
-      <a href="herramientas/descubre_tu_nivel/index.html" class="btn">Acceder</a>
+      <h3>Nivel Digital Junior</h3>
+      <p>Interfaz gamificada para que los alumnos más jóvenes identifiquen sus destrezas tecnológicas mediante una experiencia visual e intuitiva.</p>
+      <a href="herramientas/descubre_tu_nivel/index.html" class="btn">Descubrir Nivel</a>
     </article>
 
-    <!-- Aplicación 4: Capacitación ADI -->
+    <!-- Aplicación 4 -->
     <article class="app-card">
       <h3>Capacitación ADI</h3>
-      <p>
-        Guía de capacitación técnica para las Aulas Digitales Interactivas (ADI) dentro del programa PCT #EcoDigEdu. Ofrece manuales detallados sobre el uso de paneles interactivos, taller de radio, producción audiovisual y recursos STEAM (robótica, impresión 3D y realidad virtual) para impulsar la transformación digital en los centros educativos
-      </p>
-      <a href="herramientas/Capacitación ADI/index.html" class="btn">Capacitación ADI</a>
+      <p>Manuales y recursos técnicos para las Aulas Digitales Interactivas: paneles, radio escolar, producción audiovisual y recursos STEAM (Robótica y 3D).</p>
+      <a href="herramientas/Capacitación ADI/index.html" class="btn">Ver Manuales ADI</a>
     </article>
 
-     <!-- Aplicación 5: EL DESAFÍO DE ANDALUCÍA -->
+    <!-- Aplicación 5 - CORREGIDA -->
     <article class="app-card">
-      <h3>EL DESAFÍO DE ANDALUCÍA</h3>
-      <p>
-        Guía de capacitación técnica para las Aulas Digitales Interactivas (ADI) dentro del programa PCT #EcoDigEdu. Ofrece manuales detallados sobre el uso de paneles interactivos, taller de radio, producción audiovisual y recursos STEAM (robótica, impresión 3D y realidad virtual) para impulsar la transformación digital en los centros educativos
-      </p>
-      <a href="herramientas/dia_andalucia/index.html" class="btn">EL DESAFÍO DE ANDALUCÍA</a>
+      <h3>El Desafío de Andalucía</h3>
+      <p>Recurso educativo dedicado a la cultura, geografía e historia de nuestra comunidad. Un desafío interactivo para conmemorar el Día de Andalucía.</p>
+      <a href="https://lightgoldenrodyellow-sparrow-456090.hostingersite.com/" class="btn">Iniciar Desafío</a>
     </article>
-
   </main>
 
   <footer>
-    <p>&copy; 2025 - Plataforma desarrollada por Manuel Rodríguez</p>
+    <p>&copy; 2025 - Manuel Rodríguez Peñalver | Innovación Educativa y Transformación Digital</p>
   </footer>
 
 </body>
